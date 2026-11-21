@@ -1,805 +1,217 @@
 <!DOCTYPE html>
-<html lang="en">
-  <head>
-    <meta charset="utf-8" />
-    <title>Snowdingo 3D</title>
-    <meta
-      name="viewport"
-      content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no"
-    />
-    <meta name="theme-color" content="#120d18" />
-    <link rel="manifest" href="manifest.json" />
-    <link rel="icon" href="favicon.svg" type="image/svg+xml" />
-    <meta name="apple-mobile-web-app-capable" content="yes" />
-    <style>
-      :root {
-        --bg: #120d18;
-        --fg: #fff2e0;
-        --ac: #ff8c1a;
-        --bt: rgba(255, 242, 224, 0.2);
-      }
-      html,
-      body {
-        margin: 0;
-        height: 100%;
-        background: var(--bg);
-        overflow: hidden;
-        touch-action: none;
-        font-family: Georgia, 'Times New Roman', serif;
-        color: var(--fg);
-        user-select: none;
-        -webkit-user-select: none;
-      }
-      canvas {
-        display: block;
-        width: 100%;
-        height: 100%;
-      }
-      #hud {
-        position: fixed;
-        top: 0;
-        left: 0;
-        right: 0;
-        padding: calc(8px + env(safe-area-inset-top, 0px)) 14px 0;
-        display: flex;
-        justify-content: space-between;
-        font-size: 15px;
-        pointer-events: none;
-        text-shadow: 0 1px 3px #000;
-      }
-      #bn {
-        position: fixed;
-        top: 18%;
-        left: 0;
-        right: 0;
-        text-align: center;
-        font-size: 20px;
-        white-space: pre-line;
-        opacity: 0;
-        transition: opacity 0.6s;
-        pointer-events: none;
-        text-shadow: 0 2px 6px #000;
-      }
-      .b {
-        position: fixed;
-        width: 64px;
-        height: 64px;
-        border-radius: 50%;
-        background: var(--bt);
-        border: 2px solid rgba(255, 242, 224, 0.45);
-        color: var(--fg);
-        font: 15px Georgia, serif;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        touch-action: none;
-      }
-      #L {
-        left: 14px;
-        bottom: calc(18px + env(safe-area-inset-bottom, 0px));
-      }
-      #R {
-        left: 92px;
-        bottom: calc(18px + env(safe-area-inset-bottom, 0px));
-      }
-      #J {
-        right: 14px;
-        bottom: calc(18px + env(safe-area-inset-bottom, 0px));
-      }
-      #A {
-        right: 92px;
-        bottom: calc(18px + env(safe-area-inset-bottom, 0px));
-      }
-      #M {
-        right: 14px;
-        bottom: calc(96px + env(safe-area-inset-bottom, 0px));
-        background: rgba(255, 140, 26, 0.35);
-      }
-      #ov {
-        position: fixed;
-        inset: 0;
-        background: rgba(18, 13, 24, 0.86);
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        justify-content: center;
-        text-align: center;
-        padding: 24px;
-        gap: 14px;
-      }
-      #ov h1 {
-        font-size: 44px;
-        margin: 0;
-        letter-spacing: 0.02em;
-        color: var(--ac);
-      }
-      #tx {
-        max-width: 460px;
-        line-height: 1.5;
-        white-space: pre-line;
-        margin: 0;
-      }
-      #ov button {
-        font: 18px Georgia, serif;
-        padding: 12px 26px;
-        border-radius: 8px;
-        border: 2px solid var(--ac);
-        background: transparent;
-        color: var(--fg);
-      }
-      #ov button:first-of-type {
-        background: var(--ac);
-        color: #1a1006;
-      }
-      #rot {
-        display: none;
-        position: fixed;
-        inset: 0;
-        z-index: 99;
-        background: #120d18;
-        color: #fff2e0;
-        align-items: center;
-        justify-content: center;
-        text-align: center;
-        font-size: 24px;
-        padding: 24px;
-      }
-      @media (orientation: portrait) {
-        #rot {
-          display: flex;
-        }
-      }
-    </style>
-  </head>
-  <body>
-    <div id="rot">Please rotate your phone to landscape ↻</div>
-    <div id="hud"><span id="h1"></span><span id="h2"></span></div>
-    <div id="bn"></div>
-    <div class="b" id="L">◀</div>
-    <div class="b" id="R">▶</div>
-    <div class="b" id="A">Sword</div>
-    <div class="b" id="J">Jump</div>
-    <div class="b" id="M">Fire</div>
-    <div id="ov">
-      <h1 id="h">Snowdingo 3D</h1>
-      <p id="tx"></p>
-      <button id="b1"></button><button id="b2"></button>
-    </div>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
-    <script>
-      const $ = (id) => document.getElementById(id),
-        ov = $('ov');
-      const T = { l: 0, r: 0, jp: 0, ap: 0, mp: 0 },
-        K = {};
-      addEventListener('keydown', (e) => {
-        K[e.code] = 1;
-        if (e.repeat) return;
-        if (['Space', 'ArrowUp', 'KeyW'].includes(e.code)) T.jp = 1;
-        if (['KeyJ', 'KeyZ'].includes(e.code)) T.ap = 1;
-        if (['KeyK', 'KeyX'].includes(e.code)) T.mp = 1;
-        if (e.code.startsWith('Arrow') || e.code == 'Space') e.preventDefault();
-      });
-      addEventListener('keyup', (e) => (K[e.code] = 0));
-      [
-        ['L', 'l'],
-        ['R', 'r'],
-        ['J', 'jp'],
-        ['A', 'ap'],
-        ['M', 'mp'],
-      ].forEach(([id, k]) => {
-        const el = $(id),
-          hold = k == 'l' || k == 'r';
-        el.addEventListener('pointerdown', (e) => {
-          e.preventDefault();
-          T[k] = 1;
-        });
-        if (hold)
-          ['pointerup', 'pointercancel', 'pointerleave'].forEach((n) =>
-            el.addEventListener(n, () => (T[k] = 0))
-          );
-      });
+<html lang="en"><head><meta charset="utf-8">
+<title>Snowdingo 3D</title>
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no">
+<meta name="theme-color" content="#120d18">
+<link rel="manifest" href="manifest.json">
+<link rel="icon" href="favicon.svg" type="image/svg+xml">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<style>
+:root{--bg:#120d18;--fg:#fff2e0;--ac:#ff8c1a;--bt:rgba(255,242,224,.2)}
+html,body{margin:0;height:100%;background:var(--bg);overflow:hidden;touch-action:none;font-family:Georgia,"Times New Roman",serif;color:var(--fg);user-select:none;-webkit-user-select:none}
+canvas{display:block;width:100%;height:100%}
+#hud{position:fixed;top:0;left:0;right:0;padding:calc(8px + env(safe-area-inset-top,0px)) 14px 0;display:flex;justify-content:space-between;font-size:15px;pointer-events:none;text-shadow:0 1px 3px #000}
+#bn{position:fixed;top:18%;left:0;right:0;text-align:center;font-size:20px;white-space:pre-line;opacity:0;transition:opacity .6s;pointer-events:none;text-shadow:0 2px 6px #000}
+.b{position:fixed;width:64px;height:64px;border-radius:50%;background:var(--bt);border:2px solid rgba(255,242,224,.45);color:var(--fg);font:15px Georgia,serif;display:flex;align-items:center;justify-content:center;touch-action:none}
+#L{left:14px;bottom:calc(18px + env(safe-area-inset-bottom,0px))}
+#R{left:92px;bottom:calc(18px + env(safe-area-inset-bottom,0px))}
+#J{right:14px;bottom:calc(18px + env(safe-area-inset-bottom,0px))}
+#A{right:92px;bottom:calc(18px + env(safe-area-inset-bottom,0px))}
+#M{right:14px;bottom:calc(96px + env(safe-area-inset-bottom,0px));background:rgba(255,140,26,.35)}
+#ov{position:fixed;inset:0;z-index:60;background:rgba(18,13,24,.86);display:none;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:24px;gap:14px}
+#ov h1{font-size:44px;margin:0;letter-spacing:.02em;color:var(--ac)}
+#tx{max-width:460px;line-height:1.5;white-space:pre-line;margin:0}
+#ov button{font:18px Georgia,serif;padding:12px 26px;border-radius:8px;border:2px solid var(--ac);background:transparent;color:var(--fg)}
+#ov button:first-of-type{background:var(--ac);color:#1a1006}
+#rot{display:none;position:fixed;inset:0;z-index:99;background:#120d18;color:#fff2e0;align-items:center;justify-content:center;text-align:center;font-size:24px;padding:24px}
+@media (orientation:portrait){#rot{display:flex}}
 
-      const R = new THREE.WebGLRenderer({ antialias: true });
-      R.setPixelRatio(Math.min(devicePixelRatio, 2));
-      document.body.prepend(R.domElement);
-      const S = new THREE.Scene(),
-        C = new THREE.PerspectiveCamera(50, 1, 0.1, 200);
-      S.add(new THREE.HemisphereLight(0xffffff, 0x444466, 0.95));
-      const D = new THREE.DirectionalLight(0xffffff, 0.8);
-      D.position.set(5, 10, 8);
-      S.add(D);
-      function rs() {
-        R.setSize(innerWidth, innerHeight);
-        C.aspect = innerWidth / innerHeight;
-        C.updateProjectionMatrix();
-      }
-      addEventListener('resize', rs);
-      rs();
-      const mat = (c) => new THREE.MeshLambertMaterial({ color: c });
-      const box = (w, h, d, c, x = 0, y = 0, z = 0, p = S) => {
-        const m = new THREE.Mesh(new THREE.BoxGeometry(w, h, d), mat(c));
-        m.position.set(x, y, z);
-        p.add(m);
-        return m;
-      };
+/* Title screen */
+#ts{position:fixed;inset:0;z-index:50;display:none;overflow:hidden;background:radial-gradient(ellipse at 40% 25%,#2a8a9c 0%,#116079 42%,#07222f 100%)}
+#ts svg{position:absolute;inset:0;width:100%;height:100%}
+.st{position:absolute;border-radius:50%;background:#fff;animation:tw 3s ease-in-out infinite}
+@keyframes tw{0%,100%{opacity:.15}50%{opacity:1}}
+@keyframes bob{0%,100%{transform:translateY(0)}50%{transform:translateY(-3px)}}
+@keyframes pulse{0%,100%{opacity:.55}50%{opacity:1}}
+.hero{animation:bob 3s ease-in-out infinite}
+.glow{animation:pulse 1.6s ease-in-out infinite}
+#logo{position:absolute;left:6vw;top:7vh;font-style:italic;font-weight:700;line-height:1;font-size:min(15vh,11vw);background:linear-gradient(#ffffff,#a6dcf0 60%,#5aa7c4);-webkit-background-clip:text;background-clip:text;color:transparent;filter:drop-shadow(0 0 12px rgba(150,225,255,.75))}
+#logo span{display:block;font-size:.42em;letter-spacing:.35em;margin:.15em 0 0 .3em}
+#menu{position:absolute;right:0;top:12%;width:min(36vw,330px);display:flex;flex-direction:column;gap:3vh}
+#menu button{position:relative;height:clamp(42px,13vh,68px);border:0;padding:0 0 0 12%;color:#fff;font:700 clamp(17px,4.2vh,28px) Georgia,serif;background:linear-gradient(90deg,rgba(2,10,16,.5),rgba(5,22,32,.95));clip-path:polygon(14% 0,100% 0,100% 100%,0 100%);text-shadow:0 0 8px rgba(160,225,255,.7)}
+#menu button::before,#menu button::after{content:"";position:absolute;left:0;right:0;height:2px;background:linear-gradient(90deg,transparent,#fff)}
+#menu button::before{top:0}#menu button::after{bottom:0}
+#menu button:active{filter:brightness(1.5)}
+</style></head><body>
+<div id="rot">Please rotate your phone to landscape ↻</div>
+<div id="hud"><span id="h1"></span><span id="h2"></span></div>
+<div id="bn"></div>
+<div class="b" id="L">◀</div><div class="b" id="R">▶</div>
+<div class="b" id="A">Sword</div><div class="b" id="J">Jump</div><div class="b" id="M">Fire</div>
 
-      // Veer (hero)
-      const P = new THREE.Group();
-      S.add(P);
-      box(0.7, 0.7, 0.5, 0x1f6b3a, 0, 0, 0, P);
-      box(0.6, 0.1, 0.55, 0xf2f2f2, 0, -0.3, 0, P);
-      box(0.5, 0.5, 0.5, 0xe0b080, 0, 0.65, 0, P);
-      box(0.56, 0.22, 0.56, 0x111111, 0, 0.95, 0, P);
-      box(0.6, 0.5, 0.4, 0x7a5230, 0, -0.6, 0, P);
-      box(0.25, 0.3, 0.2, 0xc9a227, 0.4, 0.3, 0, P);
-      const sc = box(0.9, 0.16, 0.12, 0xff8c1a, -0.5, 0.55, 0, P);
-      const sw = new THREE.Group();
-      P.add(sw);
-      sw.position.set(0.4, 0.1, 0.3);
-      box(0.1, 1, 0.1, 0xdddddd, 0, 0.55, 0, sw);
-      box(0.32, 0.08, 0.1, 0xff6a00, 0, 0, 0, sw);
+<div id="ts">
+ <svg viewBox="0 0 1280 575" preserveAspectRatio="xMidYMax slice">
+  <defs><filter id="gl" x="-50%" y="-50%" width="200%" height="200%"><feGaussianBlur stdDeviation="5"/></filter></defs>
+  <path d="M0 575V420Q160 360 320 410Q520 330 700 400Q900 340 1100 410Q1200 380 1280 400V575Z" fill="#0b3444" opacity=".7"/>
+  <path d="M520 5 L528 -3 L536 5 L528 13Z M1000 150 L1004 140 L1008 150 L1004 160Z" fill="#fff"/>
+  <path d="M780 130 L788 150 L810 158 L788 166 L780 190 L772 166 L750 158 L772 150Z" fill="#fff" opacity=".9"/>
+  <path d="M660 395 L664 410 L680 414 L664 418 L660 432 L656 418 L640 414 L656 410Z" fill="#fff" opacity=".8"/>
+  <g fill="#03070b">
+   <ellipse cx="150" cy="100" rx="135" ry="90"/><ellipse cx="310" cy="70" rx="115" ry="68"/><ellipse cx="230" cy="175" rx="95" ry="60"/>
+   <path d="M205 200 Q215 330 190 470 L260 470 Q235 330 250 200Z"/>
+   <path d="M0 575V500Q100 470 220 490Q320 505 380 520H470Q500 530 520 575Z"/>
+   <path d="M60 490 L70 462 L80 490Z M110 484 L122 452 L132 486Z M270 498 L280 470 L292 500Z"/>
+   <g class="hero" transform="translate(380 0)">
+    <path d="M10 408 L2 384 L16 394 L18 372 L28 390 L38 374 L40 396 L54 388 L48 414Z"/>
+    <circle cx="29" cy="420" r="17"/>
+    <path d="M12 436 H46 L52 488 H8Z"/>
+    <path d="M44 444 Q82 436 100 460 Q80 454 50 462Z"/>
+    <rect x="12" y="486" width="12" height="34"/><rect x="32" y="486" width="12" height="34"/>
+   </g>
+   <path d="M480 560 L500 528 L610 520 L640 548 L600 575Z"/>
+   <path d="M740 575 L750 535 L830 530 L846 575Z"/>
+   <path d="M880 430 H1090 L1070 452 L1040 520 L1010 472 L985 562 L960 482 L930 512 L910 462Z"/>
+   <path d="M925 430 L933 396 L941 430Z M995 430 L1006 390 L1017 430Z M1045 430 L1052 408 L1060 430Z"/>
+   <path d="M1130 575 L1150 520 L1280 500 V575Z"/>
+  </g>
+  <g transform="translate(380 0)">
+   <line class="glow" x1="52" y1="470" x2="100" y2="508" stroke="#ff9a3a" stroke-width="9" stroke-linecap="round" filter="url(#gl)"/>
+   <line x1="52" y1="470" x2="98" y2="506" stroke="#ffe2b0" stroke-width="3" stroke-linecap="round"/>
+  </g>
+ </svg>
+ <div id="logo">Snowdingo<span>3D</span></div>
+ <div id="menu"><button id="m1">Start</button><button id="m2">New Game</button><button id="m3">Controls</button><button id="m4">Credits</button></div>
+</div>
 
-      const Z = [
-        {
-          n: 'Ash Village',
-          m: 'The elder gave you a sword. Light 3 lamps.',
-          w: 'Lamps',
-          sky: 0x2b2233,
-          c: 0x6b5a4a,
-          dc: 0x3a2f3a,
-          ec: 0x888888,
-          sc: 0xffaa33,
-          k: 3,
-          e: 3,
-        },
-        {
-          n: 'Blue Jungle',
-          m: 'Find 4 glowing flowers.',
-          w: 'Flowers',
-          sky: 0x06202a,
-          c: 0x1f6a5a,
-          dc: 0x0e4a40,
-          cone: 1,
-          ec: 0x2288aa,
-          sc: 0x44ffee,
-          k: 4,
-          e: 5,
-        },
-        {
-          n: 'Frost Peaks',
-          m: 'The ice is slippery! Press 3 switches.',
-          w: 'Switches',
-          sky: 0x7a98b8,
-          c: 0xdff1fb,
-          dc: 0xffffff,
-          cone: 1,
-          ec: 0x6a7a99,
-          sc: 0x4466ff,
-          ice: 1,
-          k: 3,
-          e: 6,
-        },
-        {
-          n: 'Lava Cave',
-          m: 'Do not fall in the lava. Bring 4 fire gems.',
-          w: 'Gems',
-          sky: 0x2a0c06,
-          c: 0x5a3322,
-          dc: 0x3a1a10,
-          ec: 0xcc3311,
-          sc: 0xff3344,
-          lava: 1,
-          k: 4,
-          e: 7,
-        },
-        {
-          n: 'Ash Palace',
-          m: 'Defeat the Ash King. A 3-phase fight!',
-          w: 'King',
-          sky: 0x101018,
-          c: 0x3a3a4a,
-          dc: 0x22222e,
-          ec: 0x553355,
-          boss: 1,
-          k: 0,
-          e: 0,
-        },
-      ];
-      let W,
-        pl,
-        en,
-        sh,
-        pj,
-        Z0 = 0,
-        col = 0,
-        L = 0,
-        open = 0,
-        portal,
-        boss,
-        st = 'menu',
-        inv = 0,
-        cx = 0,
-        cy = 0,
-        tt = 0,
-        mx = 0;
-      try {
-        mx = +localStorage.getItem('sd3') || 0;
-      } catch (e) {}
-      const p = {
-        x: 0,
-        y: 0,
-        vx: 0,
-        vy: 0,
-        hp: 5,
-        f: 1,
-        g: 0,
-        j: 0,
-        atk: 0,
-        mc: 0,
-        sx: 0,
-        sy: 0,
-      };
-      const gS = new THREE.SphereGeometry(0.3, 8, 8);
+<div id="ov"><h1 id="h">Snowdingo 3D</h1><p id="tx"></p><button id="b1"></button><button id="b2"></button></div>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script>
+const $=id=>document.getElementById(id),ov=$('ov');
+const T={l:0,r:0,jp:0,ap:0,mp:0},K={};
+addEventListener('keydown',e=>{K[e.code]=1;if(e.repeat)return;if(['Space','ArrowUp','KeyW'].includes(e.code))T.jp=1;if(['KeyJ','KeyZ'].includes(e.code))T.ap=1;if(['KeyK','KeyX'].includes(e.code))T.mp=1;if(e.code.startsWith('Arrow')||e.code=='Space')e.preventDefault()});
+addEventListener('keyup',e=>K[e.code]=0);
+[['L','l'],['R','r'],['J','jp'],['A','ap'],['M','mp']].forEach(([id,k])=>{const el=$(id),hold=k=='l'||k=='r';
+ el.addEventListener('pointerdown',e=>{e.preventDefault();T[k]=1});
+ if(hold)['pointerup','pointercancel','pointerleave'].forEach(n=>el.addEventListener(n,()=>T[k]=0))});
 
-      function ball(x, y, vx, vy, own, c) {
-        const m = new THREE.Mesh(gS, new THREE.MeshBasicMaterial({ color: c }));
-        if (own) m.scale.setScalar(1.3);
-        W.add(m);
-        pj.push({ x, y, vx, vy, own, life: 2, m });
-      }
-      function banner(t) {
-        const b = $('bn');
-        b.textContent = t;
-        b.style.opacity = 1;
-        clearTimeout(banner.t);
-        banner.t = setTimeout(() => (b.style.opacity = 0), 3200);
-      }
+const R=new THREE.WebGLRenderer({antialias:true});R.setPixelRatio(Math.min(devicePixelRatio,2));document.body.prepend(R.domElement);
+const S=new THREE.Scene(),C=new THREE.PerspectiveCamera(50,1,.1,200);
+S.add(new THREE.HemisphereLight(0xffffff,0x444466,.95));
+const D=new THREE.DirectionalLight(0xffffff,.8);D.position.set(5,10,8);S.add(D);
+function rs(){R.setSize(innerWidth,innerHeight);C.aspect=innerWidth/innerHeight;C.updateProjectionMatrix()}addEventListener('resize',rs);rs();
+const mat=c=>new THREE.MeshLambertMaterial({color:c});
+const box=(w,h,d,c,x=0,y=0,z=0,p=S)=>{const m=new THREE.Mesh(new THREE.BoxGeometry(w,h,d),mat(c));m.position.set(x,y,z);p.add(m);return m};
 
-      function load(z) {
-        Z0 = z;
-        const q = Z[z];
-        if (W) S.remove(W);
-        W = new THREE.Group();
-        S.add(W);
-        S.background = new THREE.Color(q.sky);
-        S.fog = new THREE.Fog(q.sky, 18, 60);
-        pl = [];
-        en = [];
-        sh = [];
-        pj = [];
-        col = 0;
-        open = 0;
-        boss = null;
-        inv = 0;
-        Object.assign(p, {
-          x: 0,
-          y: 0,
-          vx: 0,
-          vy: 0,
-          hp: 5,
-          f: 1,
-          g: 0,
-          j: 0,
-          atk: 0,
-          mc: 0,
-          sx: 0,
-          sy: 0,
-        });
-        cx = 0;
-        cy = 0;
-        let sd = z * 77 + 5;
-        const rn = () => (sd = (sd * 16807) % 2147483647) / 2147483647;
-        L = q.boss ? 44 : 55 + z * 8;
-        const gp = (a, b, y) => {
-          const h = y <= 0 ? 10 : 0.5;
-          box(b - a, h, 3, q.c, (a + b) / 2, y - h / 2, 0, W);
-          pl.push({ a, b, y });
-        };
-        const gs = [];
-        let x = -6;
-        while (x < L) {
-          const w =
-            gs.length == 0 ? 12 : q.boss ? L + 12 : 5 + Math.floor(rn() * 6);
-          const g = { a: x, b: x + w, fp: 0 };
-          gs.push(g);
-          gp(g.a, g.b, 0);
-          for (let c = g.a + w / 2; c < g.b - 3 && w > 6; c += 9) {
-            const y = 2.6 + rn() * 1.2;
-            gp(c - 1.5, c + 1.5, y);
-            g.fp = y;
-            g.fx = c;
-          }
-          x += w + (q.boss ? 99 : 2 + rn() * 1.2);
-        }
-        for (let i = 0; i < 45; i++) {
-          const dz = -5 - rn() * 10,
-            h = 3 + rn() * 7,
-            dx = -8 + (i * (L + 16)) / 45 + rn() * 2;
-          const m = new THREE.Mesh(
-            q.cone
-              ? new THREE.ConeGeometry(1.5 + rn() * 1.5, h, 6)
-              : new THREE.BoxGeometry(1.5 + rn() * 2, h, 1.5),
-            mat(q.dc)
-          );
-          m.position.set(dx, h / 2 - 2, dz);
-          W.add(m);
-        }
-        if (q.lava) {
-          const m = new THREE.Mesh(
-            new THREE.PlaneGeometry(L + 60, 30),
-            new THREE.MeshBasicMaterial({ color: 0xff4a10 })
-          );
-          m.rotation.x = -Math.PI / 2;
-          m.position.set(L / 2, -3, 0);
-          W.add(m);
-        }
-        for (let i = 0; i < q.k; i++) {
-          const g =
-            gs[
-              Math.min(
-                gs.length - 1,
-                1 + Math.floor(((i + 0.5) * (gs.length - 1)) / q.k)
-              )
-            ];
-          const onf = i % 2 && g.fp,
-            sx = onf ? g.fx : (g.a + g.b) / 2,
-            sy = onf ? g.fp + 1.1 : 1.1;
-          const m = new THREE.Mesh(
-            new THREE.OctahedronGeometry(0.4),
-            new THREE.MeshBasicMaterial({ color: q.sc })
-          );
-          m.position.set(sx, sy, 0);
-          W.add(m);
-          sh.push({ x: sx, y: sy, m });
-        }
-        for (let i = 0; i < q.e; i++) {
-          const g = gs[1 + (i % (gs.length - 1))],
-            t = z == 0 ? 0 : [1, 0, 2][i % 3],
-            ex = g.a + 1.5 + rn() * (g.b - g.a - 3);
-          const m = new THREE.Group();
-          W.add(m);
-          box(1, 1, 0.8, q.ec, 0, 0, 0, m);
-          box(0.2, 0.2, 0.1, 0xffee55, -0.2, 0.15, 0.45, m);
-          box(0.2, 0.2, 0.1, 0xffee55, 0.2, 0.15, 0.45, m);
-          if (t == 1) {
-            box(1.2, 0.1, 0.5, q.ec, -0.9, 0.3, 0, m);
-            box(1.2, 0.1, 0.5, q.ec, 0.9, 0.3, 0, m);
-          }
-          if (t == 2) m.scale.set(1.2, 0.8, 1.2);
-          const by = t == 1 ? 2.4 + rn() : 0.5;
-          en.push({
-            x: ex,
-            ox: ex,
-            y: by,
-            by,
-            t,
-            hp: t == 2 ? 2 : 1 + (z > 2 ? 1 : 0),
-            x0: g.a + 0.6,
-            x1: g.b - 0.6,
-            d: 1,
-            r: 0.5,
-            h: 0.5,
-            m,
-            a: rn() * 6,
-          });
-        }
-        if (q.boss) {
-          const m = new THREE.Group();
-          W.add(m);
-          box(2.4, 3.2, 1.6, 0x2a2a38, 0, 0, 0, m);
-          box(0.5, 0.5, 0.2, 0xff2200, -0.5, 0.8, 0.85, m);
-          box(0.5, 0.5, 0.2, 0xff2200, 0.5, 0.8, 0.85, m);
-          box(2.8, 0.5, 1.8, 0xff7a00, 0, 1.8, 0, m);
-          boss = {
-            x: L - 6,
-            y: 1.6,
-            hp: 20,
-            r: 1.2,
-            h: 1.6,
-            m,
-            cd: 2,
-            t: 'b',
-            d: -1,
-            a: 0,
-          };
-          en.push(boss);
-        }
-        portal = new THREE.Mesh(
-          new THREE.TorusGeometry(1.1, 0.2, 8, 20),
-          new THREE.MeshBasicMaterial({ color: 0x555566 })
-        );
-        portal.position.set(gs[gs.length - 1].b - 3, 1.4, 0);
-        W.add(portal);
-      }
-      function go(z) {
-        load(z);
-        st = 'play';
-        banner('Zone ' + (z + 1) + ': ' + Z[z].n + '\n' + Z[z].m);
-      }
-      function opened() {
-        portal.material.color.set(0xffd23a);
-        banner('The gate is open! Move on.');
-      }
-      function hurt(f) {
-        if (inv > 0 || st != 'play') return;
-        p.hp--;
-        inv = 1.2;
-        p.vy = 7;
-        p.vx = f * 7;
-        if (p.hp <= 0) over();
-      }
-      function hit(e, d, f) {
-        e.hp -= d;
-        e.x += f * (e.t == 'b' ? 0.2 : 0.8);
-        if (e.hp <= 0) {
-          W.remove(e.m);
-          en.splice(en.indexOf(e), 1);
-          if (e === boss) {
-            open = 1;
-            opened();
-          }
-        }
-      }
-      function lockL() {
-        try {
-          document.documentElement
-            .requestFullscreen()
-            .then(() => screen.orientation.lock('landscape'))
-            .catch(() => {});
-        } catch (e) {}
-      }
-      function ovl(t, x, a, fa, b, fb) {
-        $('h').textContent = t;
-        $('tx').textContent = x;
-        const A = $('b1'),
-          B = $('b2');
-        A.textContent = a;
-        A.onclick = () => {
-          lockL();
-          ov.style.display = 'none';
-          fa();
-        };
-        B.style.display = b ? '' : 'none';
-        if (b) {
-          B.textContent = b;
-          B.onclick = () => {
-            lockL();
-            ov.style.display = 'none';
-            fb();
-          };
-        }
-        ov.style.display = 'flex';
-      }
-      function over() {
-        st = 'over';
-        ovl(
-          'Veer has fallen',
-          'The Ember Blade is not out yet. Try again.',
-          'Play again',
-          () => go(Z0)
-        );
-      }
-      function menu() {
-        st = 'menu';
-        ovl(
-          'Snowdingo 3D',
-          'The Suryamani crystal has shattered and the world has gone dark. Veer has found the burning Ember Blade. Cross 5 zones, defeat the Ash King and bring the light back.\n\nMove: ← →   Jump: Space (press again in air = double jump)\nSword: J   Fire Blast: K\nMobile: use the buttons at the bottom',
-          mx ? 'Continue (Zone ' + (mx + 1) + ')' : 'Start game',
-          () => go(mx),
-          mx ? 'Start from Zone 1' : 0,
-          () => go(0)
-        );
-      }
-      function next() {
-        if (Z0 == 4) {
-          mx = 0;
-          try {
-            localStorage.setItem('sd3', 0);
-          } catch (e) {}
-          st = 'win';
-          ovl(
-            'You win!',
-            'The Ash King is defeated and the Suryamani is whole again. The world has light once more.',
-            'Play again',
-            () => go(0)
-          );
-          return;
-        }
-        mx = Z0 + 1;
-        try {
-          localStorage.setItem('sd3', mx);
-        } catch (e) {}
-        go(Z0 + 1);
-      }
+// Veer (hero)
+const P=new THREE.Group();S.add(P);
+box(.7,.7,.5,0x1f6b3a,0,0,0,P);box(.6,.1,.55,0xf2f2f2,0,-.3,0,P);
+box(.5,.5,.5,0xe0b080,0,.65,0,P);box(.56,.22,.56,0x111111,0,.95,0,P);
+box(.6,.5,.4,0x7a5230,0,-.6,0,P);box(.25,.3,.2,0xc9a227,.4,.3,0,P);
+const sc=box(.9,.16,.12,0xff8c1a,-.5,.55,0,P);
+const sw=new THREE.Group();P.add(sw);sw.position.set(.4,.1,.3);
+box(.1,1,.1,0xdddddd,0,.55,0,sw);box(.32,.08,.1,0xff6a00,0,0,0,sw);
 
-      function upd(dt) {
-        const q = Z[Z0],
-          l = T.l || K.ArrowLeft || K.KeyA,
-          r = T.r || K.ArrowRight || K.KeyD,
-          dir = (r ? 1 : 0) - (l ? 1 : 0);
-        if (dir) p.f = dir;
-        const ac = q.ice && p.g ? 7 : p.g ? 70 : 35;
-        p.vx += Math.max(-ac * dt, Math.min(ac * dt, dir * 6 - p.vx));
-        if (T.jp) {
-          T.jp = 0;
-          if (p.g) {
-            p.vy = 12;
-            p.j = 1;
-          } else if (p.j < 2) {
-            p.vy = 11;
-            p.j = 2;
-          }
-        }
-        const py = p.y;
-        p.vy -= 30 * dt;
-        p.x = Math.max(-5.5, Math.min(L + 5, p.x + p.vx * dt));
-        p.y += p.vy * dt;
-        p.g = 0;
-        if (p.vy <= 0)
-          for (const f of pl)
-            if (
-              p.x + 0.3 > f.a &&
-              p.x - 0.3 < f.b &&
-              py >= f.y - 0.05 &&
-              p.y <= f.y
-            ) {
-              p.y = f.y;
-              p.vy = 0;
-              p.g = 1;
-              p.j = 0;
-              if (f.y == 0 && p.x > f.a + 1 && p.x < f.b - 1) {
-                p.sx = p.x;
-                p.sy = 0;
-              }
-              break;
-            }
-        if (p.y < -7) {
-          hurt(0);
-          inv = 1.2;
-          p.x = p.sx;
-          p.y = 0.1;
-          p.vx = p.vy = 0;
-        }
-        p.atk -= dt;
-        p.mc -= dt;
-        inv -= dt;
-        if (T.ap) {
-          T.ap = 0;
-          if (p.atk <= 0) {
-            p.atk = 0.28;
-            for (const e of en.slice()) {
-              const dx = (e.x - p.x) * p.f,
-                dy = e.y - (p.y + 0.95);
-              if (dx > -0.3 && dx < 1.7 + e.r && Math.abs(dy) < 1.2 + e.h)
-                hit(e, 1, p.f);
-            }
-          }
-        }
-        if (T.mp) {
-          T.mp = 0;
-          if (p.mc <= 0) {
-            p.mc = 0.7;
-            ball(p.x + p.f * 0.6, p.y + 1, p.f * 13, 0, 1, 0xff7a1a);
-          }
-        }
-        for (const b of pj.slice()) {
-          b.x += b.vx * dt;
-          b.y += b.vy * dt;
-          b.life -= dt;
-          b.m.position.set(b.x, b.y, 0);
-          let rm = b.life <= 0;
-          if (b.own) {
-            for (const e of en)
-              if (
-                Math.abs(e.x - b.x) < e.r + 0.3 &&
-                Math.abs(e.y - b.y) < e.h + 0.3
-              ) {
-                hit(e, 2, Math.sign(b.vx));
-                rm = 1;
-                break;
-              }
-          } else if (
-            Math.abs(b.x - p.x) < 0.6 &&
-            Math.abs(b.y - (p.y + 0.95)) < 1
-          ) {
-            hurt(Math.sign(b.vx));
-            rm = 1;
-          }
-          if (rm) {
-            W.remove(b.m);
-            pj.splice(pj.indexOf(b), 1);
-          }
-        }
-        for (const e of en) {
-          e.a += dt;
-          if (e.t == 'b') {
-            const ph = e.hp > 13 ? 1 : e.hp > 6 ? 2 : 3,
-              dx = p.x - e.x;
-            if (Math.abs(dx) > (ph > 1 ? 1.2 : 2.2))
-              e.x += Math.sign(dx) * (1.2 + ph * 0.7) * dt;
-            e.cd -= dt;
-            if (e.cd <= 0) {
-              e.cd = 2.6 - ph * 0.5;
-              const sg = Math.sign(dx) || 1;
-              ball(
-                e.x + sg * 1.5,
-                Math.random() > 0.5 || ph == 1 ? 0.9 : 2.1,
-                sg * (6 + ph),
-                0,
-                0,
-                0xff2200
-              );
-              if (ph == 3) ball(e.x - sg * 1.5, 0.9, -sg * 8, 0, 0, 0xff2200);
-            }
-          } else if (e.t == 1) {
-            e.x = e.ox + Math.sin(e.a * 1.2) * 3;
-            e.y = e.by + Math.sin(e.a * 2) * 0.5;
-          } else {
-            e.x += e.d * (e.t == 2 ? 3.4 : 1.6) * dt;
-            if (e.x > e.x1) e.d = -1;
-            if (e.x < e.x0) e.d = 1;
-          }
-          e.m.position.set(e.x, e.y, 0);
-          if (
-            Math.abs(e.x - p.x) < e.r + 0.35 &&
-            Math.abs(e.y - (p.y + 0.95)) < e.h + 0.9
-          )
-            hurt(Math.sign(p.x - e.x) || 1);
-        }
-        for (const s of sh.slice()) {
-          s.m.rotation.y += dt * 2;
-          if (Math.hypot(s.x - p.x, s.y - (p.y + 0.95)) < 1.2) {
-            W.remove(s.m);
-            sh.splice(sh.indexOf(s), 1);
-            col++;
-            if (col >= q.k && !open) {
-              open = 1;
-              opened();
-            }
-          }
-        }
-        if (open && Math.abs(p.x - portal.position.x) < 1.2 && p.y < 2) next();
-      }
-      function draw(dt) {
-        const mv = Math.abs(p.vx) > 0.5 && p.g;
-        P.position.set(
-          p.x,
-          p.y + 0.85 + (mv ? Math.abs(Math.sin(tt * 14)) * 0.08 : 0),
-          0
-        );
-        P.rotation.y = p.f > 0 ? 0 : Math.PI;
-        P.visible = inv <= 0 || Math.floor(inv * 12) % 2 == 0;
-        sc.rotation.z = 0.3 + Math.sin(tt * 9) * 0.25 + Math.abs(p.vx) * 0.04;
-        sw.rotation.z = p.atk > 0 ? 1 - ((0.28 - p.atk) / 0.28) * 2.6 : 0.2;
-        const k = Math.min(1, dt * 4);
-        cx += (p.x + p.f * 1.5 - cx) * k;
-        cy += (Math.max(p.y, 0) + 2.5 - cy) * k;
-        C.position.set(cx, cy + 1.5, 12);
-        C.lookAt(cx, cy, 0);
-        const q = Z[Z0];
-        $('h1').textContent =
-          '❤'.repeat(Math.max(0, p.hp)) + '  Zone ' + (Z0 + 1) + ': ' + q.n;
-        $('h2').textContent = q.boss
-          ? boss && en.includes(boss)
-            ? 'Ash King: ' + boss.hp + '/20'
-            : 'Go to the gate'
-          : open
-          ? 'Go to the gate'
-          : q.w + ': ' + col + '/' + q.k;
-      }
-      let last = performance.now();
-      function loop(n) {
-        requestAnimationFrame(loop);
-        const dt = Math.min(0.033, (n - last) / 1000);
-        last = n;
-        tt += dt;
-        if (st == 'play' && innerWidth > innerHeight) upd(dt);
-        draw(dt);
-        R.render(S, C);
-      }
-      load(0);
-      menu();
-      requestAnimationFrame(loop);
-    </script>
-  </body>
-</html>
+const Z=[
+{n:'Ash Village',m:'The elder gave you a sword. Light 3 lamps.',w:'Lamps',sky:0x2b2233,c:0x6b5a4a,dc:0x3a2f3a,ec:0x888888,sc:0xffaa33,k:3,e:3},
+{n:'Blue Jungle',m:'Find 4 glowing flowers.',w:'Flowers',sky:0x06202a,c:0x1f6a5a,dc:0x0e4a40,cone:1,ec:0x2288aa,sc:0x44ffee,k:4,e:5},
+{n:'Frost Peaks',m:'The ice is slippery! Press 3 switches.',w:'Switches',sky:0x7a98b8,c:0xdff1fb,dc:0xffffff,cone:1,ec:0x6a7a99,sc:0x4466ff,ice:1,k:3,e:6},
+{n:'Lava Cave',m:'Do not fall in the lava. Bring 4 fire gems.',w:'Gems',sky:0x2a0c06,c:0x5a3322,dc:0x3a1a10,ec:0xcc3311,sc:0xff3344,lava:1,k:4,e:7},
+{n:'Ash Palace',m:'Defeat the Ash King. A 3-phase fight!',w:'King',sky:0x101018,c:0x3a3a4a,dc:0x22222e,ec:0x553355,boss:1,k:0,e:0}];
+let W,pl,en,sh,pj,Z0=0,col=0,L=0,open=0,portal,boss,st='menu',inv=0,cx=0,cy=0,tt=0,mx=0;
+try{mx=+localStorage.getItem('sd3')||0}catch(e){}
+const p={x:0,y:0,vx:0,vy:0,hp:5,f:1,g:0,j:0,atk:0,mc:0,sx:0,sy:0};
+const gS=new THREE.SphereGeometry(.3,8,8);
+
+function ball(x,y,vx,vy,own,c){const m=new THREE.Mesh(gS,new THREE.MeshBasicMaterial({color:c}));if(own)m.scale.setScalar(1.3);W.add(m);pj.push({x,y,vx,vy,own,life:2,m})}
+function banner(t){const b=$('bn');b.textContent=t;b.style.opacity=1;clearTimeout(banner.t);banner.t=setTimeout(()=>b.style.opacity=0,3200)}
+
+function load(z){
+ Z0=z;const q=Z[z];if(W)S.remove(W);W=new THREE.Group();S.add(W);
+ S.background=new THREE.Color(q.sky);S.fog=new THREE.Fog(q.sky,18,60);
+ pl=[];en=[];sh=[];pj=[];col=0;open=0;boss=null;inv=0;
+ Object.assign(p,{x:0,y:0,vx:0,vy:0,hp:5,f:1,g:0,j:0,atk:0,mc:0,sx:0,sy:0});cx=0;cy=0;
+ let sd=z*77+5;const rn=()=>(sd=sd*16807%2147483647)/2147483647;
+ L=q.boss?44:55+z*8;
+ const gp=(a,b,y)=>{const h=y<=0?10:.5;box(b-a,h,3,q.c,(a+b)/2,y-h/2,0,W);pl.push({a,b,y})};
+ const gs=[];let x=-6;
+ while(x<L){const w=gs.length==0?12:q.boss?L+12:5+Math.floor(rn()*6);
+  const g={a:x,b:x+w,fp:0};gs.push(g);gp(g.a,g.b,0);
+  for(let c=g.a+w/2;c<g.b-3&&w>6;c+=9){const y=2.6+rn()*1.2;gp(c-1.5,c+1.5,y);g.fp=y;g.fx=c}
+  x+=w+(q.boss?99:2+rn()*1.2)}
+ for(let i=0;i<45;i++){const dz=-5-rn()*10,h=3+rn()*7,dx=-8+i*(L+16)/45+rn()*2;
+  const m=new THREE.Mesh(q.cone?new THREE.ConeGeometry(1.5+rn()*1.5,h,6):new THREE.BoxGeometry(1.5+rn()*2,h,1.5),mat(q.dc));m.position.set(dx,h/2-2,dz);W.add(m)}
+ if(q.lava){const m=new THREE.Mesh(new THREE.PlaneGeometry(L+60,30),new THREE.MeshBasicMaterial({color:0xff4a10}));m.rotation.x=-Math.PI/2;m.position.set(L/2,-3,0);W.add(m)}
+ for(let i=0;i<q.k;i++){const g=gs[Math.min(gs.length-1,1+Math.floor((i+.5)*(gs.length-1)/q.k))];
+  const onf=i%2&&g.fp,sx=onf?g.fx:(g.a+g.b)/2,sy=onf?g.fp+1.1:1.1;
+  const m=new THREE.Mesh(new THREE.OctahedronGeometry(.4),new THREE.MeshBasicMaterial({color:q.sc}));m.position.set(sx,sy,0);W.add(m);sh.push({x:sx,y:sy,m})}
+ for(let i=0;i<q.e;i++){const g=gs[1+(i%(gs.length-1))],t=z==0?0:[1,0,2][i%3],ex=g.a+1.5+rn()*(g.b-g.a-3);
+  const m=new THREE.Group();W.add(m);box(1,1,.8,q.ec,0,0,0,m);box(.2,.2,.1,0xffee55,-.2,.15,.45,m);box(.2,.2,.1,0xffee55,.2,.15,.45,m);
+  if(t==1){box(1.2,.1,.5,q.ec,-.9,.3,0,m);box(1.2,.1,.5,q.ec,.9,.3,0,m)}
+  if(t==2)m.scale.set(1.2,.8,1.2);
+  const by=t==1?2.4+rn():.5;
+  en.push({x:ex,ox:ex,y:by,by,t,hp:t==2?2:1+(z>2?1:0),x0:g.a+.6,x1:g.b-.6,d:1,r:.5,h:.5,m,a:rn()*6})}
+ if(q.boss){const m=new THREE.Group();W.add(m);box(2.4,3.2,1.6,0x2a2a38,0,0,0,m);box(.5,.5,.2,0xff2200,-.5,.8,.85,m);box(.5,.5,.2,0xff2200,.5,.8,.85,m);box(2.8,.5,1.8,0xff7a00,0,1.8,0,m);
+  boss={x:L-6,y:1.6,hp:20,r:1.2,h:1.6,m,cd:2,t:'b',d:-1,a:0};en.push(boss)}
+ portal=new THREE.Mesh(new THREE.TorusGeometry(1.1,.2,8,20),new THREE.MeshBasicMaterial({color:0x555566}));
+ portal.position.set(gs[gs.length-1].b-3,1.4,0);W.add(portal);
+}
+function go(z){load(z);st='play';banner('Zone '+(z+1)+': '+Z[z].n+'\n'+Z[z].m)}
+function opened(){portal.material.color.set(0xffd23a);banner('The gate is open! Move on.')}
+function hurt(f){if(inv>0||st!='play')return;p.hp--;inv=1.2;p.vy=7;p.vx=f*7;if(p.hp<=0)over()}
+function hit(e,d,f){e.hp-=d;e.x+=f*(e.t=='b'?.2:.8);if(e.hp<=0){W.remove(e.m);en.splice(en.indexOf(e),1);if(e===boss){open=1;opened()}}}
+function lockL(){try{document.documentElement.requestFullscreen().then(()=>screen.orientation.lock('landscape')).catch(()=>{})}catch(e){}}
+function ovl(t,x,a,fa,b,fb){$('h').textContent=t;$('tx').textContent=x;const A=$('b1'),B=$('b2');A.textContent=a;A.onclick=()=>{lockL();ov.style.display='none';fa()};B.style.display=b?'':'none';if(b){B.textContent=b;B.onclick=()=>{lockL();ov.style.display='none';fb()}};ov.style.display='flex'}
+function info(t,x){$('h').textContent=t;$('tx').textContent=x;$('b1').textContent='Back';$('b1').onclick=()=>{ov.style.display='none'};$('b2').style.display='none';ov.style.display='flex'}
+function over(){st='over';ovl('Veer has fallen','The Ember Blade is not out yet. Try again.','Play again',()=>go(Z0))}
+function menu(){st='menu';ov.style.display='none';const t=$('ts');t.style.display='block';
+ $('m1').textContent=mx?'Continue':'Start';
+ $('m1').onclick=()=>{lockL();t.style.display='none';go(mx)};
+ $('m2').style.display=mx?'':'none';
+ $('m2').onclick=()=>{lockL();t.style.display='none';go(0)};
+ $('m3').onclick=()=>info('Controls','Move: ← →\nJump: Space (press again in air = double jump)\nSword: J\nFire Blast: K\n\nMobile: use the buttons at the bottom of the screen.');
+ $('m4').onclick=()=>info('Credits','Snowdingo 3D\nAn original adventure game.\nBuilt with three.js.')}
+function next(){if(Z0==4){mx=0;try{localStorage.setItem('sd3',0)}catch(e){}st='win';ovl('You win!','The Ash King is defeated and the Suryamani is whole again. The world has light once more.','Play again',()=>go(0));return}
+ mx=Z0+1;try{localStorage.setItem('sd3',mx)}catch(e){}go(Z0+1)}
+
+function upd(dt){
+ const q=Z[Z0],l=T.l||K.ArrowLeft||K.KeyA,r=T.r||K.ArrowRight||K.KeyD,dir=(r?1:0)-(l?1:0);
+ if(dir)p.f=dir;
+ const ac=(q.ice&&p.g)?7:(p.g?70:35);p.vx+=Math.max(-ac*dt,Math.min(ac*dt,dir*6-p.vx));
+ if(T.jp){T.jp=0;if(p.g){p.vy=12;p.j=1}else if(p.j<2){p.vy=11;p.j=2}}
+ const py=p.y;p.vy-=30*dt;p.x=Math.max(-5.5,Math.min(L+5,p.x+p.vx*dt));p.y+=p.vy*dt;p.g=0;
+ if(p.vy<=0)for(const f of pl)if(p.x+.3>f.a&&p.x-.3<f.b&&py>=f.y-.05&&p.y<=f.y){p.y=f.y;p.vy=0;p.g=1;p.j=0;if(f.y==0&&p.x>f.a+1&&p.x<f.b-1){p.sx=p.x;p.sy=0}break}
+ if(p.y<-7){hurt(0);inv=1.2;p.x=p.sx;p.y=.1;p.vx=p.vy=0}
+ p.atk-=dt;p.mc-=dt;inv-=dt;
+ if(T.ap){T.ap=0;if(p.atk<=0){p.atk=.28;for(const e of en.slice()){const dx=(e.x-p.x)*p.f,dy=e.y-(p.y+.95);if(dx>-.3&&dx<1.7+e.r&&Math.abs(dy)<1.2+e.h)hit(e,1,p.f)}}}
+ if(T.mp){T.mp=0;if(p.mc<=0){p.mc=.7;ball(p.x+p.f*.6,p.y+1,p.f*13,0,1,0xff7a1a)}}
+ for(const b of pj.slice()){b.x+=b.vx*dt;b.y+=b.vy*dt;b.life-=dt;b.m.position.set(b.x,b.y,0);let rm=b.life<=0;
+  if(b.own){for(const e of en)if(Math.abs(e.x-b.x)<e.r+.3&&Math.abs(e.y-b.y)<e.h+.3){hit(e,2,Math.sign(b.vx));rm=1;break}}
+  else if(Math.abs(b.x-p.x)<.6&&Math.abs(b.y-(p.y+.95))<1){hurt(Math.sign(b.vx));rm=1}
+  if(rm){W.remove(b.m);pj.splice(pj.indexOf(b),1)}}
+ for(const e of en){e.a+=dt;
+  if(e.t=='b'){const ph=e.hp>13?1:e.hp>6?2:3,dx=p.x-e.x;
+   if(Math.abs(dx)>(ph>1?1.2:2.2))e.x+=Math.sign(dx)*(1.2+ph*.7)*dt;
+   e.cd-=dt;if(e.cd<=0){e.cd=2.6-ph*.5;const sg=Math.sign(dx)||1;ball(e.x+sg*1.5,Math.random()>.5||ph==1?.9:2.1,sg*(6+ph),0,0,0xff2200);if(ph==3)ball(e.x-sg*1.5,.9,-sg*8,0,0,0xff2200)}}
+  else if(e.t==1){e.x=e.ox+Math.sin(e.a*1.2)*3;e.y=e.by+Math.sin(e.a*2)*.5}
+  else{e.x+=e.d*(e.t==2?3.4:1.6)*dt;if(e.x>e.x1)e.d=-1;if(e.x<e.x0)e.d=1}
+  e.m.position.set(e.x,e.y,0);
+  if(Math.abs(e.x-p.x)<e.r+.35&&Math.abs(e.y-(p.y+.95))<e.h+.9)hurt(Math.sign(p.x-e.x)||1)}
+ for(const s of sh.slice()){s.m.rotation.y+=dt*2;if(Math.hypot(s.x-p.x,s.y-(p.y+.95))<1.2){W.remove(s.m);sh.splice(sh.indexOf(s),1);col++;if(col>=q.k&&!open){open=1;opened()}}}
+ if(open&&Math.abs(p.x-portal.position.x)<1.2&&p.y<2)next();
+}
+function draw(dt){
+ const mv=Math.abs(p.vx)>.5&&p.g;
+ P.position.set(p.x,p.y+.85+(mv?Math.abs(Math.sin(tt*14))*.08:0),0);P.rotation.y=p.f>0?0:Math.PI;
+ P.visible=inv<=0||Math.floor(inv*12)%2==0;
+ sc.rotation.z=.3+Math.sin(tt*9)*.25+Math.abs(p.vx)*.04;
+ sw.rotation.z=p.atk>0?1-(.28-p.atk)/.28*2.6:.2;
+ const k=Math.min(1,dt*4);cx+=(p.x+p.f*1.5-cx)*k;cy+=(Math.max(p.y,0)+2.5-cy)*k;
+ C.position.set(cx,cy+1.5,12);C.lookAt(cx,cy,0);
+ const q=Z[Z0];$('h1').textContent='❤'.repeat(Math.max(0,p.hp))+'  Zone '+(Z0+1)+': '+q.n;
+ $('h2').textContent=q.boss?(boss&&en.includes(boss)?'Ash King: '+boss.hp+'/20':'Go to the gate'):(open?'Go to the gate':q.w+': '+col+'/'+q.k);
+}
+let last=performance.now();
+function loop(n){requestAnimationFrame(loop);const dt=Math.min(.033,(n-last)/1000);last=n;tt+=dt;if(st=='play'&&innerWidth>innerHeight)upd(dt);draw(dt);R.render(S,C)}
+for(let i=0;i<70;i++){const s=document.createElement('div'),z=1+Math.random()*2.2;s.className='st';s.style.cssText='left:'+Math.random()*100+'%;top:'+Math.random()*65+'%;width:'+z+'px;height:'+z+'px;animation-delay:'+Math.random()*3+'s';$('ts').prepend(s)}
+load(0);menu();requestAnimationFrame(loop);
+</script></body></html>
