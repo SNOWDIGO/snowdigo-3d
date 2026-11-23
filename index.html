@@ -53,51 +53,22 @@ canvas{display:block;width:100%;height:100%}
 #m1{height:clamp(44px,13vh,66px)!important;background:linear-gradient(#7dff8a,#1fb85a);animation:beat 1.3s ease-in-out infinite}
 #m2{background:linear-gradient(#ffb3d9,#ff4f9a)}#m3{background:linear-gradient(#8fdcff,#2f8fff)}#m4{background:linear-gradient(#d9b3ff,#8a4fff)}
 #m1::before{content:"\25B6  "}#m2::before{content:"\2726  "}#m3::before{content:"\2725  "}#m4::before{content:"\2605  "}
-.mp{display:block;width:100%;margin:6px 0}.mp:disabled{opacity:.4}</style></head><body>
+.mp{display:block;width:100%;margin:6px 0}.mp:disabled{opacity:.4}
+#tv{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:50% 75%}
+#shade{position:absolute;inset:0;background:linear-gradient(0deg,rgba(0,0,0,.65),rgba(0,0,0,0) 45%),linear-gradient(180deg,rgba(0,0,0,.55),rgba(0,0,0,0) 35%)}
+#menu{left:50%;right:auto;top:auto;bottom:calc(6vh + env(safe-area-inset-bottom,0px));transform:translateX(-50%);flex-direction:row;width:auto;gap:4vw}
+#menu button{width:clamp(150px,24vw,250px)}
+#m3::before{content:"\2699  "}</style></head><body>
 <div id="rot">Please rotate your phone to landscape ↻</div>
 <div id="hud"><span id="h1"></span><span id="hp"></span><span id="h2"></span></div>
 <div id="bn"></div>
 <div class="b" id="L"><i>◀</i></div><div class="b" id="R"><i>▶</i></div>
 <div class="b" id="A"><i>⚔</i><small>Sword</small></div><div class="b" id="J"><i>▲</i><small>Jump</small></div><div class="b" id="M"><i>✹</i><small>Fire</small></div>
 <div id="ts">
- <svg viewBox="0 0 1280 575" preserveAspectRatio="xMidYMax slice">
-  <defs>
-   <radialGradient id="sun"><stop offset="0" stop-color="#fffbe0"/><stop offset=".45" stop-color="#ffd98a" stop-opacity=".9"/><stop offset="1" stop-color="#ffb06b" stop-opacity="0"/></radialGradient>
-   <linearGradient id="gr" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#7be37a"/><stop offset=".14" stop-color="#3fb55a"/><stop offset=".15" stop-color="#9a6a45"/><stop offset="1" stop-color="#4a2c3a"/></linearGradient>
-   <filter id="gl" x="-60%" y="-60%" width="220%" height="220%"><feGaussianBlur stdDeviation="6"/></filter>
-  </defs>
-  <circle cx="640" cy="380" r="300" fill="url(#sun)"/>
-  <g class="cl" fill="#fff" opacity=".28"><ellipse cx="220" cy="190" rx="90" ry="18"/><ellipse cx="270" cy="178" rx="60" ry="16"/><ellipse cx="980" cy="150" rx="110" ry="20"/><ellipse cx="1040" cy="138" rx="70" ry="16"/></g>
-  <path d="M0 575V430L110 350L210 420L330 320L450 425L570 360L690 440L820 340L950 430L1070 360L1170 430L1280 380V575Z" fill="#6a2f8f"/>
-  <path d="M0 575V470L140 410L260 470L400 400L540 480L700 430L860 490L1020 420L1160 480L1280 440V575Z" fill="#3f1a63"/>
-  <path d="M0 575V520Q320 480 640 520T1280 505V575Z" fill="#241040"/>
-  <g class="fl"><path d="M40 270Q100 258 160 270L140 296Q120 322 100 332Q70 318 55 296Z" fill="url(#gr)"/><polygon points="85,268 98,225 112,268" fill="#ff7ad1"/></g>
-  <g class="fl2"><path d="M600 410Q700 395 800 410L775 440Q750 480 700 500Q650 480 625 440Z" fill="url(#gr)"/>
-   <ellipse class="glow" cx="700" cy="380" rx="50" ry="40" fill="#6af0ff" filter="url(#gl)"/>
-   <polygon points="680,408 695,340 712,408" fill="#6af0ff"/><polygon points="705,408 725,360 742,408" fill="#b58cff"/></g>
-  <g class="fl2">
-   <path d="M130 470Q330 445 540 470L505 505Q470 555 425 575L395 535L350 585L315 540L265 575L215 525Z" fill="url(#gr)"/>
-   <g transform="translate(330 360)">
-    <path class="sw" d="M-18 28Q-60 22-90 40Q-60 44-40 52Q-70 62-96 80Q-50 76-14 48Z" fill="#ff8c1a"/>
-    <rect x="-18" y="70" width="14" height="24" fill="#7a4a2a"/><rect x="4" y="70" width="14" height="24" fill="#7a4a2a"/>
-    <rect x="-21" y="92" width="20" height="10" rx="4" fill="#3a2014"/><rect x="1" y="92" width="20" height="10" rx="4" fill="#3a2014"/>
-    <rect x="-22" y="24" width="44" height="48" rx="10" fill="#2fa862"/><rect x="-22" y="56" width="44" height="8" fill="#fff2d8"/>
-    <circle cx="22" cy="30" r="9" fill="#d9a441"/>
-    <circle cx="0" cy="0" r="24" fill="#f2c291"/>
-    <path d="M-26-4L-30-30L-14-20L-10-40L0-24L12-42L16-20L32-30L26-4Q0-22-26-4Z" fill="#1a1424"/>
-    <circle cx="-9" cy="4" r="4" fill="#1a1424"/><circle cx="9" cy="4" r="4" fill="#1a1424"/><circle cx="-8" cy="3" r="1.4" fill="#fff"/><circle cx="10" cy="3" r="1.4" fill="#fff"/>
-    <path d="M-6 14Q0 20 6 14" stroke="#7a3a2a" stroke-width="2.5" fill="none" stroke-linecap="round"/>
-    <rect x="18" y="32" width="36" height="12" rx="6" fill="#f2c291" transform="rotate(25 18 38)"/>
-    <g transform="translate(54 54) rotate(-35)">
-     <rect class="glow" x="-9" y="-102" width="18" height="102" rx="8" fill="#ff8a2a" filter="url(#gl)"/>
-     <rect x="-5" y="-96" width="10" height="96" rx="4" fill="#e6f6ff"/><rect x="-15" y="-3" width="30" height="7" rx="3" fill="#ffb21a"/><rect x="-3" y="4" width="6" height="14" fill="#6a3a1a"/>
-    </g>
-    <circle cx="54" cy="54" r="7" fill="#f2c291"/>
-   </g>
-  </g>
- </svg>
+ <video id="tv" src="intro.mp4" autoplay muted loop playsinline preload="auto"></video>
+ <div id="shade"></div>
  <div id="logo"><b>Snowdingo<u>3D</u></b><small>Light the Suryamani. Save the world.</small></div>
- <div id="menu"><button id="m1">Start</button><button id="m2">New Game</button><button id="m3">Controls</button><button id="m4">Credits</button></div>
+ <div id="menu"><button id="m1">Play</button><button id="m3">Settings</button></div>
 </div>
 <div id="ov"><h1 id="h">Snowdingo 3D</h1><p id="tx"></p><button id="b1"></button><button id="b2"></button></div>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
@@ -152,7 +123,7 @@ const Z=[
 {n:'Coral Depths',m:'Find 5 Sea Pearls. Swim upward! The Tide Titan waits.',w:'Sea Pearls',k:5,e:7,img:'bg_ocean.jpg',sky:['#04204a','#1a8ab0'],fog:0x0e5a80,sun:0xbff6ff,c:0x2a4a6a,cap:0x4ac8b0,bc:[0x14648e,0x1e86a6,0x2aa6a4],bs:4,ec:0xff6ab0,sc:0xffffff,pc:0xbff6ff,pv:[.1,1.3],f0:131,g:15,fl:1,ray:1,pit:0x04202a,boss:{n:'Tide Titan',hp:24,c:0x2a6ab0,c2:0xff6ab0}},
 {n:'Moonlit Ruins',m:'Gather 5 Moon Shards and defeat the Hollow King.',w:'Moon Shards',k:5,e:8,img:'bg_ruins.jpg',sky:['#06122a','#1a4a6a'],fog:0x16384e,sun:0xcfe8ff,c:0x3a4a44,cap:0x4aa860,bc:[0x1a3a4e,0x24546a,0x2e6a7a],bs:5,ec:0x6a8aff,sc:0x9ad8ff,pc:0x9ad8ff,pv:[.15,.4],f0:123,g:30,pit:0x0a1a2a,boss:{n:'Hollow King',hp:30,c:0x3a3a5a,c2:0x66ccff}}];
 let W,pl,en,sh,pj,fx,hz,hr,sw,LY,AR,PT,boss,portal,Z0=0,col=0,open=0,bd=0,st='menu',inv=0,cx=0,cy=0,cz=12,tt=0,mx=0,shk=0,mn=0,tot=0;
-try{mx=+localStorage.getItem('sd3b')||0;tot=+localStorage.getItem('sd3g')||0}catch(e){}
+try{mx=+localStorage.getItem('sd3b')||0;tot=+localStorage.getItem('sd3g')||0;if(localStorage.getItem('sd3s')=='0')DL.castShadow=false}catch(e){}
 const p={x:0,y:0,vx:0,vy:0,hp:5,f:1,g:0,j:0,atk:0,cs:0,cc:0,mc:0,sx:0,coy:0,jb:0,sq:0,gy:0};
 const gS=new THREE.SphereGeometry(.3,10,8),fG=new THREE.BoxGeometry(.14,.14,.14),FM={};
 const fm=c=>FM[c]||(FM[c]=new THREE.MeshBasicMaterial({color:c}));
@@ -235,22 +206,29 @@ function load(z){
  if(PT)S.remove(PT);const N=150,a=new Float32Array(N*3);for(let i=0;i<N;i++){a[i*3]=Math.random()*70-35;a[i*3+1]=Math.random()*22-6;a[i*3+2]=Math.random()*18-12}
  const gm=new THREE.BufferGeometry();gm.setAttribute('position',new THREE.BufferAttribute(a,3));PT=new THREE.Points(gm,new THREE.PointsMaterial({color:q.pc,size:.22,transparent:true,opacity:.85,depthWrite:false}));PT.frustumCulled=false;S.add(PT)}
 
-function go(z){load(z);st='play';banner('Map '+(z+1)+': '+Z[z].n+'\n'+Z[z].m)}
+function go(z){try{$('tv').pause()}catch(e){}load(z);st='play';banner('Map '+(z+1)+': '+Z[z].n+'\n'+Z[z].m)}
 function chk(){if(!open&&col>=Z[Z0].k&&bd){open=1;portal.ring.material.color.set(0xffd23a);portal.disc.material.opacity=.45;banner('The gate is open! Enter it.');sfx(660,.4,'triangle',.06,990)}}
 function hurt(f){if(inv>0||st!='play')return;p.hp--;inv=1.3;p.vy=8;p.vx=f*7;shk=.3;sfx(160,.25,'sawtooth',.07,60);if(p.hp<=0)over()}
 function hit(e,d,f){e.hp-=d;e.fl=.15;e.x+=f*(e.t=='b'?.1:.6);shk=Math.max(shk,.12);sfx(240,.08,'sawtooth',.05);burst(e.x,e.y,Z[Z0].ec,5);
  if(e.hp<=0){W.remove(e.m);en.splice(en.indexOf(e),1);burst(e.x,e.y,0xffe14a,14);sfx(120,.3,'square',.06,40);if(e===boss){bd=1;shk=.6;chk()}}}
 function lockL(){try{document.documentElement.requestFullscreen().then(()=>screen.orientation.lock('landscape')).catch(()=>{})}catch(e){}}
 function ovl(t,x,a,fa,b,fb){$('h').textContent=t;$('tx').textContent=x;const A=$('b1'),B=$('b2');A.textContent=a;A.onclick=()=>{lockL();ov.style.display='none';fa()};B.style.display=b?'':'none';if(b){B.textContent=b;B.onclick=()=>{lockL();ov.style.display='none';fb()}};ov.style.display='flex'}
-function info(t,x){$('h').textContent=t;$('tx').textContent=x;$('b1').textContent='Back';$('b1').onclick=()=>{ov.style.display='none'};$('b2').style.display='none';ov.style.display='flex'}
+function info(t,x,back){$('h').textContent=t;$('tx').textContent=x;$('b1').textContent='Back';$('b1').onclick=back||(()=>{ov.style.display='none'});$('b2').style.display='none';ov.style.display='flex'}
 function pick(i){lockL();ov.style.display='none';$('ts').style.display='none';go(i)}
 function over(){st='over';ovl('Veer has fallen','The Ember Blade is not out yet. Try again.','Play again',()=>go(Z0))}
-function menu(){st='menu';ov.style.display='none';const t=$('ts');t.style.display='block';
- $('m1').textContent=mx?'Continue':'Start';$('m1').onclick=()=>{lockL();t.style.display='none';go(Math.min(mx,Z.length-1))};
- $('m2').textContent='Maps';$('m2').style.display='';
- $('m2').onclick=()=>{info('Choose Map','');$('tx').innerHTML=Z.map((q,i)=>'<button class="mp" '+(i>mx?'disabled':'onclick="pick('+i+')"')+'>'+(i>mx?'\uD83D\uDD12 ':'')+(i+1)+'. '+q.n+'</button>').join('')};
- $('m3').onclick=()=>info('Controls','Move: \u2190 \u2192\nJump: Space (tap again for double jump)\nSword: J (hit 3 times for a combo)\nFire Blast: K\nTip: jump on enemies to stomp them!\n\nMobile: use the buttons at the bottom.');
- $('m4').onclick=()=>info('Credits','Snowdingo 3D\nAn original adventure game.\nBuilt with three.js.')}
+function maps(){info('Choose Map','',settings);$('tx').innerHTML=Z.map((q,i)=>'<button class="mp" '+(i>mx?'disabled':'onclick="pick('+i+')"')+'>'+(i>mx?'\uD83D\uDD12 ':'')+(i+1)+'. '+q.n+'</button>').join('')}
+function settings(){$('h').textContent='Settings';const b=(id,t)=>'<button class="mp" id="'+id+'">'+t+'</button>';
+ $('tx').innerHTML=b('s1','Sound: '+(mute?'OFF':'ON'))+b('s2','Shadows: '+(DL.castShadow?'ON':'OFF'))+b('s3','Choose Map')+b('s4','Controls')+b('s5','Credits')+b('s6','Reset Progress');
+ $('s1').onclick=()=>{mute=!mute;mb.style.opacity=mute?.35:1;settings()};
+ $('s2').onclick=()=>{DL.castShadow=!DL.castShadow;S.traverse(o=>{if(o.material)o.material.needsUpdate=true});try{localStorage.setItem('sd3s',DL.castShadow?1:0)}catch(e){}settings()};
+ $('s3').onclick=maps;
+ $('s4').onclick=()=>info('Controls','Move: \u2190 \u2192\nJump: Space (tap again for double jump)\nSword: J (hit 3 times for a combo)\nFire Blast: K\nTip: jump on enemies to stomp them!\n\nMobile: use the buttons at the bottom.',settings);
+ $('s5').onclick=()=>info('Credits','Snowdingo 3D\nAn original adventure game.\nBuilt with three.js.',settings);
+ $('s6').onclick=()=>{mx=0;tot=0;try{localStorage.removeItem('sd3b');localStorage.removeItem('sd3g')}catch(e){}info('Progress reset','You will start from Map 1.',settings)};
+ $('b1').textContent='Back';$('b1').onclick=()=>{ov.style.display='none'};$('b2').style.display='none';ov.style.display='flex'}
+function menu(){st='menu';ov.style.display='none';const t=$('ts');t.style.display='block';try{$('tv').play()}catch(e){}
+ $('m1').onclick=()=>{lockL();t.style.display='none';go(Math.min(mx,Z.length-1))};
+ $('m3').onclick=settings}
 function next(){mx=Math.max(mx,Z0+1);try{localStorage.setItem('sd3b',Math.min(mx,Z.length));localStorage.setItem('sd3g',tot)}catch(e){}
  if(Z0==Z.length-1){st='win';ovl('You win!','The Hollow King is defeated and the Suryamani is whole again. All six lands are saved!','Play again',()=>go(0));return}go(Z0+1)}
 
