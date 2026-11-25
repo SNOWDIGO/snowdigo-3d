@@ -138,13 +138,13 @@ canvas{display:block;width:100%;height:100%}
 </style>
 </head>
 <body>
-<div id="rot">Please rotate your phone to landscape ↻</div>
+<div id="rot">Please rotate your phone to landscape &#8635;</div>
 <div id="flash"></div>
 <div id="hud"><span id="h1"></span><span id="h2"></span></div>
 <div id="bn"></div>
 
-<div class="b" id="L">◀</div>
-<div class="b" id="R">▶</div>
+<div class="b" id="L">&#9664;</div>
+<div class="b" id="R">&#9654;</div>
 <div class="b" id="EN">Enter</div>
 <div class="b" id="SH">Shop</div>
 <div class="b" id="M">Bolt</div>
@@ -285,53 +285,66 @@ const bas=(c,o)=>new THREE.MeshBasicMaterial({color:c,transparent:o!=null,opacit
 let sd=1;
 const rn=()=>(sd=sd*16807%2147483647)/2147483647;
 
-// ---------- Hero ----------
+// ---------- Hero (Matching Reference Art) ----------
 const P=new THREE.Group();S.add(P);
 const BD=new THREE.Group();P.add(BD);
 const pv=(x,y,par)=>{const g=new THREE.Group();g.position.set(x,y,0);par.add(g);return g};
 
 const legL=pv(-.18,.95,BD),legR=pv(.18,.95,BD);
-const armL=pv(-.48,1.62,BD),armR=pv(.48,1.62,BD);
+const armL=pv(-.46,1.6,BD),armR=pv(.46,1.6,BD);
 
+// Dark warrior pants & boots
 [legL,legR].forEach(l=>{
- box(.23,.62,.27,0x473022,0,-.31,0,l,1);
- box(.27,.22,.36,0x211614,0,-.63,.05,l,1);
+ box(.24,.62,.28,0x1d1c24,0,-.31,0,l,1);
+ box(.28,.22,.36,0x141218,0,-.63,.05,l,1);
 });
-box(.76,.76,.46,0x1d6b44,0,1.3,0,BD,1);
-box(.78,.13,.48,0xd9b25f,0,1.0,0,BD);
-box(.28,.28,.12,0xe6b832,0,1.36,.25,BD);
-box(.5,.5,.5,0xeab88a,0,1.95,0,BD,1);
-box(.58,.24,.58,0x161220,0,2.24,0,BD);
+
+// White tunic + dark sash + waist sheath
+box(.74,.74,.44,0xeef2f7,0,1.3,0,BD,1);
+box(.78,.18,.48,0x1a1822,0,1.04,0,BD);
+box(.68,.12,.46,0xd8dde6,0,.94,0,BD);
+box(.1,.82,.1,0x16141e,-.38,1.02,.18,BD);
+
+// Dark skin head, expressive eyes, and spiky dark hair
+box(.5,.5,.5,0x6e4329,0,1.95,0,BD,1);
+box(.58,.22,.58,0x14121c,0,2.24,0,BD);
 [-.14,.14].forEach(x=>{
- box(.1,.08,.06,0x14101c,x,1.98,.27,BD);
+ box(.1,.08,.06,0x120e16,x,1.98,.27,BD);
  box(.04,.04,.07,0x8ef6ff,x+.02,1.99,.28,BD);
 });
-for(let i=-1;i<2;i++){
- const c=new THREE.Mesh(new THREE.ConeGeometry(.11,.36,5),mat(0x161220));
- c.position.set(i*.17,2.48,0);BD.add(c);
-}
-[armL,armR].forEach(a=>{
- box(.2,.58,.22,0x1d6b44,0,-.28,0,a,1);
- box(.2,.14,.22,0xeab88a,0,-.62,0,a);
+const spikeDirs=[
+ [-.24,2.38,-.25],[-.12,2.52,.1],[0,2.58,-.15],[.14,2.52,.12],[.25,2.38,-.2],
+ [-.28,2.24,.2],[.28,2.24,.2]
+];
+spikeDirs.forEach(([sx,sy,rz],i)=>{
+ const c=new THREE.Mesh(new THREE.ConeGeometry(.12,.42+(i%2)*.08,5),mat(0x14121c));
+ c.position.set(sx,sy,0);c.rotation.z=rz;BD.add(c);
 });
-box(.34,.18,.34,0xd99e32,.5,1.8,0,BD);
-const swd=pv(0,-.66,armR);swd.rotation.z=-1.2;
-box(.1,1.26,.06,0xeaf9ff,0,.74,0,swd,0,mat(0xeaf9ff,0x44c8ff,.2,.75));
-const aura=new THREE.Mesh(new THREE.BoxGeometry(.2,.12,.12),bas(0x5ce8ff,.45));
-aura.scale.set(1,10.5,1);aura.position.set(0,.74,0);swd.add(aura);
-box(.42,.1,.16,0xffb824,0,.1,0,swd);
-box(.09,.28,.09,0x5c3014,0,-.08,0,swd);
 
-const sc=[];let s0=pv(-.32,1.72,BD);
+// Arms + glowing cyan katana-style blade
+[armL,armR].forEach(a=>{
+ box(.2,.58,.22,0x6e4329,0,-.28,0,a,1);
+ box(.22,.16,.24,0x1a1822,0,-.56,0,a);
+});
+const swd=pv(0,-.66,armR);swd.rotation.z=-1.15;
+box(.09,1.3,.05,0xf2fcff,0,.76,0,swd,0,mat(0xf2fcff,0x38e8ff,.2,.75));
+const aura=new THREE.Mesh(new THREE.BoxGeometry(.22,.12,.14),bas(0x38e8ff,.48));
+aura.scale.set(1,11,1);aura.position.set(0,.76,0);swd.add(aura);
+box(.42,.1,.16,0xe6b832,0,.1,0,swd);
+box(.09,.28,.09,0x181620,0,-.08,0,swd);
+
+// Flowing dark cloak
+const sc=[];let s0=pv(-.34,1.74,BD);
 for(let i=0;i<4;i++){
- box(.35,.15,.1,0xe87a1e,-.17,0,0,s0);
- const n=pv(-.34,0,s0);sc.push(s0);s0=n;
+ box(.42,.24,.12,0x1d1b26,-.18,-i*.03,0,s0);
+ const n=pv(-.38,-0.02,s0);sc.push(s0);s0=n;
 }
+
 const BL=new THREE.Mesh(new THREE.CircleGeometry(.58,18),bas(0x09060e,.4));
 BL.rotation.x=-Math.PI/2;S.add(BL);
 const SL=new THREE.Mesh(
  new THREE.RingGeometry(.95,1.85,24,1,-.95,1.9),
- new THREE.MeshBasicMaterial({color:0x9ef6ff,transparent:true,opacity:0,side:2})
+ new THREE.MeshBasicMaterial({color:0x6af0ff,transparent:true,opacity:0,side:2})
 );
 S.add(SL);
 
@@ -959,7 +972,7 @@ function draw(dt){
  BD.position.y=p.g?Math.abs(Math.sin(ph))*.11*sp+Math.sin(tt*2.2)*.012:0;
  BD.rotation.z=-sp*.16-(air?p.vy*.012:0);
  P.scale.set(1+p.sq*.12,1-p.sq*.22,1+p.sq*.12);
- sc.forEach((s,i)=>s.rotation.z=Math.sin(tt*10+i*.9)*.3+.18+sp*.12*i);
+ sc.forEach((s,i)=>s.rotation.z=Math.sin(tt*10+i*.9)*.32+.22+sp*.14*i);
 
  BL.visible=p.gy>-90;BL.position.set(p.x,p.gy+.03,0);
  BL.scale.setScalar(Math.max(.4,1-(p.y-p.gy)*.12));
