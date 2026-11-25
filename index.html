@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<title>Legends of Aetheria — Part II</title>
+<title>Snowdigo 3D — Swordigo Base</title>
 <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,viewport-fit=cover,user-scalable=no">
 <meta name="theme-color" content="#120d18">
 <meta name="mobile-web-app-capable" content="yes">
@@ -31,16 +31,16 @@ canvas{display:block;width:100%;height:100%}
 #hud{
   position:fixed;top:0;left:0;right:0;z-index:10;
   padding:calc(8px + env(safe-area-inset-top,0px)) 14px 0;
-  display:flex;justify-content:space-between;align-items:center;gap:8px;
-  font-size:14px;pointer-events:none;text-shadow:0 2px 6px rgba(0,0,0,.92);
+  display:flex;justify-content:space-between;align-items:center;gap:8px;flex-wrap:wrap;
+  font-size:13px;pointer-events:none;text-shadow:0 2px 6px rgba(0,0,0,.92);
 }
 #hud span{
-  background:rgba(14,10,22,.6);padding:6px 12px;border-radius:10px;
+  background:rgba(14,10,22,.62);padding:5px 11px;border-radius:10px;
   border:1px solid rgba(255,246,232,.22);backdrop-filter:blur(4px);
 }
 #bn{
   position:fixed;top:16%;left:0;right:0;z-index:12;text-align:center;
-  font-size:19px;white-space:pre-line;opacity:0;transition:opacity .45s;
+  font-size:18px;white-space:pre-line;opacity:0;transition:opacity .45s;
   pointer-events:none;text-shadow:0 3px 10px rgba(0,0,0,.96);
 }
 .b{
@@ -62,10 +62,10 @@ canvas{display:block;width:100%;height:100%}
   display:none;flex-direction:column;align-items:center;justify-content:center;
   text-align:center;padding:24px;gap:14px;
 }
-#ov h1{font-size:40px;margin:0;letter-spacing:.02em;color:var(--ac)}
-#tx{max-width:500px;width:100%;line-height:1.5;white-space:pre-line;margin:0}
+#ov h1{font-size:38px;margin:0;letter-spacing:.02em;color:var(--ac)}
+#tx{max-width:520px;width:100%;line-height:1.5;white-space:pre-line;margin:0}
 #ov button{
-  font:18px Georgia,serif;padding:12px 26px;border-radius:8px;
+  font:17px Georgia,serif;padding:11px 24px;border-radius:8px;
   border:2px solid var(--ac);background:transparent;color:var(--fg);cursor:pointer;
 }
 #ov button:first-of-type{background:var(--ac);color:#1a1006}
@@ -147,7 +147,7 @@ canvas{display:block;width:100%;height:100%}
 <div class="b" id="R">▶</div>
 <div class="b" id="EN">Enter</div>
 <div class="b" id="SH">Shop</div>
-<div class="b" id="M">Fire</div>
+<div class="b" id="M">Bolt</div>
 <div class="b" id="A">Sword</div>
 <div class="b" id="J">Jump</div>
 
@@ -188,17 +188,17 @@ canvas{display:block;width:100%;height:100%}
    </g>
   </g>
  </svg>
- <div id="logo"><b>Snowdigo<u>3D</u></b><small>Eight realms. One hero. Restore the Aether.</small></div>
+ <div id="logo"><b>Snowdigo<u>3D</u></b><small>Seek the Mageblade. Restore the Light.</small></div>
  <div id="menu">
   <button id="m1">Start</button>
-  <button id="m2">Maps</button>
+  <button id="m2">Realms</button>
   <button id="m3">Controls</button>
-  <button id="m4">Credits</button>
+  <button id="m4">Lore</button>
  </div>
 </div>
 
 <div id="ov">
- <h1 id="h">Legends of Aetheria</h1>
+ <h1 id="h">Snowdigo 3D</h1>
  <div id="tx"></div>
  <button id="b1"></button>
  <button id="b2"></button>
@@ -252,7 +252,7 @@ R.setPixelRatio(Math.min(devicePixelRatio,2));
 R.shadowMap.enabled=true;
 R.shadowMap.type=THREE.PCFSoftShadowMap;
 R.toneMapping=THREE.ACESFilmicToneMapping;
-R.toneMappingExposure=1.1;
+R.toneMappingExposure=1.08;
 document.body.prepend(R.domElement);
 
 const S=new THREE.Scene();
@@ -271,8 +271,8 @@ function rs(){
 }
 addEventListener('resize',rs);rs();
 
-const mat=(c,e,r=.46,m=.16)=>new THREE.MeshStandardMaterial({
- color:c,emissive:e||0,emissiveIntensity:e?.36:0,roughness:r,metalness:m
+const mat=(c,e,r=.48,m=.15)=>new THREE.MeshStandardMaterial({
+ color:c,emissive:e||0,emissiveIntensity:e?.35:0,roughness:r,metalness:m
 });
 const box=(w,h,d,c,x=0,y=0,z=0,p=S,shd=0,mt)=>{
  const m=new THREE.Mesh(new THREE.BoxGeometry(w,h,d),mt||mat(c));
@@ -285,7 +285,7 @@ const bas=(c,o)=>new THREE.MeshBasicMaterial({color:c,transparent:o!=null,opacit
 let sd=1;
 const rn=()=>(sd=sd*16807%2147483647)/2147483647;
 
-// ---------- Hero (Veer) ----------
+// ---------- Hero ----------
 const P=new THREE.Group();S.add(P);
 const BD=new THREE.Group();P.add(BD);
 const pv=(x,y,par)=>{const g=new THREE.Group();g.position.set(x,y,0);par.add(g);return g};
@@ -294,18 +294,13 @@ const legL=pv(-.18,.95,BD),legR=pv(.18,.95,BD);
 const armL=pv(-.48,1.62,BD),armR=pv(.48,1.62,BD);
 
 [legL,legR].forEach(l=>{
- box(.23,.62,.27,0x473022,0,-.31,0,l,1,mat(0x473022,0,.62,.1));
- box(.27,.22,.36,0x211614,0,-.63,.05,l,1,mat(0x211614,0,.45,.35));
+ box(.23,.62,.27,0x473022,0,-.31,0,l,1);
+ box(.27,.22,.36,0x211614,0,-.63,.05,l,1);
 });
-
-// Armored tunic + belt + crest buckle
-box(.76,.76,.46,0x1d6b44,0,1.3,0,BD,1,mat(0x1d6b44,0,.42,.25));
-box(.78,.13,.48,0xd9b25f,0,1.0,0,BD,0,mat(0xd9b25f,0,.35,.55));
-box(.28,.28,.12,0xe6b832,0,1.36,.25,BD,0,mat(0xe6b832,0,.3,.6));
-
-// Head + brow + hair spikes + glowing eyes
+box(.76,.76,.46,0x1d6b44,0,1.3,0,BD,1);
+box(.78,.13,.48,0xd9b25f,0,1.0,0,BD);
+box(.28,.28,.12,0xe6b832,0,1.36,.25,BD);
 box(.5,.5,.5,0xeab88a,0,1.95,0,BD,1);
-box(.56,.14,.56,0x1c4a35,0,2.14,0,BD);
 box(.58,.24,.58,0x161220,0,2.24,0,BD);
 [-.14,.14].forEach(x=>{
  box(.1,.08,.06,0x14101c,x,1.98,.27,BD);
@@ -315,57 +310,50 @@ for(let i=-1;i<2;i++){
  const c=new THREE.Mesh(new THREE.ConeGeometry(.11,.36,5),mat(0x161220));
  c.position.set(i*.17,2.48,0);BD.add(c);
 }
-
-// Arms + pauldrons + glowing blade
 [armL,armR].forEach(a=>{
  box(.2,.58,.22,0x1d6b44,0,-.28,0,a,1);
  box(.2,.14,.22,0xeab88a,0,-.62,0,a);
 });
-box(.34,.18,.34,0xd99e32,.5,1.8,0,BD,0,mat(0xd99e32,0,.35,.5));
+box(.34,.18,.34,0xd99e32,.5,1.8,0,BD);
 const swd=pv(0,-.66,armR);swd.rotation.z=-1.2;
 box(.1,1.26,.06,0xeaf9ff,0,.74,0,swd,0,mat(0xeaf9ff,0x44c8ff,.2,.75));
 const aura=new THREE.Mesh(new THREE.BoxGeometry(.2,.12,.12),bas(0x5ce8ff,.45));
 aura.scale.set(1,10.5,1);aura.position.set(0,.74,0);swd.add(aura);
-box(.42,.1,.16,0xffb824,0,.1,0,swd,0,mat(0xffb824,0,.3,.6));
+box(.42,.1,.16,0xffb824,0,.1,0,swd);
 box(.09,.28,.09,0x5c3014,0,-.08,0,swd);
 
-// Flowing scarf
 const sc=[];let s0=pv(-.32,1.72,BD);
 for(let i=0;i<4;i++){
  box(.35,.15,.1,0xe87a1e,-.17,0,0,s0);
  const n=pv(-.34,0,s0);sc.push(s0);s0=n;
 }
-
 const BL=new THREE.Mesh(new THREE.CircleGeometry(.58,18),bas(0x09060e,.4));
 BL.rotation.x=-Math.PI/2;S.add(BL);
-
 const SL=new THREE.Mesh(
  new THREE.RingGeometry(.95,1.85,24,1,-.95,1.9),
  new THREE.MeshBasicMaterial({color:0x9ef6ff,transparent:true,opacity:0,side:2})
 );
 S.add(SL);
 
-// ---------- Realms ----------
+// ---------- Swordigo-Inspired Realms ----------
 const Z=[
-{n:'Cairnwood Outskirts',m:'Collect 3 Sunstones, enter cottages for chest loot, & defeat Mossback.',w:'Sunstones',k:3,e:4,sky:['#182848','#6a9ec9'],fog:0x6b92b5,sun:0xffe9a8,c:0x5e4229,cap:0x368c3e,bc:[0x48698a,0x375748,0x264234],bs:0,ec:0x3c7a47,es:0,sc:0xffd23a,pc:0xffffff,pv:[.7,-.4],f0:196,g:30,cl:1,pit:0x163f5e,village:1,boss:{n:'Mossback',hp:8,c:0x35692b,c2:0xffbe2e}},
-{n:'Frost Peaks',m:'Find 3 Ice Shards. Watch the slick stone ledges!',w:'Ice Shards',k:3,e:5,sky:['#0b1d42','#8ec2f0'],fog:0x88b8e3,sun:0xffffff,c:0x7698bd,cap:0xe6f6ff,bc:[0x58789c,0x7398bf,0x9ec2e3],bs:1,ec:0x3c84bd,es:1,sc:0x5af0ff,pc:0xffffff,pv:[-.9,-2.2],f0:174,g:30,ice:1,pit:0x102f52,boss:{n:'Frost Wyrm',hp:10,c:0x4ea0db,c2:0xffffff}},
-{n:'Evernight Hollow',m:'Gather 4 Ember Cores through dark woods & Maw plants.',w:'Ember Cores',k:4,e:6,sky:['#0e0917','#382547'],fog:0x1b1224,sun:0xbda8f5,c:0x422b19,cap:0x275722,bc:[0x24192e,0x1b1224,0x130c1a],bs:2,ec:0x8c324e,es:2,sc:0xff8c1a,pc:0xc9b8ff,pv:[.25,-.8],f0:147,g:30,maw:1,pit:0x0e0914,boss:{n:'Hollow Warden',hp:12,c:0x33203d,c2:0xff8c1a}},
-{n:'Sunbaked Dunes',m:'Recover 4 Relic Seals. Avoid thorn clusters!',w:'Relic Seals',k:4,e:6,sky:['#c26d29','#f7d488'],fog:0xdcb46e,sun:0xfff0c0,c:0x946932,cap:0xc99c4b,bc:[0xbd8544,0xa87032,0x8f5b24],bs:3,ec:0xa37322,es:2,sc:0x4affd0,pc:0xf0d090,pv:[3.2,-.2],f0:165,g:30,sp:1,pit:0x9e7830,boss:{n:'Dune Sovereign',hp:14,c:0xb38732,c2:0x2a7aff}},
-{n:'Tidewater Trench',m:'Find 5 Ocean Pearls. Float & strike the Trench Titan!',w:'Ocean Pearls',k:5,e:7,sky:['#02122b','#0e5975'],fog:0x093a52,sun:0xbff6ff,c:0x1b334a,cap:0x2f9c88,bc:[0x0c405c,0x125a70,0x197370],bs:4,ec:0xd94c8c,es:1,sc:0xffffff,pc:0xbff6ff,pv:[.1,1.3],f0:131,g:15,fl:1,ray:1,pit:0x02121a,boss:{n:'Tide Titan',hp:24,c:0x1b497a,c2:0xff6ab0}}
- ];
-
-// Part II: three new original realms added to the five original stages.
-Z.push(
- {n:'Ashenheart Volcano',m:'Claim 5 Magma Hearts and silence the Cinder Colossus.',w:'Magma Hearts',k:5,e:8,sky:['#260b12','#d65b27'],fog:0x6c281d,sun:0xffb06a,c:0x49302a,cap:0xe45b2c,bc:[0x65342b,0x8a3827,0x3d2424],bs:3,ec:0xb84a28,es:2,sc:0xffd05a,pc:0xffb18a,pv:[-.7,.3],f0:110,g:30,sp:1,pit:0x301018,boss:{n:'Cinder Colossus',hp:18,c:0x692b22,c2:0xff9b24}},
- {n:'Cloudspire Kingdom',m:'Gather 5 Sky Sigils above the clouds. Mind the high platforms!',w:'Sky Sigils',k:5,e:8,sky:['#315a91','#b9e8ff'],fog:0x9ac9e8,sun:0xffffff,c:0x7896a8,cap:0xe4f5ff,bc:[0x6386aa,0x8eacc5,0xb9d4e8],bs:1,ec:0x6b70b8,es:1,sc:0xffe77a,pc:0xffffff,pv:[.3,-.5],f0:220,g:30,ice:1,pit:0x294b70,boss:{n:'Aether Roc',hp:20,c:0x536db0,c2:0xffe77a}},
- {n:'The Umbral Citadel',m:'Find 6 Void Shards and defeat the final Night Sovereign.',w:'Void Shards',k:6,e:10,sky:['#080817','#38204d'],fog:0x21152f,sun:0xb7a0ff,c:0x29233d,cap:0x65458a,bc:[0x28213d,0x352348,0x171326],bs:2,ec:0x9b3e83,es:2,sc:0xbda0ff,pc:0xcabaff,pv:[-.2,-.4],f0:98,g:30,maw:1,pit:0x090713,boss:{n:'Night Sovereign',hp:28,c:0x30203f,c2:0xd66aff}}
-);
+{n:'Cairnwood & Forest',m:'Find 3 Mageblade Shards, clear cottage guards, & defeat Corruptor.',w:'Shards',k:3,e:4,sky:['#182848','#6a9ec9'],fog:0x6b92b5,sun:0xffe9a8,c:0x5e4229,cap:0x368c3e,bc:[0x48698a,0x375748,0x264234],bs:0,ec:0x3c7a47,es:0,sc:0xffd23a,pc:0xffffff,pv:[.7,-.4],f0:196,g:30,cl:1,pit:0x163f5e,village:1,boss:{n:'Corruptor',hp:8,c:0x35692b,c2:0xffbe2e}},
+{n:'Frost Peaks & Caves',m:'Collect 3 Frost Shards on icy ledges & defeat the Overseer.',w:'Shards',k:3,e:5,sky:['#0b1d42','#8ec2f0'],fog:0x88b8e3,sun:0xffffff,c:0x7698bd,cap:0xe6f6ff,bc:[0x58789c,0x7398bf,0x9ec2e3],bs:1,ec:0x3c84bd,es:1,sc:0x5af0ff,pc:0xffffff,pv:[-.9,-2.2],f0:174,g:30,ice:1,pit:0x102f52,boss:{n:'Overseer',hp:10,c:0x4ea0db,c2:0xffffff}},
+{n:'Evernight & Flame Depths',m:'Gather 4 Ember Shards & defeat the Flame King.',w:'Shards',k:4,e:6,sky:['#0e0917','#382547'],fog:0x1b1224,sun:0xbda8f5,c:0x422b19,cap:0x275722,bc:[0x24192e,0x1b1224,0x130c1a],bs:2,ec:0x8c324e,es:2,sc:0xff8c1a,pc:0xc9b8ff,pv:[.25,-.8],f0:147,g:30,maw:1,pit:0x0e0914,boss:{n:'Flame King',hp:12,c:0x33203d,c2:0xff8c1a}},
+{n:'Wastelands & Dwarven Hall',m:'Recover 4 Relic Shards & defeat the Dwarven King.',w:'Shards',k:4,e:6,sky:['#c26d29','#f7d488'],fog:0xdcb46e,sun:0xfff0c0,c:0x946932,cap:0xc99c4b,bc:[0xbd8544,0xa87032,0x8f5b24],bs:3,ec:0xa37322,es:2,sc:0x4affd0,pc:0xf0d090,pv:[3.2,-.2],f0:165,g:30,sp:1,pit:0x9e7830,boss:{n:'Dwarven King',hp:14,c:0xb38732,c2:0x2a7aff}},
+{n:"World's End Keep",m:'Collect 5 Final Shards & defeat Master of Chaos!',w:'Shards',k:5,e:7,sky:['#02122b','#0e5975'],fog:0x093a52,sun:0xbff6ff,c:0x1b334a,cap:0x2f9c88,bc:[0x0c405c,0x125a70,0x197370],bs:4,ec:0xd94c8c,es:1,sc:0xffffff,pc:0xbff6ff,pv:[.1,1.3],f0:131,g:15,fl:1,ray:1,pit:0x02121a,boss:{n:'Master of Chaos',hp:24,c:0x1b497a,c2:0xff6ab0}}
+];
 
 let W,IW,pl,en,sh,pj,fx,hz,hr,ch,sw,LY,AR,PT,boss,portal,shopSpot,doors,inside,roomEnemy,roomChest;
-let Z0=0,col=0,coins=120,open=0,bd=0,st='menu',inv=0,cx=0,cy=0,cz=12,tt=0,mx=0,shk=0,mn=0;
-try{mx=+localStorage.getItem('sd3b')||0;coins=+localStorage.getItem('sd3c')||120}catch(e){}
+let Z0=0,col=0,coins=120,xp=0,lvl=1,trinket='None',open=0,bd=0,st='menu',inv=0,cx=0,cy=0,cz=12,tt=0,mx=0,shk=0,mn=0;
+try{
+ mx=+localStorage.getItem('sd3b')||0;
+ coins=+localStorage.getItem('sd3c')||120;
+ xp=+localStorage.getItem('sd3x')||0;
+ lvl=+localStorage.getItem('sd3l')||1;
+}catch(e){}
 
-const p={x:0,y:0,vx:0,vy:0,hp:5,mhp:5,f:1,g:0,j:0,atk:0,cs:0,cc:0,mc:0,sx:0,coy:0,jb:0,sq:0,gy:0,spd:6.6};
+const p={x:0,y:0,vx:0,vy:0,hp:5,mhp:5,atkDmg:1,magDmg:2,f:1,g:0,j:0,atk:0,cs:0,cc:0,mc:0,sx:0,coy:0,jb:0,sq:0,gy:0,spd:6.6};
 const gS=new THREE.SphereGeometry(.32,12,10),fG=new THREE.BoxGeometry(.15,.15,.15),FM={};
 const fm=c=>FM[c]||(FM[c]=new THREE.MeshBasicMaterial({color:c}));
 
@@ -385,6 +373,25 @@ function ball(x,y,vx,vy,own,c){
 function banner(t){
  const b=$('bn');b.textContent=t;b.style.opacity=1;
  clearTimeout(banner.t);banner.t=setTimeout(()=>b.style.opacity=0,3400);
+}
+function saveProg(){
+ try{
+  localStorage.setItem('sd3b',Math.min(mx,5));
+  localStorage.setItem('sd3c',coins);
+  localStorage.setItem('sd3x',xp);
+  localStorage.setItem('sd3l',lvl);
+ }catch(e){}
+}
+function gainXp(amt){
+ xp+=amt;
+ const need=lvl*40;
+ if(xp>=need){
+  xp-=need;lvl++;saveProg();
+  st='pause';
+  ovl('Level Up! (Lv '+lvl+')','Choose an attribute to upgrade:',
+   '+1 Max HP & Full Heal',()=>{p.mhp++;p.hp=p.mhp;st='play';banner('Health Upgraded!')},
+   '+1 Sword/Magic Power',()=>{p.atkDmg++;p.magDmg++;st='play';banner('Attack & Magic Upgraded!')});
+ }else saveProg();
 }
 
 function sky(q){
@@ -470,10 +477,8 @@ function enterRoom(roomIdx){
   tr.position.set(px,3.1,-1.45);IW.add(tr);
  });
 
- // Exit door on left (-5.5)
  box(1.1,1.9,.25,0x6e3f1c,-5.5,.95,-2.05,IW);
 
- // Reward Chest on right (5.5) - locked until roomEnemy defeated
  const cg=new THREE.Group();cg.position.set(5.5,0,-1.1);IW.add(cg);
  box(1.1,.7,.76,0x7a3d15,0,.35,0,cg,1);
  box(1.16,.14,.82,0xe8ab2c,0,.71,0,cg);
@@ -482,7 +487,6 @@ function enterRoom(roomIdx){
  lockGem.position.set(0,1.25,-1.1);IW.add(lockGem);
  roomChest={x:5.5,y:0,lid,lockGem,opened:0,unlocked:0};
 
- // Guard Enemy inside room
  const em=new THREE.Group();em.position.set(1.5,.6,0);IW.add(em);
  const eb=new THREE.Mesh(new THREE.BoxGeometry(1.15,1.05,1.05),mat(0x8f2d4c,0x2a0814));
  eb.castShadow=true;em.add(eb);
@@ -493,7 +497,7 @@ function enterRoom(roomIdx){
  roomEnemy={x:1.5,y:.6,hp:3+Z0,r:.6,h:.6,d:-1,x0:-2.5,x1:4.2,m:em,a:0,fl:0,alive:1};
 
  p.x=-4.5;p.y=0;p.vx=0;p.vy=0;p.sx=-4.5;
- banner('Inside Cottage! Defeat the guard to unlock the Reward Chest.\nPress Enter to exit via left door.');
+ banner('Inside Room! Defeat the guard to unlock the Reward Chest.\nPress Enter to exit via left door.');
 }
 
 function exitRoom(){
@@ -550,7 +554,7 @@ function mkE(q,t,g){
  if(t==1){wl=box(1.05,.09,.52,c,-.82,.3,0,m);wr=box(1.05,.09,.52,c,.82,.3,0,m)}
  if(t==2)b.scale.set(1.18,.86,1.18);
  const ex=g.a+1.5+rn()*(g.b-g.a-3),by=t==1?2.6+rn()*1.2:.52;
- en.push({x:ex,ox:ex,y:by,by,t,hp:t==2?2:1+(Z0>2?1:0),x0:g.a+.6,x1:g.b-.6,d:1,r:.52,h:.52,m,b,wl,wr,a:rn()*6,fl:0});
+ en.push({x:ex,ox:ex,y:by,by,t,hp:(t==2?2:1+(Z0>2?1:0))+Math.floor((lvl-1)*.5),x0:g.a+.6,x1:g.b-.6,d:1,r:.52,h:.52,m,b,wl,wr,a:rn()*6,fl:0});
 }
 
 function mkB(q){
@@ -660,11 +664,11 @@ function tryEnter(){
   if(roomChest&&roomChest.unlocked&&!roomChest.opened&&Math.abs(p.x-roomChest.x)<1.8){
    roomChest.opened=1;roomChest.lid.rotation.x=-1.15;roomChest.lid.position.y=1.1;
    roomChest.lockGem.material.color.set(0x6aff9c);
-   coins+=60;p.hp=Math.min(p.mhp,p.hp+2);
+   coins+=60;p.hp=Math.min(p.mhp,p.hp+2);gainXp(25);
    burst(roomChest.x,1.0,0xffd23a,18);triggerFlash(.45);sfx(880,.25,'triangle',.07,1320);
-   banner('Reward Chest Opened! +60 Coins & +2 HP');
+   banner('Reward Chest Opened! +60 Soul Shards, +2 HP & +25 XP');
   }else if(roomChest&&!roomChest.unlocked){
-   banner('Defeat the cottage guard first to unlock the chest!');
+   banner('Defeat the guard first to unlock the chest!');
   }else{
    banner('Walk to the left door to exit.');
   }
@@ -676,19 +680,19 @@ function tryEnter(){
 }
 
 function openShop(){
- if(inside){banner('Exit the cottage to visit the Shop.');return}
+ if(inside){banner('Exit the room to visit the Shop.');return}
  if(!shopSpot||Math.abs(p.x-shopSpot.x)>3.6){banner('Walk near the SHOP cottage to buy items.');return}
  st='pause';
- ovl('Cabin Shop','Coins: '+coins+' | Health: '+p.hp+'/'+p.mhp,
-  'Heal (+2 HP) - 30c',()=>{coins=Math.max(0,coins-30);p.hp=Math.min(p.mhp,p.hp+2);st='play';banner('Restored +2 Health!')},
-  'Swift Boots - 50c',()=>{coins=Math.max(0,coins-50);p.spd=7.8;st='play';banner('Swift Boots equipped!')});
+ ovl('Elder Shop & Trinkets','Soul Shards: '+coins+' | Trinket: '+trinket,
+  'Heal +2 HP (30)',()=>{coins=Math.max(0,coins-30);p.hp=Math.min(p.mhp,p.hp+2);saveProg();st='play';banner('Restored +2 Health!')},
+  'Fire Trinket (60)',()=>{coins=Math.max(0,coins-60);trinket='Fire';aura.material.color.set(0xff6a24);saveProg();st='play';banner('Equipped Fire Trinket!')});
 }
 
 function go(z){load(z);st='play';banner('Realm '+(z+1)+': '+Z[z].n+'\n'+Z[z].m)}
 function chk(){
  if(!open&&col>=Z[Z0].k&&bd){
   open=1;portal.ring.material.color.set(0xffd23a);portal.disc.material.opacity=.48;
-  banner('The Portal Gate is open! Step inside.');sfx(660,.4,'triangle',.06,990);
+  banner('Portal Gate open! Step inside.');sfx(660,.4,'triangle',.06,990);
  }
 }
 function hurt(f){
@@ -697,10 +701,13 @@ function hurt(f){
  if(p.hp<=0)over();
 }
 function hit(e,d,f){
- e.hp-=d;e.fl=.15;e.x+=f*(e.t=='b'?.1:.6);shk=Math.max(shk,.14);
- sfx(240,.08,'sawtooth',.05);burst(e.x,e.y,Z[Z0].ec,6);
+ const totalDmg=d*p.atkDmg;
+ e.hp-=totalDmg;e.fl=.15;e.x+=f*(e.t=='b'?.1:.6);shk=Math.max(shk,.14);
+ sfx(240,.08,'sawtooth',.05);
+ burst(e.x,e.y,trinket=='Fire'?0xff6a24:Z[Z0].ec,6);
  if(e.hp<=0){
-  activeWorld().remove(e.m);en.splice(en.indexOf(e),1);coins+=15;
+  activeWorld().remove(e.m);en.splice(en.indexOf(e),1);
+  coins+=15;gainXp(18);
   burst(e.x,e.y,0xffe14a,16);sfx(120,.3,'square',.06,40);
   if(e===boss){bd=1;shk=.65;chk()}
  }
@@ -722,15 +729,15 @@ function info(t,x){
 function pick(i){lockL();ov.style.display='none';$('ts').style.display='none';go(i)}
 function over(){
  st='over';inside=0;if(IW){S.remove(IW);IW=null}
- ovl('Veer has fallen','The Suryamani awaits your return.','Play again',()=>go(Z0));
+ ovl('Hero Fallen','Master of Chaos still threatens the realm.','Retry',()=>go(Z0));
 }
 function menu(){
  st='menu';ov.style.display='none';const t=$('ts');t.style.display='block';
  $('m1').textContent=mx?'Continue':'Start';
- $('m1').onclick=()=>{lockL();t.style.display='none';go(Math.min(mx,Z.length-1))};
- $('m2').textContent='Maps';$('m2').style.display='';
+ $('m1').onclick=()=>{lockL();t.style.display='none';go(Math.min(mx,4))};
+ $('m2').textContent='Realms';$('m2').style.display='';
  $('m2').onclick=()=>{
-  info('Choose Realm — '+Z.length+' Realms','Select any realm you have unlocked.');
+  info('Choose Realm','');
   const tx=$('tx');tx.innerHTML='';
   Z.forEach((q,i)=>{
    const btn=document.createElement('button');
@@ -739,13 +746,12 @@ function menu(){
    btn.onclick=()=>pick(i);tx.appendChild(btn);
   });
  };
- $('m3').onclick=()=>info('Controls','Move: \u2190 \u2192  |  Enter House: F / Enter\nShop: E  |  Jump: Space (Double Jump)\nSword: J (Combo + Deflect Fireballs)\nFire Blast: K  |  Stomp: jump onto foes');
- $('m4').onclick=()=>info('Credits','Legends of Aetheria\nOriginal 2.5D action platformer.\nBuilt with Three.js.');
+ $('m3').onclick=()=>info('Controls','Move: \u2190 \u2192  |  Enter Room / Chest: F / Enter\nShop / Trinket: E  |  Jump: Space (Double Jump)\nSword: J (3-Hit Combo + Deflect)  |  Magic Bolt: K');
+ $('m4').onclick=()=>info('Story','Your Master falls to the Corruptors.\nGuided by your Master’s spirit, gather the Mageblade shards across realms and defeat the Master of Chaos.');
 }
 function next(){
- mx=Math.max(mx,Z0+1);
- try{localStorage.setItem('sd3b',Math.min(mx,Z.length-1));localStorage.setItem('sd3c',coins)}catch(e){}
- if(Z0==Z.length-1){st='win';ovl('Aether Restored!','All eight realms are free. Veer has restored the Aether and brought light back to every kingdom!','Play again',()=>go(0));return}
+ mx=Math.max(mx,Z0+1);saveProg();
+ if(Z0==4){st='win';ovl('Victory!','The Mageblade is restored and peace returns!','Play again',()=>go(0));return}
  go(Z0+1);
 }
 
@@ -817,11 +823,11 @@ function upd(dt){
   if(inside&&roomEnemy&&roomEnemy.alive){
    const dx=(roomEnemy.x-p.x)*p.f,dy=roomEnemy.y-(p.y+.6);
    if(dx>-.3&&dx<2.2&&Math.abs(dy)<1.3){
-    roomEnemy.hp-=(p.cs==2?2:1);roomEnemy.fl=.15;roomEnemy.x+=p.f*.55;
+    roomEnemy.hp-=(p.cs==2?2:1)*p.atkDmg;roomEnemy.fl=.15;roomEnemy.x+=p.f*.55;
     shk=Math.max(shk,.14);burst(roomEnemy.x,roomEnemy.y,0xff5c8a,7);
     sfx(240,.08,'sawtooth',.05);
     if(roomEnemy.hp<=0){
-     roomEnemy.alive=0;IW.remove(roomEnemy.m);coins+=25;
+     roomEnemy.alive=0;IW.remove(roomEnemy.m);coins+=25;gainXp(20);
      burst(roomEnemy.x,roomEnemy.y,0xffd23a,18);sfx(120,.3,'square',.06,40);
      if(roomChest){
       roomChest.unlocked=1;roomChest.lockGem.material.color.set(0xffd23a);
@@ -848,14 +854,14 @@ function upd(dt){
   let rm=b.life<=0;
   if(b.own){
    if(inside&&roomEnemy&&roomEnemy.alive&&Math.abs(roomEnemy.x-b.x)<roomEnemy.r+.35&&Math.abs(roomEnemy.y-b.y)<roomEnemy.h+.35){
-    roomEnemy.hp-=2;roomEnemy.fl=.15;burst(roomEnemy.x,roomEnemy.y,0xff5c8a,8);rm=1;
+    roomEnemy.hp-=p.magDmg;roomEnemy.fl=.15;burst(roomEnemy.x,roomEnemy.y,0xff5c8a,8);rm=1;
     if(roomEnemy.hp<=0){
-     roomEnemy.alive=0;IW.remove(roomEnemy.m);coins+=25;
+     roomEnemy.alive=0;IW.remove(roomEnemy.m);coins+=25;gainXp(20);
      if(roomChest){roomChest.unlocked=1;roomChest.lockGem.material.color.set(0xffd23a);banner('Guard Defeated! Reward Chest Unlocked!')}
     }
    }
    if(!inside){
-    for(const e of en)if(Math.abs(e.x-b.x)<e.r+.3&&Math.abs(e.y-b.y)<e.h+.3){hit(e,2,Math.sign(b.vx));rm=1;break}
+    for(const e of en)if(Math.abs(e.x-b.x)<e.r+.3&&Math.abs(e.y-b.y)<e.h+.3){hit(e,p.magDmg,Math.sign(b.vx));rm=1;break}
    }
   }else if(Math.abs(b.x-p.x)<.6&&Math.abs(b.y-(p.y+.95))<1){hurt(Math.sign(b.vx));rm=1}
   if(rm){activeWorld().remove(b.m);pj.splice(pj.indexOf(b),1)}
@@ -870,10 +876,10 @@ function upd(dt){
   roomEnemy.m.scale.setScalar(1+roomEnemy.fl*1.5);
   if(Math.abs(roomEnemy.x-p.x)<.85&&Math.abs(roomEnemy.y-(p.y+.85))<1.1){
    if(p.vy<-1&&p.y>roomEnemy.y+.2){
-    roomEnemy.hp-=1;roomEnemy.fl=.15;p.vy=10;p.j=1;
+    roomEnemy.hp-=p.atkDmg;roomEnemy.fl=.15;p.vy=10;p.j=1;
     burst(roomEnemy.x,roomEnemy.y,0xff5c8a,7);
     if(roomEnemy.hp<=0){
-     roomEnemy.alive=0;IW.remove(roomEnemy.m);coins+=25;
+     roomEnemy.alive=0;IW.remove(roomEnemy.m);coins+=25;gainXp(20);
      if(roomChest){roomChest.unlocked=1;roomChest.lockGem.material.color.set(0xffd23a);banner('Guard Defeated! Reward Chest Unlocked!')}
     }
    }else hurt(Math.sign(p.x-roomEnemy.x)||1);
@@ -920,12 +926,12 @@ function upd(dt){
   }
   for(const h of hz)if(Math.abs(h.x-p.x)<.65&&p.y<1.1)hurt(Math.sign(p.x-h.x)||1);
   for(const c of ch)if(!c.open&&Math.hypot(c.x-p.x,c.y-p.y)<1.4){
-   c.open=1;c.lid.rotation.x=-1.1;c.lid.position.y=1.05;coins+=35;
+   c.open=1;c.lid.rotation.x=-1.1;c.lid.position.y=1.05;coins+=35;gainXp(15);
    burst(c.x,c.y+.7,0xffd23a,14);sfx(880,.22,'triangle',.06,1320);
-   banner('Treasure Chest! +35 Coins');
+   banner('Treasure Chest! +35 Soul Shards & +15 XP');
   }
   for(const s of sh.slice())if(Math.hypot(s.x-p.x,s.y-(p.y+.95))<1.2){
-   W.remove(s.m);sh.splice(sh.indexOf(s),1);col++;
+   W.remove(s.m);sh.splice(sh.indexOf(s),1);col++;gainXp(12);
    burst(s.x,s.y,q.sc,12);sfx(900,.2,'sine',.06,1400);chk();
   }
   for(const h of hr.slice())if(p.hp<p.mhp&&Math.hypot(h.x-p.x,h.y-(p.y+.95))<1.2){
@@ -998,7 +1004,7 @@ function draw(dt){
  C.position.set(cx+kx,cy+1.8+ky,cz);
  C.lookAt(cx,cy+.5,0);
 
- $('h1').textContent='\u2764'.repeat(Math.max(0,p.hp))+'  '+(inside?'Cottage Interior':q.n)+'  |  \uD83E\uDE99 '+coins;
+ $('h1').textContent='\u2764'.repeat(Math.max(0,p.hp))+'  Lv.'+lvl+'  |  \uD83E\uDE99 '+coins;
  $('h2').textContent=inside
   ?(roomChest?.opened?'Chest Opened! Exit left':roomChest?.unlocked?'Unlock Chest (Enter)!':'Defeat Guard!')
   :(open?'Go to the portal \u25BA':q.w+' '+col+'/'+q.k+(boss&&!bd?'  |  '+q.boss.n+' '+boss.hp+'/'+boss.mh:''));
