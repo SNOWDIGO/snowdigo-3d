@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<title>Snowdigo 3D</title>
+<title>Legends of Aetheria — Part II</title>
 <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,viewport-fit=cover,user-scalable=no">
 <meta name="theme-color" content="#120d18">
 <meta name="mobile-web-app-capable" content="yes">
@@ -188,7 +188,7 @@ canvas{display:block;width:100%;height:100%}
    </g>
   </g>
  </svg>
- <div id="logo"><b>Snowdigo<u>3D</u></b><small>Light the Suryamani. Save the world.</small></div>
+ <div id="logo"><b>Snowdigo<u>3D</u></b><small>Eight realms. One hero. Restore the Aether.</small></div>
  <div id="menu">
   <button id="m1">Start</button>
   <button id="m2">Maps</button>
@@ -198,7 +198,7 @@ canvas{display:block;width:100%;height:100%}
 </div>
 
 <div id="ov">
- <h1 id="h">Snowdigo 3D</h1>
+ <h1 id="h">Legends of Aetheria</h1>
  <div id="tx"></div>
  <button id="b1"></button>
  <button id="b2"></button>
@@ -352,7 +352,14 @@ const Z=[
 {n:'Evernight Hollow',m:'Gather 4 Ember Cores through dark woods & Maw plants.',w:'Ember Cores',k:4,e:6,sky:['#0e0917','#382547'],fog:0x1b1224,sun:0xbda8f5,c:0x422b19,cap:0x275722,bc:[0x24192e,0x1b1224,0x130c1a],bs:2,ec:0x8c324e,es:2,sc:0xff8c1a,pc:0xc9b8ff,pv:[.25,-.8],f0:147,g:30,maw:1,pit:0x0e0914,boss:{n:'Hollow Warden',hp:12,c:0x33203d,c2:0xff8c1a}},
 {n:'Sunbaked Dunes',m:'Recover 4 Relic Seals. Avoid thorn clusters!',w:'Relic Seals',k:4,e:6,sky:['#c26d29','#f7d488'],fog:0xdcb46e,sun:0xfff0c0,c:0x946932,cap:0xc99c4b,bc:[0xbd8544,0xa87032,0x8f5b24],bs:3,ec:0xa37322,es:2,sc:0x4affd0,pc:0xf0d090,pv:[3.2,-.2],f0:165,g:30,sp:1,pit:0x9e7830,boss:{n:'Dune Sovereign',hp:14,c:0xb38732,c2:0x2a7aff}},
 {n:'Tidewater Trench',m:'Find 5 Ocean Pearls. Float & strike the Trench Titan!',w:'Ocean Pearls',k:5,e:7,sky:['#02122b','#0e5975'],fog:0x093a52,sun:0xbff6ff,c:0x1b334a,cap:0x2f9c88,bc:[0x0c405c,0x125a70,0x197370],bs:4,ec:0xd94c8c,es:1,sc:0xffffff,pc:0xbff6ff,pv:[.1,1.3],f0:131,g:15,fl:1,ray:1,pit:0x02121a,boss:{n:'Tide Titan',hp:24,c:0x1b497a,c2:0xff6ab0}}
-];
+ ];
+
+// Part II: three new original realms added to the five original stages.
+Z.push(
+ {n:'Ashenheart Volcano',m:'Claim 5 Magma Hearts and silence the Cinder Colossus.',w:'Magma Hearts',k:5,e:8,sky:['#260b12','#d65b27'],fog:0x6c281d,sun:0xffb06a,c:0x49302a,cap:0xe45b2c,bc:[0x65342b,0x8a3827,0x3d2424],bs:3,ec:0xb84a28,es:2,sc:0xffd05a,pc:0xffb18a,pv:[-.7,.3],f0:110,g:30,sp:1,pit:0x301018,boss:{n:'Cinder Colossus',hp:18,c:0x692b22,c2:0xff9b24}},
+ {n:'Cloudspire Kingdom',m:'Gather 5 Sky Sigils above the clouds. Mind the high platforms!',w:'Sky Sigils',k:5,e:8,sky:['#315a91','#b9e8ff'],fog:0x9ac9e8,sun:0xffffff,c:0x7896a8,cap:0xe4f5ff,bc:[0x6386aa,0x8eacc5,0xb9d4e8],bs:1,ec:0x6b70b8,es:1,sc:0xffe77a,pc:0xffffff,pv:[.3,-.5],f0:220,g:30,ice:1,pit:0x294b70,boss:{n:'Aether Roc',hp:20,c:0x536db0,c2:0xffe77a}},
+ {n:'The Umbral Citadel',m:'Find 6 Void Shards and defeat the final Night Sovereign.',w:'Void Shards',k:6,e:10,sky:['#080817','#38204d'],fog:0x21152f,sun:0xb7a0ff,c:0x29233d,cap:0x65458a,bc:[0x28213d,0x352348,0x171326],bs:2,ec:0x9b3e83,es:2,sc:0xbda0ff,pc:0xcabaff,pv:[-.2,-.4],f0:98,g:30,maw:1,pit:0x090713,boss:{n:'Night Sovereign',hp:28,c:0x30203f,c2:0xd66aff}}
+);
 
 let W,IW,pl,en,sh,pj,fx,hz,hr,ch,sw,LY,AR,PT,boss,portal,shopSpot,doors,inside,roomEnemy,roomChest;
 let Z0=0,col=0,coins=120,open=0,bd=0,st='menu',inv=0,cx=0,cy=0,cz=12,tt=0,mx=0,shk=0,mn=0;
@@ -720,10 +727,10 @@ function over(){
 function menu(){
  st='menu';ov.style.display='none';const t=$('ts');t.style.display='block';
  $('m1').textContent=mx?'Continue':'Start';
- $('m1').onclick=()=>{lockL();t.style.display='none';go(Math.min(mx,4))};
+ $('m1').onclick=()=>{lockL();t.style.display='none';go(Math.min(mx,Z.length-1))};
  $('m2').textContent='Maps';$('m2').style.display='';
  $('m2').onclick=()=>{
-  info('Choose Realm','');
+  info('Choose Realm — '+Z.length+' Realms','Select any realm you have unlocked.');
   const tx=$('tx');tx.innerHTML='';
   Z.forEach((q,i)=>{
    const btn=document.createElement('button');
@@ -733,12 +740,12 @@ function menu(){
   });
  };
  $('m3').onclick=()=>info('Controls','Move: \u2190 \u2192  |  Enter House: F / Enter\nShop: E  |  Jump: Space (Double Jump)\nSword: J (Combo + Deflect Fireballs)\nFire Blast: K  |  Stomp: jump onto foes');
- $('m4').onclick=()=>info('Credits','Snowdigo 3D\nOriginal 2.5D action platformer.\nBuilt with Three.js.');
+ $('m4').onclick=()=>info('Credits','Legends of Aetheria\nOriginal 2.5D action platformer.\nBuilt with Three.js.');
 }
 function next(){
  mx=Math.max(mx,Z0+1);
- try{localStorage.setItem('sd3b',Math.min(mx,5));localStorage.setItem('sd3c',coins)}catch(e){}
- if(Z0==4){st='win';ovl('Victory!','Every realm is safe and the Suryamani shines bright once more!','Play again',()=>go(0));return}
+ try{localStorage.setItem('sd3b',Math.min(mx,Z.length-1));localStorage.setItem('sd3c',coins)}catch(e){}
+ if(Z0==Z.length-1){st='win';ovl('Aether Restored!','All eight realms are free. Veer has restored the Aether and brought light back to every kingdom!','Play again',()=>go(0));return}
  go(Z0+1);
 }
 
