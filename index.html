@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<title>Snowdigo 2D — Anime Action Fantasy</title>
+<title>Snowdigo 2D — 8 Realms Anime Action Fantasy</title>
 <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,viewport-fit=cover,user-scalable=no">
 <meta name="theme-color" content="#0d111a">
 <style>
@@ -61,12 +61,12 @@ canvas{display:block;width:100%;height:100%;image-rendering:auto}
 #ov{
   position:fixed;inset:0;z-index:60;background:rgba(10,14,22,.93);
   display:none;flex-direction:column;align-items:center;justify-content:center;
-  text-align:center;padding:24px;gap:14px;
+  text-align:center;padding:24px;gap:14px;overflow-y:auto;
 }
-#ov h1{font-size:36px;margin:0;letter-spacing:.02em;color:var(--ac)}
-#tx{max-width:520px;width:100%;line-height:1.5;white-space:pre-line;margin:0}
+#ov h1{font-size:32px;margin:0;letter-spacing:.02em;color:var(--ac)}
+#tx{max-width:540px;width:100%;line-height:1.45;white-space:pre-line;margin:0;max-height:58vh;overflow-y:auto}
 #ov button{
-  font:17px Georgia,serif;padding:11px 24px;border-radius:8px;
+  font:17px Georgia,serif;padding:10px 22px;border-radius:8px;
   border:2px solid var(--ac);background:transparent;color:var(--fg);cursor:pointer;
 }
 #ov button:first-of-type{background:var(--ac);color:#08131a;font-weight:700}
@@ -110,9 +110,9 @@ canvas{display:block;width:100%;height:100%;image-rendering:auto}
 #menu button:active{transform:translateY(3px)}
 #m1{height:clamp(46px,13vh,66px)!important;background:linear-gradient(180deg,#38e8ff,#1282a8)!important;color:#06131a!important}
 .mp{
-  display:block;width:100%;margin:6px 0;padding:10px 14px;border-radius:8px;
+  display:block;width:100%;margin:5px 0;padding:9px 14px;border-radius:8px;
   border:1px solid rgba(106,240,255,.35);background:rgba(56,232,255,.16);
-  color:#fff2e0;font:700 16px Georgia,serif;cursor:pointer;
+  color:#fff2e0;font:700 15px Georgia,serif;cursor:pointer;
 }
 .mp:disabled{opacity:.4;cursor:not-allowed}
 </style>
@@ -136,10 +136,10 @@ canvas{display:block;width:100%;height:100%;image-rendering:auto}
 <div class="b" id="J">Jump</div>
 
 <div id="ts">
- <div id="logo"><b>Snowdigo<u>2D</u></b><small>Seek the Mageblade. Master the Lightning.</small></div>
+ <div id="logo"><b>Snowdigo<u>2D</u></b><small>8 Realms • Seek the Mageblade • Master the Lightning</small></div>
  <div id="menu">
   <button id="m1">▶ Start</button>
-  <button id="m2">✦ Realms</button>
+  <button id="m2">✦ Realms (8)</button>
   <button id="m3">✥ Controls</button>
   <button id="m4">★ Story</button>
  </div>
@@ -174,7 +174,7 @@ addEventListener('keyup',e=>K[e.code]=0);
  if(hold)['pointerup','pointercancel','pointerleave'].forEach(n=>el.addEventListener(n,()=>T[k]=0));
 });
 
-// Optional custom 2x2 Sprite Sheet loader (removes dark background cleanly)
+// Optional custom 2x2 Sprite Sheet loader
 let spriteSheet=null;
 $('SPBTN').onclick=()=>$('spFile').click();
 $('spFile').onchange=e=>{
@@ -228,13 +228,16 @@ addEventListener('resize',rs);rs();
 let sd=1;
 const rn=()=>(sd=sd*16807%2147483647)/2147483647;
 
-// ---------- 5 Swordigo Realms (2D Painterly Palette) ----------
+// ---------- 8 Ultra 2D Fantasy Realms ----------
 const Z=[
-{n:'Cairnwood & Forest',m:'Collect 3 Mageblade Shards, clear cottage guards, & defeat Corruptor.',w:'Shards',k:3,e:4,sky:['#133447','#276b78','#62a69c'],mt:['#173a4a','#102936'],c:'#4c3626',cap:'#3b8c52',ec:'#397a49',sc:'#38e8ff',f0:196,g:30,village:1,boss:{n:'Corruptor',hp:8,c:'#2f6327',c2:'#ffbe2e'}},
-{n:'Frost Peaks & Caves',m:'Collect 3 Frost Shards on icy ledges & defeat the Overseer.',w:'Shards',k:3,e:5,sky:['#0b1f3d','#255c8a','#88c4eb'],mt:['#386894','#24486b'],c:'#5b7b9e',cap:'#e3f6ff',ec:'#2b78b5',sc:'#6af0ff',f0:174,g:30,ice:1,boss:{n:'Overseer',hp:10,c:'#3f8ec9',c2:'#ffffff'}},
-{n:'Evernight & Flame Depths',m:'Gather 4 Ember Shards & defeat the Flame King.',w:'Shards',k:4,e:6,sky:['#140b1f','#3b1936','#8f3329'],mt:['#291226','#1a0b19'],c:'#382319',cap:'#6e2d25',ec:'#9e2d48',sc:'#ff9224',f0:147,g:30,maw:1,boss:{n:'Flame King',hp:12,c:'#381c36',c2:'#ff8c1a'}},
-{n:'Wastelands & Dwarven Hall',m:'Recover 4 Relic Shards & defeat the Dwarven King.',w:'Shards',k:4,e:6,sky:['#6e391b','#b86d2c','#f2c572'],mt:['#8c5227','#633819'],c:'#7d5629',cap:'#c99742',ec:'#9c6c1e',sc:'#4affd0',f0:165,g:30,sp:1,boss:{n:'Dwarven King',hp:14,c:'#9e7429',c2:'#38e8ff'}},
-{n:"World's End Keep",m:'Collect 5 Final Shards & defeat Master of Chaos!',w:'Shards',k:5,e:7,sky:['#071726','#113e52','#1f6e78'],mt:['#0f3547','#09212e'],c:'#1e3247',cap:'#369c8a',ec:'#c9427c',sc:'#38e8ff',f0:131,g:16,fl:1,boss:{n:'Master of Chaos',hp:24,c:'#183c66',c2:'#ff5ea8'}}
+ {id:'forest',n:'1. Forest Realm',m:'Collect 3 Forest Shards, clear cottage guards, & defeat Corruptor.',w:'Shards',k:3,e:4,sky:['#185a9d','#43cea2','#b8f2e6'],mt:['#256e66','#194d48'],c:'#4c3626',cap:'#43b559',ec:'#397a49',sc:'#38e8ff',f0:196,g:30,village:1,boss:{n:'Corruptor',hp:8,c:'#2f6327',c2:'#ffbe2e'}},
+ {id:'desert',n:'2. Desert Realm',m:'Cross sun-scorched dunes & ruins, gather 3 Sun Shards, & beat Sand Golem.',w:'Shards',k:3,e:5,sky:['#c96a1b','#f2a33c','#ffe39f'],mt:['#c77a32','#9e581e'],c:'#9c682b',cap:'#e6b355',ec:'#b8651e',sc:'#4affd0',f0:165,g:30,sp:1,boss:{n:'Sand Golem',hp:10,c:'#a66d24',c2:'#ffd23a'}},
+ {id:'ice',n:'3. Ice Kingdom',m:'Scale frozen peaks, collect 3 Frost Shards, & defeat Ice Overseer.',w:'Shards',k:3,e:5,sky:['#16447a','#5ca4e6','#d4f0ff'],mt:['#689fd1','#4477a8'],c:'#5b7b9e',cap:'#e8f8ff',ec:'#2b78b5',sc:'#6af0ff',f0:174,g:30,ice:1,boss:{n:'Ice Overseer',hp:12,c:'#3f8ec9',c2:'#ffffff'}},
+ {id:'volcano',n:'4. Volcano Realm',m:'Leap over molten lava & erupting peaks! Gather 4 Magma Shards & beat Flame King.',w:'Shards',k:4,e:6,sky:['#26070c','#7d1919','#eb5e1c'],mt:['#421114','#29080a'],c:'#2e1c1c',cap:'#b8321a',ec:'#d4381c',sc:'#ffd23a',f0:147,g:30,lava:1,boss:{n:'Flame King',hp:15,c:'#42161c',c2:'#ff7b1a'}},
+ {id:'ocean',n:'5. Ocean Realm',m:'Swim past sunken ships & glowing coral! Gather 4 Pearl Shards & beat Leviathan.',w:'Shards',k:4,e:6,sky:['#04243b','#0b5378','#1fa2b8'],mt:['#0a415e','#06293d'],c:'#1b4d5c',cap:'#36b5a0',ec:'#d94c8c',sc:'#7cf9ff',f0:155,g:17,fl:1,boss:{n:'Abyss Leviathan',hp:17,c:'#134f6e',c2:'#ff6ab0'}},
+ {id:'haunted',n:'6. Haunted Kingdom',m:'Brave the moonlit manor & dead woods! Gather 4 Soul Shards & beat Dread Lord.',w:'Shards',k:4,e:7,sky:['#0f0c24','#29214d','#55487d'],mt:['#1d1738','#120e24'],c:'#2b2638',cap:'#534b6e',ec:'#7d389c',sc:'#b87aff',f0:138,g:30,maw:1,boss:{n:'Dread Lord',hp:19,c:'#2a1d42',c2:'#b87aff'}},
+ {id:'sky',n:'7. Sky Kingdom',m:'Soar across floating cloud islands! Gather 4 Aether Shards & beat Sky Archon.',w:'Shards',k:4,e:7,sky:['#2978d6','#6cb8ff','#e3f4ff'],mt:['#9cc8f5','#73a8e0'],c:'#6b5239',cap:'#57c966',ec:'#3b82d6',sc:'#fff066',f0:220,g:22,fl:1,boss:{n:'Sky Archon',hp:21,c:'#2c64b8',c2:'#ffe14a'}},
+ {id:'dark',n:'8. Dark Realm',m:'Storm the chained obsidian citadel! Collect 5 Final Shards & defeat Master of Chaos!',w:'Shards',k:5,e:8,sky:['#090414','#230c42','#4e1985'],mt:['#18082e','#0e041c'],c:'#1c1429',cap:'#6929b8',ec:'#a832d9',sc:'#38e8ff',f0:131,g:30,maw:1,boss:{n:'Master of Chaos',hp:26,c:'#1e0c3b',c2:'#d65cff'}}
 ];
 
 let pl,en,sh,pj,fx,hz,hr,ch,AR,boss,portal,shopSpot,doors,inside,roomEnemy,roomChest,props,ambient;
@@ -246,7 +249,7 @@ try{
  lvl=+localStorage.getItem('sd3l')||1;
 }catch(e){}
 
-const p={x:0,y:0,vx:0,vy:0,hp:5,mhp:5,atkDmg:1,magDmg:2,f:1,g:0,j:0,atk:0,cs:0,cc:0,mc:0,sx:0,coy:0,jb:0,sq:0,gy:0,spd:7.2};
+const p={x:0,y:0,vx:0,vy:0,hp:5,mhp:5,atkDmg:1,magDmg:2,f:1,g:0,j:0,atk:0,cs:0,cc:0,mc:0,sx:0,coy:0,jb:0,sq:0,gy:0,spd:7.4};
 
 function burst(x,y,c,n){
  for(let i=0;i<n;i++){
@@ -258,11 +261,11 @@ function ball(x,y,vx,vy,own,c){
 }
 function banner(t){
  const b=$('bn');b.textContent=t;b.style.opacity=1;
- clearTimeout(banner.t);banner.t=setTimeout(()=>b.style.opacity=0,3400);
+ clearTimeout(banner.t);banner.t=setTimeout(()=>b.style.opacity=0,3600);
 }
 function saveProg(){
  try{
-  localStorage.setItem('sd3b',Math.min(mx,5));
+  localStorage.setItem('sd3b',Math.min(mx,Z.length));
   localStorage.setItem('sd3c',coins);
   localStorage.setItem('sd3x',xp);
   localStorage.setItem('sd3l',lvl);
@@ -288,14 +291,14 @@ function load(z){
  Object.assign(p,{x:0,y:0,vx:0,vy:0,hp:p.mhp,f:1,g:0,j:0,atk:0,cs:0,cc:0,mc:0,sx:0,coy:0,jb:0,sq:0,gy:0});
  cx=0;cy=1.5;
 
- const gs=[],Lm=46+z*6;let x=-6;
+ const gs=[],Lm=50+z*5;let x=-6;
  while(x<Lm){
   const w=gs.length==0?14:5+Math.floor(rn()*6),g={a:x,b:x+w,fp:0};
   gs.push(g);pl.push({a:g.a,b:g.b,y:0});
-  for(let c=g.a+w/2;c<g.b-3&&w>6;c+=9){
-   const y=2.5+rn()*1.2;pl.push({a:c-1.5,b:c+1.5,y});g.fp=y;g.fx=c;
+  for(let c=g.a+w/2;c<g.b-3&&w>6;c+=8.5){
+   const y=2.5+rn()*1.3;pl.push({a:c-1.6,b:c+1.6,y});g.fp=y;g.fx=c;
   }
-  x+=w+2+rn()*1.1;
+  x+=w+2.1+rn()*1.1;
  }
  AR={a:x,b:x+26};pl.push({a:AR.a,b:AR.b,y:0});
  const n=gs.length;
@@ -331,7 +334,7 @@ function load(z){
   en.push({x:ex,ox:ex,y:by,by,t,hp:(t==2?2:1+(Z0>2?1:0))+Math.floor((lvl-1)*.5),x0:g.a+.6,x1:g.b-.6,d:1,r:.55,h:.55,a:rn()*6,fl:0});
  }
 
- if(q.sp||q.maw)for(let i=2;i<n;i++)if(rn()<.75){
+ if(q.sp||q.maw||q.lava)for(let i=2;i<n;i++)if(rn()<.75){
   const g=gs[i];hz.push({x:g.a+1.5+rn()*(g.b-g.a-3)});
  }
 
@@ -339,8 +342,9 @@ function load(z){
  en.push(boss);
  portal={x:AR.b-3,y:1.5};
 
- for(let i=0;i<75;i++){
-  ambient.push({x:Math.random()*60-30,y:Math.random()*16-2,vx:1.2+Math.random()*2.2,vy:(Math.random()-.5)*.6,sz:1.5+Math.random()*2.5,c:i%3==0?'#38e8ff':'#ffbe55'});
+ const sparkCol=q.id=='volcano'?'#ff8c1a':(q.id=='dark'?'#c96aff':(q.id=='ocean'?'#7cf9ff':'#38e8ff'));
+ for(let i=0;i<80;i++){
+  ambient.push({x:Math.random()*60-30,y:Math.random()*16-2,vx:(q.id=='volcano'||q.id=='ocean')?(Math.random()-.5)*1.2:1.4+Math.random()*2,vy:(q.id=='volcano'||q.id=='ocean')?1.2+Math.random()*1.8:(Math.random()-.5)*.6,sz:1.5+Math.random()*2.5,c:i%2==0?sparkCol:'#ffbe55'});
  }
 }
 
@@ -382,7 +386,7 @@ function openShop(){
   'Lightning/Fire Trinket (60)',()=>{coins=Math.max(0,coins-60);trinket='Lightning';saveProg();st='play';banner('Equipped Lightning/Fire Trinket!')});
 }
 
-function go(z){load(z);st='play';banner('Realm '+(z+1)+': '+Z[z].n+'\n'+Z[z].m)}
+function go(z){load(z);st='play';banner(Z[z].n+'\n'+Z[z].m)}
 function chk(){
  if(!open&&col>=Z[Z0].k&&bd){
   open=1;banner('Portal Gate open! Step inside.');sfx(660,.4,'triangle',.06,990);
@@ -421,28 +425,28 @@ function info(t,x){
 function pick(i){lockL();ov.style.display='none';$('ts').style.display='none';go(i)}
 function over(){
  st='over';inside=0;
- ovl('Hero Fallen','Master of Chaos still threatens the realm.','Retry',()=>go(Z0));
+ ovl('Hero Fallen','Darkness still threatens the realm.','Retry',()=>go(Z0));
 }
 function menu(){
  st='menu';ov.style.display='none';const t=$('ts');t.style.display='block';
- $('m1').textContent=mx?'\u25B6 Continue':'\u25B6 Start';
- $('m1').onclick=()=>{lockL();t.style.display='none';go(Math.min(mx,4))};
+ $('m1').textContent=mx?'▶ Continue':'▶ Start';
+ $('m1').onclick=()=>{lockL();t.style.display='none';go(Math.min(mx,Z.length-1))};
  $('m2').onclick=()=>{
-  info('Choose Realm','');
+  info('Choose Realm (8 Maps)','');
   const tx=$('tx');tx.innerHTML='';
   Z.forEach((q,i)=>{
    const btn=document.createElement('button');
    btn.className='mp';btn.disabled=i>mx;
-   btn.textContent=(i>mx?'\uD83D\uDD12 ':'')+(i+1)+'. '+q.n;
+   btn.textContent=(i>mx?'🔒 ':'')+q.n;
    btn.onclick=()=>pick(i);tx.appendChild(btn);
   });
  };
- $('m3').onclick=()=>info('Controls','Move: \u2190 \u2192  |  Enter Room / Chest: F / Enter\nShop: E  |  Jump: Space (Double Jump)\nLightning Sword: J (3-Hit Combo + Deflect)  |  Magic Bolt: K');
- $('m4').onclick=()=>info('Story','Wielding the lightning-forged blade, travel across 5 realms, collect the Mageblade shards, and defeat the Master of Chaos.');
+ $('m3').onclick=()=>info('Controls','Move: ← →  |  Enter Room / Chest: F / Enter\nShop: E  |  Jump: Space (Double/Triple Jump)\nLightning Sword: J (3-Hit Combo + Deflect)  |  Magic Bolt: K');
+ $('m4').onclick=()=>info('Story','Journey across 8 unique realms—Forest, Desert, Ice, Volcano, Ocean, Haunted, Sky, and Dark Realm—to restore the Mageblade!');
 }
 function next(){
  mx=Math.max(mx,Z0+1);saveProg();
- if(Z0==4){st='win';ovl('Victory!','The Mageblade is restored and peace returns!','Play again',()=>go(0));return}
+ if(Z0==Z.length-1){st='win';ovl('Victory!','All 8 Realms saved and the Mageblade is restored!','Play again',()=>go(0));return}
  go(Z0+1);
 }
 
@@ -613,14 +617,158 @@ function upd(dt){
  }
 }
 
-// ---------- High-Detail 2D Anime Warrior Renderer (Matches Reference Sheet) ----------
+// ---------- Realm-Specific 2D Scenery & Parallax Backgrounds ----------
+function drawRealmBackdrop(q,ppm,toSX,toSY){
+ const floorY=toSY(0);
+
+ // 1. Celestial Body / Light Rays
+ if(q.id=='ocean'){
+  // Underwater sunbeams
+  ctx.save();
+  for(let i=0;i<6;i++){
+   const rx=((i*260-cx*14)% (W+300)+W+300)%(W+300)-150;
+   const g=ctx.createLinearGradient(rx,0,rx+90,H*0.8);
+   g.addColorStop(0,'rgba(140,250,255,0.22)');g.addColorStop(1,'rgba(140,250,255,0)');
+   ctx.fillStyle=g;
+   ctx.beginPath();ctx.moveTo(rx,0);ctx.lineTo(rx+85,0);ctx.lineTo(rx+190,H*0.85);ctx.lineTo(rx+40,H*0.85);ctx.closePath();ctx.fill();
+  }
+  ctx.restore();
+ }else if(q.id=='dark'){
+  // Purple lightning storm bolts in sky
+  if(Math.sin(tt*7.3)>0.82){
+   ctx.save();ctx.strokeStyle='rgba(218,140,255,0.75)';ctx.lineWidth=3;ctx.shadowColor='#b84dff';ctx.shadowBlur=18;
+   const lx=W*0.65;ctx.beginPath();ctx.moveTo(lx,0);ctx.lineTo(lx-25,H*0.18);ctx.lineTo(lx+12,H*0.26);ctx.lineTo(lx-18,H*0.46);ctx.stroke();
+   ctx.restore();
+  }
+ }else{
+  const sunX=W*0.72-cx*2.2,sunY=q.id=='haunted'?H*0.22:H*0.24;
+  const sunR=q.id=='haunted'?44:52;
+  const sunG=ctx.createRadialGradient(sunX,sunY,8,sunX,sunY,sunR*2.8);
+  sunG.addColorStop(0,q.id=='volcano'?'rgba(255,190,70,0.9)':'rgba(255,250,220,0.95)');
+  sunG.addColorStop(.45,q.id=='volcano'?'rgba(255,80,20,0.35)':'rgba(255,220,150,0.28)');
+  sunG.addColorStop(1,'rgba(255,200,120,0)');
+  ctx.fillStyle=sunG;ctx.beginPath();ctx.arc(sunX,sunY,sunR*2.8,0,Math.PI*2);ctx.fill();
+  if(q.id=='haunted'){
+   ctx.fillStyle='#f6f2ff';ctx.beginPath();ctx.arc(sunX,sunY,32,0,Math.PI*2);ctx.fill();
+  }
+ }
+
+ // 2. Parallax Distant Mountains / Volcanoes / Clouds
+ [0.12,0.26].forEach((par,idx)=>{
+  ctx.fillStyle=q.mt[idx];
+  ctx.beginPath();ctx.moveTo(0,H);
+  for(let sx=-120;sx<=W+240;sx+=140){
+   const wx=(sx+cx*ppm*par);
+   let peak=H*(0.52+idx*0.1)+Math.sin(wx*0.008+idx*2)*65;
+   if(q.id=='desert')peak=H*(0.58+idx*0.08)+Math.sin(wx*0.005)*38;
+   if(q.id=='sky')peak=H*(0.68+idx*0.09)+Math.cos(wx*0.012)*30;
+   ctx.lineTo(sx,peak);
+  }
+  ctx.lineTo(W,H);ctx.closePath();ctx.fill();
+ });
+
+ // 3. Iconic Realm Landmarks (Volcano, Castles, Sunken Ship, Floating Islands)
+ ctx.save();
+ const lmX=W*0.56-cx*ppm*0.18;
+ if(q.id=='volcano'){
+  // Erupting Volcano Cone + Lava Streams
+  ctx.fillStyle='#24090c';
+  ctx.beginPath();ctx.moveTo(lmX-230,floorY);ctx.lineTo(lmX-38,H*0.26);ctx.lineTo(lmX+38,H*0.26);ctx.lineTo(lmX+230,floorY);ctx.closePath();ctx.fill();
+  // Glowing Crater & Lava Veins
+  const lg=ctx.createLinearGradient(lmX,H*0.24,lmX,floorY);
+  lg.addColorStop(0,'#fff066');lg.addColorStop(0.3,'#ff6a1a');lg.addColorStop(1,'#b81d13');
+  ctx.strokeStyle=lg;ctx.lineWidth=6;
+  ctx.beginPath();ctx.moveTo(lmX-16,H*0.27);ctx.quadraticCurveTo(lmX-45,H*0.48,lmX-95,floorY);
+  ctx.moveTo(lmX+12,H*0.27);ctx.quadraticCurveTo(lmX+35,H*0.46,lmX+75,floorY);ctx.stroke();
+  ctx.fillStyle='#ff9a24';ctx.beginPath();ctx.ellipse(lmX,H*0.26,38,10,0,0,Math.PI*2);ctx.fill();
+ }else if(q.id=='ice'||q.id=='haunted'||q.id=='dark'){
+  // Fantasy Castle Silhouette on Distant Ridge
+  const cyBase=floorY-35;
+  ctx.fillStyle=q.id=='ice'?'#7ab2e6':(q.id=='haunted'?'#1a1430':'#160829');
+  ctx.fillRect(lmX-75,cyBase-95,150,95);
+  [-65,-25,15,55].forEach((tx,i)=>{
+   const th=115+(i%2)*28;
+   ctx.fillRect(lmX+tx-12,cyBase-th,24,th);
+   ctx.beginPath();ctx.moveTo(lmX+tx-16,cyBase-th);ctx.lineTo(lmX+tx,cyBase-th-28);ctx.lineTo(lmX+tx+16,cyBase-th);ctx.closePath();ctx.fill();
+  });
+  // Glowing Castle Windows
+  ctx.fillStyle=q.id=='ice'?'#e6f8ff':(q.id=='haunted'?'#ffae38':'#b84dff');
+  ctx.fillRect(lmX-8,cyBase-42,16,26);
+ }else if(q.id=='ocean'){
+  // Sunken Pirate Ship Silhouette
+  ctx.save();ctx.translate(lmX,floorY-25);ctx.rotate(-0.22);
+  ctx.fillStyle='rgba(7,35,54,0.72)';
+  ctx.beginPath();ctx.moveTo(-110,-20);ctx.lineTo(110,-20);ctx.lineTo(75,28);ctx.lineTo(-85,28);ctx.closePath();ctx.fill();
+  ctx.fillRect(-35,-125,8,105);ctx.fillRect(25,-105,7,85);
+  ctx.fillRect(-65,-95,68,6);ctx.fillRect(-2,-78,56,5);
+  ctx.restore();
+ }else if(q.id=='sky'){
+  // Floating Sky Citadel Island
+  const fy=H*0.34+Math.sin(tt*1.6)*8;
+  ctx.fillStyle='#5c452e';
+  ctx.beginPath();ctx.moveTo(lmX-95,fy);ctx.lineTo(lmX+95,fy);ctx.lineTo(lmX+40,fy+52);ctx.lineTo(lmX-35,fy+45);ctx.closePath();ctx.fill();
+  ctx.fillStyle='#63d471';ctx.fillRect(lmX-98,fy-8,196,10);
+  ctx.fillStyle='#dceeff';ctx.fillRect(lmX-55,fy-68,110,60);
+  ctx.beginPath();ctx.moveTo(lmX-25,fy-68);ctx.lineTo(lmX,fy-105);ctx.lineTo(lmX+25,fy-68);ctx.closePath();ctx.fill();
+ }
+ ctx.restore();
+}
+
+function drawRealmProp(q,pr,sx,sy){
+ ctx.save();ctx.translate(sx,sy);ctx.scale(pr.s,pr.s);
+ if(q.id=='forest'||q.id=='sky'){
+  ctx.fillStyle='#4a2e1b';ctx.fillRect(-7,-74,14,74);
+  ctx.fillStyle=q.cap;ctx.beginPath();ctx.arc(0,-88,34,0,Math.PI*2);ctx.fill();
+  ctx.beginPath();ctx.arc(-22,-72,23,0,Math.PI*2);ctx.arc(22,-72,23,0,Math.PI*2);ctx.fill();
+ }else if(q.id=='desert'){
+  if(pr.k%2==0){
+   // Saguaro Cactus
+   ctx.fillStyle='#2f8a3e';ctx.strokeStyle='#143d1b';ctx.lineWidth=2;
+   ctx.beginPath();ctx.roundRect(-8,-68,16,68,8);ctx.fill();ctx.stroke();
+   ctx.beginPath();ctx.roundRect(-24,-48,16,10,5);ctx.roundRect(-24,-62,10,24,5);ctx.fill();ctx.stroke();
+   ctx.beginPath();ctx.roundRect(8,-38,16,10,5);ctx.roundRect(14,-54,10,26,5);ctx.fill();ctx.stroke();
+  }else{
+   // Ancient Sandstone Ruin Pillar
+   ctx.fillStyle='#b8823e';ctx.strokeStyle='#593b16';ctx.lineWidth=2;
+   ctx.fillRect(-16,-62,32,62);ctx.strokeRect(-16,-62,32,62);
+   ctx.fillRect(-20,-70,40,10);ctx.strokeRect(-20,-70,40,10);
+  }
+ }else if(q.id=='ice'){
+  // Snow-Covered Pine Tree
+  [0,-22,-42].forEach((oy,i)=>{
+   const w=34-i*7;
+   ctx.fillStyle='#265780';ctx.beginPath();ctx.moveTo(-w,oy-12);ctx.lineTo(0,oy-46);ctx.lineTo(w,oy-12);ctx.closePath();ctx.fill();
+   ctx.fillStyle='#eef9ff';ctx.beginPath();ctx.moveTo(-w*.65,oy-24);ctx.lineTo(0,oy-46);ctx.lineTo(w*.65,oy-24);ctx.closePath();ctx.fill();
+  });
+ }else if(q.id=='volcano'){
+  // Obsidian Spire & Glowing Magma Crack
+  ctx.fillStyle='#1f1214';ctx.beginPath();ctx.moveTo(-18,0);ctx.lineTo(-4,-72);ctx.lineTo(16,0);ctx.closePath();ctx.fill();
+  ctx.strokeStyle='#ff7b1a';ctx.lineWidth=2.5;ctx.beginPath();ctx.moveTo(-3,-10);ctx.lineTo(2,-45);ctx.stroke();
+ }else if(q.id=='ocean'){
+  // Coral Cluster & Seaweed
+  ctx.fillStyle='#ff5e8e';ctx.beginPath();ctx.arc(-10,-28,12,0,Math.PI*2);ctx.arc(8,-34,14,0,Math.PI*2);ctx.arc(0,-18,14,0,Math.PI*2);ctx.fill();
+  ctx.fillStyle='#28a878';ctx.fillRect(-18,-48,6,48);ctx.fillRect(14,-42,6,42);
+ }else if(q.id=='haunted'){
+  // Twisted Dead Tree
+  ctx.strokeStyle='#141021';ctx.lineWidth=7;ctx.lineCap='round';
+  ctx.beginPath();ctx.moveTo(0,0);ctx.lineTo(0,-66);ctx.moveTo(0,-42);ctx.lineTo(-24,-64);ctx.moveTo(0,-50);ctx.lineTo(22,-72);ctx.stroke();
+ }else{
+  // Glowing Purple Dark Crystal Cluster
+  ctx.save();ctx.shadowColor='#b84dff';ctx.shadowBlur=14;
+  ctx.fillStyle='#9b38ff';ctx.beginPath();ctx.moveTo(-12,0);ctx.lineTo(-2,-56);ctx.lineTo(12,0);ctx.closePath();ctx.fill();
+  ctx.fillStyle='#d99eff';ctx.beginPath();ctx.moveTo(4,0);ctx.lineTo(16,-38);ctx.lineTo(24,0);ctx.closePath();ctx.fill();
+  ctx.restore();
+ }
+ ctx.restore();
+}
+
+// ---------- High-Detail 2D Anime Warrior Renderer ----------
 function drawAnimeHero(sx,sy,scale,facing,pose,phase,atkProg){
  ctx.save();
  ctx.translate(sx,sy);
  ctx.scale(facing,1);
 
  if(spriteSheet){
-  // Use uploaded 2x2 pose sheet if user loaded it
   const hw=spriteSheet.width/2,hh=spriteSheet.height/2;
   const colIdx=(pose=='run'||pose=='slash')?1:0;
   const rowIdx=(pose=='jump'||pose=='slash')?1:0;
@@ -633,22 +781,20 @@ function drawAnimeHero(sx,sy,scale,facing,pose,phase,atkProg){
  const u=scale/95;
  ctx.scale(u,u);
 
- // Ground shadow
  ctx.fillStyle='rgba(0,0,0,0.38)';
  ctx.beginPath();ctx.ellipse(0,2,36,8,0,0,Math.PI*2);ctx.fill();
 
- // Pose angles
- let bodyTilt=0,bobY=0,lHip=0.25,lKnee=0.2,rHip=-0.35,rKnee=0.35,swAng=-0.55,lArmAng=0.45;
+ let bodyTilt=0,bobY=0,lHip=0.25,lKnee=0.2,rHip=-0.35,rKnee=0.35,swAng=-0.55;
  if(pose=='run'){
   bodyTilt=0.24;bobY=Math.abs(Math.sin(phase))*5;
   lHip=Math.sin(phase)*0.85;lKnee=Math.max(0.1,Math.sin(phase-0.8)*0.9);
   rHip=-Math.sin(phase)*0.85;rKnee=Math.max(0.1,-Math.sin(phase-0.8)*0.9);
-  swAng=-2.25+Math.sin(phase)*0.15;lArmAng=-Math.sin(phase)*0.7;
+  swAng=-2.25+Math.sin(phase)*0.15;
  }else if(pose=='jump'){
-  bodyTilt=0.12;lHip=0.65;lKnee=0.95;rHip=-0.45;rKnee=0.85;swAng=-1.2;lArmAng=-0.7;
+  bodyTilt=0.12;lHip=0.65;lKnee=0.95;rHip=-0.45;rKnee=0.85;swAng=-1.2;
  }else if(pose=='slash'){
   bodyTilt=0.28;lHip=0.55;lKnee=0.4;rHip=-0.65;rKnee=0.25;
-  swAng=-1.4+atkProg*2.75;lArmAng=0.85;
+  swAng=-1.4+atkProg*2.75;
  }else{
   bobY=Math.sin(tt*3)*2.2;
   swAng=-0.48+Math.sin(tt*2.5)*0.05;
@@ -656,7 +802,7 @@ function drawAnimeHero(sx,sy,scale,facing,pose,phase,atkProg){
 
  ctx.translate(0,-bobY);
 
- // Flowing Tattered Dark Cloak (Back layer)
+ // Flowing Tattered Dark Cloak
  const wave=Math.sin(tt*9+phase)*7;
  ctx.save();
  ctx.fillStyle='#242834';ctx.strokeStyle='#0d0f14';ctx.lineWidth=2.5;
@@ -668,27 +814,21 @@ function drawAnimeHero(sx,sy,scale,facing,pose,phase,atkProg){
  ctx.quadraticCurveTo(-44,-28,-12,-46);
  ctx.closePath();ctx.fill();ctx.stroke();
 
- // Cloak shading fold
  ctx.fillStyle='#181b24';
  ctx.beginPath();
  ctx.moveTo(-10,-70);ctx.quadraticCurveTo(-48,-62+wave,-86,-42-wave);
  ctx.quadraticCurveTo(-44,-38,-12,-50);ctx.closePath();ctx.fill();
  ctx.restore();
 
- // Helper for limbs
  const drawLeg=(hipX,hipA,kneeA,isBack)=>{
   ctx.save();ctx.translate(hipX,-44);ctx.rotate(hipA);
-  // Thigh (dark pants)
   ctx.fillStyle=isBack?'#1d2029':'#292d38';ctx.strokeStyle='#0d0f14';ctx.lineWidth=2.4;
   ctx.beginPath();ctx.roundRect(-9,0,18,24,7);ctx.fill();ctx.stroke();
   ctx.translate(0,21);ctx.rotate(kneeA);
-  // Shin + wraps + boot
   ctx.fillStyle=isBack?'#232126':'#332e33';
   ctx.beginPath();ctx.roundRect(-8,0,16,22,5);ctx.fill();ctx.stroke();
-  // Leg wraps
   ctx.strokeStyle='#5c524d';ctx.lineWidth=2;
   ctx.beginPath();ctx.moveTo(-7,6);ctx.lineTo(7,9);ctx.moveTo(-7,13);ctx.lineTo(7,16);ctx.stroke();
-  // Boot
   ctx.fillStyle='#3b2d26';ctx.strokeStyle='#0d0f14';ctx.lineWidth=2.2;
   ctx.beginPath();ctx.roundRect(-8,19,22,9,4);ctx.fill();ctx.stroke();
   ctx.restore();
@@ -703,29 +843,24 @@ function drawAnimeHero(sx,sy,scale,facing,pose,phase,atkProg){
  ctx.moveTo(-15,-34);ctx.lineTo(15,-34);ctx.lineTo(17,4);ctx.lineTo(-17,4);
  ctx.closePath();ctx.fill();ctx.stroke();
 
- // Tunic lapel V-neck
  ctx.strokeStyle='#57534e';ctx.lineWidth=2;
  ctx.beginPath();ctx.moveTo(-7,-33);ctx.lineTo(2,-16);ctx.lineTo(9,-33);ctx.stroke();
 
- // Tattered white hem skirt
  ctx.fillStyle='#dcd8cf';ctx.strokeStyle='#0d0f14';ctx.lineWidth=2.2;
  ctx.beginPath();
  ctx.moveTo(-16,4);ctx.lineTo(16,4);ctx.lineTo(21,22);ctx.lineTo(10,17);
  ctx.lineTo(3,24);ctx.lineTo(-7,18);ctx.lineTo(-19,22);
  ctx.closePath();ctx.fill();ctx.stroke();
 
- // Dark waist sash
  ctx.fillStyle='#232630';ctx.strokeStyle='#0d0f14';ctx.lineWidth=2.3;
  ctx.beginPath();ctx.roundRect(-18,-4,36,10,4);ctx.fill();ctx.stroke();
 
- // Waist katana scabbard
  ctx.save();ctx.translate(-4,1);ctx.rotate(0.45);
  ctx.fillStyle='#1b1e26';ctx.strokeStyle='#0d0f14';ctx.lineWidth=2;
  ctx.beginPath();ctx.roundRect(-38,-3,46,6,3);ctx.fill();ctx.stroke();
  ctx.fillStyle='#d4a738';ctx.fillRect(5,-4,4,8);
  ctx.restore();
 
- // Scarf collar around neck
  ctx.fillStyle='#2a2f3d';ctx.strokeStyle='#0d0f14';ctx.lineWidth=2.4;
  ctx.beginPath();ctx.roundRect(-18,-40,36,12,6);ctx.fill();ctx.stroke();
 
@@ -736,16 +871,13 @@ function drawAnimeHero(sx,sy,scale,facing,pose,phase,atkProg){
  ctx.moveTo(-13,-12);ctx.lineTo(13,-12);ctx.lineTo(14,4);ctx.lineTo(5,14);ctx.lineTo(-8,13);ctx.lineTo(-14,3);
  ctx.closePath();ctx.fill();ctx.stroke();
 
- // Cheek scar + fierce eyes
  ctx.strokeStyle='#5c3622';ctx.lineWidth=1.5;
  ctx.beginPath();ctx.moveTo(-3,4);ctx.lineTo(3,6);ctx.stroke();
  ctx.fillStyle='#ffffff';ctx.beginPath();ctx.ellipse(6,-1,4.2,2.6,0,0,Math.PI*2);ctx.fill();
  ctx.fillStyle='#11131a';ctx.beginPath();ctx.arc(7,-1,1.9,0,Math.PI*2);ctx.fill();
- // Eyebrow
  ctx.strokeStyle='#0d0f14';ctx.lineWidth=2.4;
  ctx.beginPath();ctx.moveTo(1,-5);ctx.lineTo(12,-3);ctx.stroke();
 
- // Spiky anime dark hair
  ctx.fillStyle='#191c24';ctx.strokeStyle='#0d0f14';ctx.lineWidth=2.4;
  ctx.beginPath();
  ctx.moveTo(-14,2);ctx.lineTo(-22,-6);ctx.lineTo(-16,-12);ctx.lineTo(-24,-22);
@@ -760,18 +892,15 @@ function drawAnimeHero(sx,sy,scale,facing,pose,phase,atkProg){
 
  // Front Arm + Glowing Cyan Lightning Katana
  ctx.save();ctx.translate(10,-74);ctx.rotate(swAng);
- // Muscular dark-skinned arm + wrist wrap
  ctx.fillStyle='#8c583a';ctx.strokeStyle='#0d0f14';ctx.lineWidth=2.2;
  ctx.beginPath();ctx.roundRect(-5,0,10,24,5);ctx.fill();ctx.stroke();
  ctx.fillStyle='#2a2e38';ctx.fillRect(-5.5,14,11,9);
 
- // Sword Hilt + Tsuba Guard + Glowing Cyan Blade
  ctx.translate(0,22);ctx.rotate(-1.35);
  ctx.fillStyle='#181b22';ctx.strokeStyle='#0d0f14';ctx.lineWidth=2;
  ctx.beginPath();ctx.roundRect(-3,-14,6,16,2);ctx.fill();ctx.stroke();
  ctx.fillStyle='#e0b43c';ctx.beginPath();ctx.roundRect(-10,0,20,5,2);ctx.fill();ctx.stroke();
 
- // Cyan Lightning Aura Glow around Blade
  ctx.save();
  ctx.shadowColor='#38e8ff';ctx.shadowBlur=18;
  ctx.fillStyle='#ffffff';ctx.strokeStyle='#6af0ff';ctx.lineWidth=2.5;
@@ -779,7 +908,6 @@ function drawAnimeHero(sx,sy,scale,facing,pose,phase,atkProg){
  ctx.moveTo(-3.2,5);ctx.lineTo(3.2,5);ctx.lineTo(2.4,66);ctx.lineTo(0,76);ctx.lineTo(-2.4,66);
  ctx.closePath();ctx.fill();ctx.stroke();
 
- // Crackling lightning bolts along blade
  ctx.strokeStyle='#aef9ff';ctx.lineWidth=1.8;
  ctx.beginPath();
  ctx.moveTo(-5,14);ctx.lineTo(5,26);ctx.lineTo(-4,38);ctx.lineTo(5,52);ctx.lineTo(-2,66);
@@ -802,36 +930,6 @@ function drawAnimeHero(sx,sy,scale,facing,pose,phase,atkProg){
  ctx.restore();
 }
 
-
-// ---------- Snowdigo signature scenery: clean, colorful 2D trees ----------
-function drawGameTree(x,y,scale,style=0,wind=0){
- ctx.save();ctx.translate(x,y);ctx.scale(scale,scale);
- const sway=Math.sin(tt*1.35+style*1.7)*(.025+wind*.055);
- // soft ground shadow
- ctx.fillStyle='rgba(12,25,34,.22)';ctx.beginPath();ctx.ellipse(0,0,39,7,0,0,Math.PI*2);ctx.fill();
- // trunk with curved silhouette
- ctx.fillStyle='#754326';ctx.strokeStyle='#3c281e';ctx.lineWidth=2.2;
- ctx.beginPath();ctx.moveTo(-8,0);ctx.quadraticCurveTo(-3,-35,-13,-72);ctx.quadraticCurveTo(-4,-83,3,-72);ctx.quadraticCurveTo(5,-35,10,0);ctx.closePath();ctx.fill();ctx.stroke();
- ctx.strokeStyle='rgba(225,157,83,.55)';ctx.lineWidth=3;ctx.beginPath();ctx.moveTo(-2,-8);ctx.quadraticCurveTo(-8,-38,-5,-67);ctx.stroke();
- // branches sway separately from trunk
- ctx.save();ctx.translate(0,-66);ctx.rotate(sway);
- ctx.strokeStyle='#58351f';ctx.lineWidth=7;ctx.lineCap='round';
- ctx.beginPath();ctx.moveTo(0,14);ctx.quadraticCurveTo(-19,-12,-35,-27);ctx.moveTo(1,7);ctx.quadraticCurveTo(17,-13,34,-28);ctx.moveTo(0,-1);ctx.lineTo(1,-37);ctx.stroke();
- const leafSets=[[-29,-34,25],[-7,-48,29],[22,-38,27],[0,-20,31],[-39,-16,20],[39,-18,21]];
- leafSets.forEach((a,i)=>{
-  const [lx,ly,r]=a;ctx.save();ctx.translate(lx,ly);ctx.rotate(Math.sin(tt*1.5+i+style)*(.035+wind*.12));
-  const greens=['#168b3e','#27a943','#43c832','#76df35','#9be83e'];
-  ctx.fillStyle=greens[(i+style)%greens.length];ctx.strokeStyle='rgba(10,87,39,.55)';ctx.lineWidth=1.5;
-  ctx.beginPath();ctx.arc(0,0,r,0,Math.PI*2);ctx.fill();ctx.stroke();
-  ctx.fillStyle='rgba(198,255,111,.38)';ctx.beginPath();ctx.ellipse(-r*.2,-r*.34,r*.52,r*.2,-.35,0,Math.PI*2);ctx.fill();ctx.restore();
- });
- ctx.restore();ctx.restore();
-}
-function drawSceneryCloud(x,y,s){
- ctx.save();ctx.translate(x,y);ctx.scale(s,s);ctx.fillStyle='rgba(255,255,255,.72)';
- ctx.beginPath();ctx.arc(-25,4,19,0,Math.PI*2);ctx.arc(-5,-7,25,0,Math.PI*2);ctx.arc(20,0,20,0,Math.PI*2);ctx.arc(39,7,14,0,Math.PI*2);ctx.fill();ctx.restore();
-}
-
 function draw(){
  const q=Z[Z0],sp=Math.min(1,Math.abs(p.vx)/p.spd),air=!p.g,ph=tt*(12+sp*6);
  shk=Math.max(0,shk-0.016);
@@ -842,7 +940,7 @@ function draw(){
  cx+=(targetX-cx)*.12;
  cy+=(targetY-cy)*.1;
 
- const ppm=Math.min(W,H)*0.115; // pixels per world meter
+ const ppm=Math.min(W,H)*0.115;
  const toSX=wx=>W*0.5+(wx-cx)*ppm+kx;
  const toSY=wy=>H*0.76-(wy-cy+1.6)*ppm+ky;
 
@@ -856,12 +954,10 @@ function draw(){
  ctx.fillStyle=sg;ctx.fillRect(0,0,W,H);
 
  if(inside){
-  // Cottage Interior Room
   const rx0=toSX(-8),rx1=toSX(8),ryTop=toSY(5.5),ryFloor=toSY(0);
   ctx.fillStyle='#1d1526';ctx.fillRect(rx0,ryTop,rx1-rx0,ryFloor-ryTop);
   ctx.strokeStyle='#433252';ctx.lineWidth=4;ctx.strokeRect(rx0,ryTop,rx1-rx0,ryFloor-ryTop);
 
-  // Wall torches
   [-3.8,3.8].forEach(tx=>{
    const sx=toSX(tx),sy=toSY(2.8);
    ctx.fillStyle='#5c3a21';ctx.fillRect(sx-4,sy,8,28);
@@ -870,12 +966,10 @@ function draw(){
    ctx.fillStyle=g;ctx.beginPath();ctx.arc(sx,sy-4,48,0,Math.PI*2);ctx.fill();
   });
 
-  // Exit Door on left
   const dx=toSX(-5.5),dy=toSY(0);
   ctx.fillStyle='#5e3418';ctx.strokeStyle='#241206';ctx.lineWidth=3;
   ctx.fillRect(dx-24,dy-74,48,74);ctx.strokeRect(dx-24,dy-74,48,74);
 
-  // Reward Chest on right
   if(roomChest){
    const chx=toSX(roomChest.x),chy=toSY(0);
    ctx.fillStyle=roomChest.opened?'#8c5828':'#6e3a16';ctx.strokeStyle='#1c0e04';ctx.lineWidth=2.5;
@@ -884,11 +978,9 @@ function draw(){
    ctx.beginPath();ctx.arc(chx,chy-18,6,0,Math.PI*2);ctx.fill();
   }
 
-  // Floor
   ctx.fillStyle='#4a3322';ctx.fillRect(rx0,ryFloor,rx1-rx0,H-ryFloor);
   ctx.fillStyle='#78553a';ctx.fillRect(rx0,ryFloor,rx1-rx0,8);
 
-  // Room Guard Enemy
   if(roomEnemy&&roomEnemy.alive){
    const ex=toSX(roomEnemy.x),ey=toSY(roomEnemy.y);
    ctx.fillStyle=roomEnemy.fl>0?'#ffffff':'#9e2b4c';ctx.strokeStyle='#14080e';ctx.lineWidth=2.5;
@@ -896,31 +988,19 @@ function draw(){
    ctx.fillStyle='#ffd23a';ctx.fillRect(ex-10,ey-6,6,6);ctx.fillRect(ex+4,ey-6,6,6);
   }
  }else{
-  // Sun / Moon Glow
-  const sunX=W*0.72-cx*2,sunY=H*0.24;
-  const sunG=ctx.createRadialGradient(sunX,sunY,10,sunX,sunY,140);
-  sunG.addColorStop(0,'rgba(255,248,210,0.95)');sunG.addColorStop(.4,'rgba(255,210,130,0.35)');sunG.addColorStop(1,'rgba(255,210,130,0)');
-  ctx.fillStyle=sunG;ctx.beginPath();ctx.arc(sunX,sunY,140,0,Math.PI*2);ctx.fill();
+  drawRealmBackdrop(q,ppm,toSX,toSY);
 
-  // Parallax Mountain Layers
-  [0.12,0.26].forEach((par,idx)=>{
-   ctx.fillStyle=q.mt[idx];
-   ctx.beginPath();ctx.moveTo(0,H);
-   for(let sx=-100;sx<=W+220;sx+=140){
-    const wx=(sx+cx*ppm*par);
-    const peak=H*(0.52+idx*0.1)+Math.sin(wx*0.008+idx*2)*65;
-    ctx.lineTo(sx,peak);
-   }
-   ctx.lineTo(W,H);ctx.closePath();ctx.fill();
-  });
-
-  // Ambient floating embers/sparks (matches character backdrop!)
+  // Ambient floating embers/bubbles/sparks
   for(const a of ambient){
    a.x+=a.vx*0.016;a.y+=a.vy*0.016;
    if(a.x>cx+25)a.x-=50;if(a.x<cx-25)a.x+=50;
+   if(a.y>16)a.y=-2;if(a.y<-2)a.y=16;
    const sx=toSX(a.x),sy=toSY(a.y);
-   ctx.fillStyle=a.c;ctx.globalAlpha=0.55;
-   ctx.beginPath();ctx.ellipse(sx,sy,a.sz*2.2,a.sz*.7,-.2,0,Math.PI*2);ctx.fill();
+   ctx.fillStyle=a.c;ctx.globalAlpha=0.6;
+   ctx.beginPath();
+   if(q.id=='ocean')ctx.arc(sx,sy,a.sz*1.2,0,Math.PI*2);
+   else ctx.ellipse(sx,sy,a.sz*2.2,a.sz*.7,-.2,0,Math.PI*2);
+   ctx.fill();
   }
   ctx.globalAlpha=1;
 
@@ -941,54 +1021,37 @@ function draw(){
    ctx.fillStyle='#ffd23a';ctx.font='bold 12px Georgia';ctx.textAlign='center';ctx.fillText('SHOP',dx,dy-62);
   }
 
-  // Distant layered hills, soft clouds and a consistent Snowdigo tree-art style
-  const hillColors=q.mt;
-  [0,1].forEach(i=>{
-   const y=H*(.53+i*.075),par=i===0?.10:.19;
-   ctx.fillStyle=hillColors[i];ctx.globalAlpha=i===0?.48:.72;
-   ctx.beginPath();ctx.moveTo(0,H);
-   for(let x=-80;x<=W+100;x+=90){const wx=x+cx*ppm*par;ctx.lineTo(x,y+Math.sin(wx*.006+i*2)*28+Math.sin(wx*.014)*12)}
-   ctx.lineTo(W,H);ctx.closePath();ctx.fill();
-  });ctx.globalAlpha=1;
-  for(let i=0;i<5;i++){
-   const x=((i*W*.29-cx*ppm*.045+tt*(5+i*1.4))%(W+180)+W+180)%(W+180)-80;
-   drawSceneryCloud(x,H*(.16+(i%3)*.09),.55+(i%2)*.22);
-  }
-  // Background Trees / crystals / pillars — unified rounded 2D platform-game art
-  for(let i=0;i<8;i++){
-   const wx=Math.floor((cx-22)/7)*7+i*7-12;
-   const sx=toSX(wx),sy=toSY(0);
-   if(sx<-160||sx>W+160)continue;
-   if(q.ice||q.maw||q.fl){
-    ctx.save();ctx.translate(sx,sy);ctx.globalAlpha=.42;
-    ctx.fillStyle=q.ice?'#b9e9ff':q.fl?'#34264e':'#8062a7';
-    ctx.beginPath();ctx.moveTo(-22,0);ctx.lineTo(-8,-78);ctx.lineTo(0,-102);ctx.lineTo(13,-62);ctx.lineTo(25,0);ctx.closePath();ctx.fill();ctx.restore();
-   }else drawGameTree(sx,sy-1,.72+(i%3)*.12,i,0);
-  }
-  // Foreground landmark trees with gentle wind motion
+  // Realm-Specific Foreground Scenery Props
   for(const pr of props){
    const sx=toSX(pr.x),sy=toSY(0);
-   if(sx<-140||sx>W+140)continue;
-   drawGameTree(sx,sy,pr.s,Math.round(pr.x),q.fl?.85:q.sp?.35:.12);
+   if(sx<-120||sx>W+120)continue;
+   drawRealmProp(q,pr,sx,sy);
   }
 
-  // Platforms & Rocky/Grassy Ledges
+  // Glowing Lava / Deep Abyss below gaps
+  const pitY=toSY(-1.1);
+  if(q.id=='volcano'){
+   const lg=ctx.createLinearGradient(0,pitY,0,H);
+   lg.addColorStop(0,'#ff9e24');lg.addColorStop(0.35,'#e63917');lg.addColorStop(1,'#5c0a06');
+   ctx.fillStyle=lg;ctx.fillRect(0,pitY,W,H-pitY);
+  }else if(q.id=='sky'){
+   ctx.fillStyle='rgba(255,255,255,0.42)';ctx.fillRect(0,pitY+24,W,H-pitY);
+  }
+
+  // Platforms & Rocky/Grassy/Icy/Volcanic Ledges
   for(const f of pl){
    const x0=toSX(f.a),x1=toSX(f.b),y0=toSY(f.y);
    if(x1<-40||x0>W+40)continue;
-   const h=f.y<=0?H-y0:26;
+   const h=(f.y<=0&&q.id!='sky')?H-y0:28;
    ctx.fillStyle=q.c;ctx.fillRect(x0,y0,x1-x0,h);
-   ctx.fillStyle=q.cap;ctx.fillRect(x0-2,y0-3,x1-x0+4,12);
-   ctx.fillStyle='rgba(255,255,255,.13)';ctx.fillRect(x0,y0-3,x1-x0,2);
-   ctx.fillStyle='rgba(8,17,27,.24)';
-   for(let rx=x0+12;rx<x1-8;rx+=42){ctx.beginPath();ctx.moveTo(rx,y0+16);ctx.lineTo(rx+8,y0+28);ctx.lineTo(rx+18,y0+16);ctx.fill()}
+   ctx.fillStyle=q.cap;ctx.fillRect(x0-2,y0-2,x1-x0+4,11);
    ctx.strokeStyle='#141821';ctx.lineWidth=2;ctx.strokeRect(x0,y0,x1-x0,h);
   }
 
   // Hazards
   for(const h of hz){
    const sx=toSX(h.x),sy=toSY(0);
-   ctx.fillStyle='#ff4f79';ctx.beginPath();
+   ctx.fillStyle=q.id=='volcano'?'#ff8c1a':'#ff4f79';ctx.beginPath();
    ctx.moveTo(sx-14,sy);ctx.lineTo(sx-7,sy-24);ctx.lineTo(sx,sy);
    ctx.lineTo(sx+7,sy-26);ctx.lineTo(sx+14,sy);ctx.closePath();ctx.fill();
   }
@@ -1056,17 +1119,17 @@ function draw(){
  }
  ctx.globalAlpha=1;
 
- // Draw High-Detail 2D Anime Hero!
+ // Draw High-Detail 2D Anime Hero
  if(inv<=0||Math.floor(inv*14)%2==0){
   const pose=p.atk>0?'slash':(air?'jump':(sp>0.12?'run':'idle'));
   const atkProg=p.atk>0?(1-p.atk/.32):0;
   drawAnimeHero(toSX(p.x),toSY(p.y),ppm*1.12,p.f,pose,ph,atkProg);
  }
 
- $('h1').textContent='\u2764'.repeat(Math.max(0,p.hp))+'  Lv.'+lvl+'  |  \uD83E\uDE99 '+coins;
+ $('h1').textContent='❤'.repeat(Math.max(0,p.hp))+'  Lv.'+lvl+'  |  🪙 '+coins;
  $('h2').textContent=inside
   ?(roomChest?.opened?'Chest Opened! Exit left':roomChest?.unlocked?'Unlock Chest (Enter)!':'Defeat Guard!')
-  :(open?'Go to the portal \u25BA':q.w+' '+col+'/'+q.k+(boss&&!bd?'  |  '+q.boss.n+' '+boss.hp+'/'+boss.mh:''));
+  :(open?'Go to the portal ►':q.w+' '+col+'/'+q.k+(boss&&!bd?'  |  '+q.boss.n+' '+boss.hp+'/'+boss.mh:''));
 }
 
 let last=performance.now();
@@ -1084,7 +1147,7 @@ setInterval(()=>{
 const mb=document.createElement('div');
 mb.className='b';
 mb.style.cssText='width:40px;height:40px;right:12px;top:calc(42px + env(safe-area-inset-top,0px));font-size:18px;border-radius:50%';
-mb.textContent='\u266A';
+mb.textContent='♪';
 mb.onclick=()=>{mute=!mute;mb.style.opacity=mute?.35:1};
 document.body.append(mb);
 
