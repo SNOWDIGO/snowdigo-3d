@@ -414,17 +414,7 @@ function triggerFlash(strength=.55){
 }
 
 let W=innerWidth,H=innerHeight,DPR=Math.min(devicePixelRatio||1,2);
-function rs(){
- W=innerWidth;H=innerHeight;DPR=Math.min(devicePixelRatio||1,2);
- cv.width=W*DPR;cv.height=H*DPR;
- ctx.setTransform(DPR,0,0,DPR,0,0);
- applyCustomLayout();
- resizeMapCanvas();
-}
-addEventListener('resize',rs);rs();
-
-let sd=1;
-const rn=()=>(sd=sd*16807%2147483647)/2147483647;
+let mapNodes=[];
 
 // ---------- 8 Ultra 2D Fantasy Realms ----------
 const Z=[
@@ -447,9 +437,7 @@ try{
  lvl=+localStorage.getItem('sd3l')||1;
 }catch(e){}
 
-// ---------- Completion Percentage Calculation ----------
 function getPlayedPercent(){
- // Combines unlocked realms, current realm shard/boss progress, and level progress
  const totalRealms=Z.length;
  const realmSpan=100/totalRealms;
  const completedRealms=Math.min(mx,totalRealms);
@@ -461,7 +449,6 @@ function getPlayedPercent(){
   const inRealmProgress=((shardRatio*0.65)+(bossRatio*0.35))*realmSpan;
   pct=Math.max(pct,Z0*realmSpan+inRealmProgress);
  }
- // Slight bonus from player level up to 100%
  const levelBoost=Math.min(4,(lvl-1)*0.5);
  return Math.max(0,Math.min(100,Math.round(pct+levelBoost)));
 }
@@ -476,24 +463,10 @@ function updateProgressUI(){
  if($('mapRealmName'))$('mapRealmName').textContent=Z[Z0]?Z[Z0].n.replace(/^\d+\.\s*/,''):'World\'s End Keep';
 }
 
-// ---------- Portal / Level Node Map Screen ----------
 const mapCv=$('mapCv'),mctx=mapCv.getContext('2d');
-let mapNodes=[];
-
-function resizeMapCanvas(){
- const wrap=$('mapCanvasWrap');
- if(!wrap||!mapCv)return;
- const w=wrap.clientWidth||W,h=wrap.clientHeight||(H-96);
- mapCv.width=w*DPR;mapCv.height=h*DPR;
- mctx.setTransform(DPR,0,0,DPR,0,0);
- buildMapNodes(w,h);
- if($('mapScreen').style.display==='flex')drawMapScreen();
-}
 
 function buildMapNodes(w,h){
- // Generates a multi-branch node layout across the 8 realms similar to the Portal map
  mapNodes=[];
- const cols=11;
  const padX=w*0.09,spanX=w*0.82;
  const midY=h*0.52;
  const stepY=Math.min(h*0.18,62);
@@ -515,10 +488,8 @@ function buildMapNodes(w,h){
    isBoss,
    stars
   });
-  // Add sub-branch node on alternate realms for rich portal path
   if(idx<Z.length-1){
    const nextX=padX+((idx+1)/(Z.length-1))*spanX;
-   const nextY=midY+Math.sin((idx+1)*1.45)*stepY*1.25;
    const subY=(yOff>0)?(midY-stepY*1.35):(midY+stepY*1.35);
    mapNodes.push({
     id:'sub_'+idx,
@@ -539,7 +510,6 @@ function drawMapScreen(){
  const w=mapCv.width/DPR,h=mapCv.height/DPR;
  mctx.clearRect(0,0,w,h);
 
- // Subtle starry night backdrop
  mctx.fillStyle='rgba(255,255,255,0.22)';
  for(let i=0;i<36;i++){
   const sx=((i*97)%Math.max(100,w));
@@ -547,7 +517,6 @@ function drawMapScreen(){
   mctx.fillRect(sx,sy,2,2);
  }
 
- // Draw connecting lines between sequential nodes
  mctx.lineWidth=3.5;
  for(let i=0;i<mapNodes.length-1;i++){
   const a=mapNodes[i],b=mapNodes[i+1];
@@ -555,17 +524,14 @@ function drawMapScreen(){
   mctx.beginPath();mctx.moveTo(a.x,a.y);mctx.lineTo(b.x,b.y);mctx.stroke();
  }
 
- // Draw hexagons / nodes
  for(const nd of mapNodes){
   const r=nd.isSub?16:23;
   mctx.save();mctx.translate(nd.x,nd.y);
 
-  // Highlight active current realm
   if(!nd.isSub && nd.realmIdx===Z0){
    mctx.shadowColor='#38e8ff';mctx.shadowBlur=18;
   }
 
-  // Hexagon shape
   mctx.beginPath();
   for(let k=0;k<6;k++){
    const ang=k*Math.PI/3;
@@ -596,14 +562,12 @@ function drawMapScreen(){
    mctx.fillText(String(nd.realmIdx+1),0,0);
   }
 
-  // Stars below node
   if(nd.unlocked && !nd.isSub){
    const stStr='★'.repeat(nd.stars)+'☆'.repeat(Math.max(0,3-nd.stars));
    mctx.fillStyle='#ffe885';mctx.font='bold 11px sans-serif';mctx.textAlign='center';
    mctx.fillText(stStr,0,r+12);
   }
 
-  // Node name caption
   if(!nd.isSub){
    mctx.fillStyle='#fff6e8';mctx.font='bold 10px Georgia,serif';mctx.textAlign='center';
    mctx.fillText(nd.label,0,-r-8);
@@ -613,10 +577,20 @@ function drawMapScreen(){
  }
 }
 
+function resizeMapCanvas(){
+ const wrap=$('mapCanvasWrap');
+ if(!wrap||!mapCv)return;
+ const w=wrap.clientWidth||W,h=wrap.clientHeight||Math.max(120,H-96);
+ mapCv.width=w*DPR;mapCv.height=h*DPR;
+ mctx.setTransform(DPR,0,0,DPR,0,0);
+ buildMapNodes(w,h);
+ if($('mapScreen').style.display==='flex')drawMapScreen();
+}
+
 function openMapScreen(){
  updateProgressUI();
- resizeMapCanvas();
  $('mapScreen').style.display='flex';
+ resizeMapCanvas();
  drawMapScreen();
 }
 
@@ -645,6 +619,15 @@ mapCv.addEventListener('pointerdown',e=>{
   }
  }
 });
+
+function rs(){
+ W=innerWidth;H=innerHeight;DPR=Math.min(devicePixelRatio||1,2);
+ cv.width=W*DPR;cv.height=H*DPR;
+ ctx.setTransform(DPR,0,0,DPR,0,0);
+ applyCustomLayout();
+ resizeMapCanvas();
+}
+addEventListener('resize',rs);rs();
 
 const p={x:0,y:0,vx:0,vy:0,hp:5,mhp:5,atkDmg:1,magDmg:2,f:1,g:0,j:0,atk:0,cs:0,cc:0,mc:0,sx:0,coy:0,jb:0,sq:0,gy:0,spd:7.4};
 
