@@ -58,6 +58,27 @@ canvas{display:block;width:100%;height:100%;image-rendering:auto}
   height:36px;padding:0 12px;border-radius:18px;background:rgba(16,22,34,.82);
   border:1.5px solid #38e8ff;color:#aef7ff;font:700 11px Georgia,serif;cursor:pointer;
 }
+/* Custom control editing mode */
+body.editing-controls .b{
+  z-index:75!important;
+  outline:2px dashed #ffd23a;
+  box-shadow:0 0 18px rgba(255,210,58,.65),0 6px 16px rgba(0,0,0,.65);
+  cursor:grab;
+}
+body.editing-controls .b:active{transform:scale(1.06);cursor:grabbing}
+#editBar{
+  display:none;position:fixed;left:50%;top:calc(12px + env(safe-area-inset-top,0px));
+  transform:translateX(-50%);z-index:80;
+  background:rgba(10,14,24,.94);border:2px solid #38e8ff;border-radius:14px;
+  padding:8px 14px;gap:10px;align-items:center;flex-wrap:wrap;justify-content:center;
+  box-shadow:0 8px 24px rgba(0,0,0,.7);font-size:13px;
+}
+#editBar button{
+  padding:7px 14px;border-radius:8px;border:1.5px solid #38e8ff;
+  background:#14283b;color:#fff6e8;font:700 13px Georgia,serif;cursor:pointer;
+}
+#editBar button.primary{background:#38e8ff;color:#06131a}
+
 #ov{
   position:fixed;inset:0;z-index:60;background:rgba(10,14,22,.93);
   display:none;flex-direction:column;align-items:center;justify-content:center;
@@ -124,6 +145,13 @@ canvas{display:block;width:100%;height:100%;image-rendering:auto}
 <div id="hud"><span id="h1"></span><span id="h2"></span></div>
 <div id="bn"></div>
 
+<div id="editBar">
+  <span>✥ Drag any button (Jump, Sword, Bolt, Move) where you want</span>
+  <button id="saveLayoutBtn" class="primary">Save Layout</button>
+  <button id="resetLayoutBtn">Reset Default</button>
+  <button id="cancelLayoutBtn">Close</button>
+</div>
+
 <input type="file" id="spFile" accept="image/*" style="display:none">
 <button id="SPBTN" title="Optional: Load your 4-pose sprite sheet image">Load Sprite</button>
 
@@ -155,6 +183,123 @@ canvas{display:block;width:100%;height:100%;image-rendering:auto}
 <script>
 const $=id=>document.getElementById(id),ov=$('ov'),flEl=$('flash'),cv=$('cv'),ctx=cv.getContext('2d');
 const T={l:0,r:0,jh:0,jp:0,ap:0,mp:0,sp:0,ep:0},K={};
+let editingControls=false,prevStateBeforeEdit='menu';
+
+// ---------- Custom Control Layout Manager (All Buttons Movable) ----------
+const BTN_IDS=['L','R','EN','SH','M','A','J'];
+let customPositions={};
+
+function loadCustomLayout(){
+ try{
+  const raw=localStorage.getItem('sd_custom_btns_v1');
+  customPositions=raw?JSON.parse(raw):{};
+ }catch(e){customPositions={}}
+ applyCustomLayout();
+}
+
+function applyCustomLayout(){
+ BTN_IDS.forEach(id=>{
+  const el=$(id);
+  if(!el)return;
+  const pos=customPositions[id];
+  if(pos && typeof pos.left==='number' && typeof pos.top==='number'){
+   el.style.left=pos.left+'px';
+   el.style.top=pos.top+'px';
+   el.style.right='auto';
+   el.style.bottom='auto';
+  }else{
+   el.style.left='';
+   el.style.top='';
+   el.style.right='';
+   el.style.bottom='';
+  }
+ });
+}
+
+function saveCustomLayout(){
+ BTN_IDS.forEach(id=>{
+  const el=$(id);
+  if(!el)return;
+  const rect=el.getBoundingClientRect();
+  customPositions[id]={left:Math.round(rect.left),top:Math.round(rect.top)};
+ });
+ try{localStorage.setItem('sd_custom_btns_v1',JSON.stringify(customPositions))}catch(e){}
+ applyCustomLayout();
+ banner('Custom Button Layout Saved!');
+}
+
+function resetCustomLayout(){
+ customPositions={};
+ try{localStorage.removeItem('sd_custom_btns_v1')}catch(e){}
+ applyCustomLayout();
+ banner('Default Button Positions Restored!');
+}
+
+function startControlEditor(){
+ editingControls=true;
+ prevStateBeforeEdit=(st==='play'?'play':'menu');
+ st='pause';
+ ov.style.display='none';
+ $('ts').style.display='none';
+ document.body.classList.add('editing-controls');
+ $('editBar').style.display='flex';
+ // Convert current visual positions to explicit left/top so dragging is exact
+ BTN_IDS.forEach(id=>{
+  const el=$(id);
+  if(!el)return;
+  const r=el.getBoundingClientRect();
+  el.style.left=r.left+'px';
+  el.style.top=r.top+'px';
+  el.style.right='auto';
+  el.style.bottom='auto';
+ });
+}
+
+function stopControlEditor(shouldSave){
+ if(shouldSave)saveCustomLayout();
+ editingControls=false;
+ document.body.classList.remove('editing-controls');
+ $('editBar').style.display='none';
+ if(prevStateBeforeEdit==='play'){
+  st='play';
+ }else{
+  st='menu';
+  $('ts').style.display='block';
+ }
+}
+
+$('saveLayoutBtn').onclick=()=>stopControlEditor(true);
+$('resetLayoutBtn').onclick=()=>resetCustomLayout();
+$('cancelLayoutBtn').onclick=()=>stopControlEditor(false);
+
+// Pointer drag support on all .b buttons when in edit mode
+BTN_IDS.forEach(id=>{
+ const el=$(id);
+ let dragging=false,offsetX=0,offsetY=0;
+ el.addEventListener('pointerdown',e=>{
+  if(!editingControls)return;
+  e.preventDefault();e.stopPropagation();
+  dragging=true;
+  el.setPointerCapture(e.pointerId);
+  const r=el.getBoundingClientRect();
+  offsetX=e.clientX-r.left;
+  offsetY=e.clientY-r.top;
+ },true);
+ el.addEventListener('pointermove',e=>{
+  if(!editingControls||!dragging)return;
+  e.preventDefault();e.stopPropagation();
+  const maxX=window.innerWidth-el.offsetWidth-8;
+  const maxY=window.innerHeight-el.offsetHeight-8;
+  const nx=Math.max(8,Math.min(maxX,e.clientX-offsetX));
+  const ny=Math.max(8,Math.min(maxY,e.clientY-offsetY));
+  el.style.left=nx+'px';
+  el.style.top=ny+'px';
+ },true);
+ el.addEventListener('pointerup',e=>{
+  if(!editingControls||!dragging)return;
+  dragging=false;
+ },true);
+});
 
 addEventListener('keydown',e=>{
  K[e.code]=1;
@@ -170,7 +315,10 @@ addEventListener('keyup',e=>K[e.code]=0);
 
 [['L','l'],['R','r'],['J','jh'],['A','ap'],['M','mp'],['SH','sp'],['EN','ep']].forEach(([id,k])=>{
  const el=$(id),hold=k=='l'||k=='r'||k=='jh';
- el.addEventListener('pointerdown',e=>{e.preventDefault();T[k]=1;if(k=='jh')T.jp=1});
+ el.addEventListener('pointerdown',e=>{
+  if(editingControls)return;
+  e.preventDefault();T[k]=1;if(k=='jh')T.jp=1;
+ });
  if(hold)['pointerup','pointercancel','pointerleave'].forEach(n=>el.addEventListener(n,()=>T[k]=0));
 });
 
@@ -222,6 +370,7 @@ function rs(){
  W=innerWidth;H=innerHeight;DPR=Math.min(devicePixelRatio||1,2);
  cv.width=W*DPR;cv.height=H*DPR;
  ctx.setTransform(DPR,0,0,DPR,0,0);
+ applyCustomLayout();
 }
 addEventListener('resize',rs);rs();
 
@@ -441,7 +590,17 @@ function menu(){
    btn.onclick=()=>pick(i);tx.appendChild(btn);
   });
  };
- $('m3').onclick=()=>info('Controls','Move: ← →  |  Enter Room / Chest: F / Enter\nShop: E  |  Jump: Space (Double/Triple Jump)\nLightning Sword: J (3-Hit Combo + Deflect)  |  Magic Bolt: K');
+ $('m3').onclick=()=>{
+  info('Controls & Custom Layout','Move: ← →  |  Enter Room / Chest: F / Enter\nShop: E  |  Jump: Space (Double/Triple Jump)\nLightning Sword: J (3-Hit Combo + Deflect)  |  Magic Bolt: K\n\nTap "Customize Layout" below to drag Jump or any button anywhere!');
+  const tx=$('tx');
+  const custBtn=document.createElement('button');
+  custBtn.className='mp';
+  custBtn.style.background='rgba(56,232,255,.28)';
+  custBtn.style.borderColor='#38e8ff';
+  custBtn.textContent='✥ Customize Button Layout (Drag Any Button)';
+  custBtn.onclick=()=>startControlEditor();
+  tx.appendChild(custBtn);
+ };
  $('m4').onclick=()=>info('Story','Journey across 8 unique realms—Forest, Desert, Ice, Volcano, Ocean, Haunted, Sky, and Dark Realm—to restore the Mageblade!');
 }
 function next(){
@@ -621,12 +780,10 @@ function upd(dt){
 function drawRealmBackdrop(q,ppm,toSX,toSY){
  const floorY=toSY(0);
 
- // 1. Celestial Body / Light Rays
  if(q.id=='ocean'){
-  // Underwater sunbeams
   ctx.save();
   for(let i=0;i<6;i++){
-   const rx=((i*260-cx*14)% (W+300)+W+300)%(W+300)-150;
+   const rx=((i*260-cx*14)%(W+300)+W+300)%(W+300)-150;
    const g=ctx.createLinearGradient(rx,0,rx+90,H*0.8);
    g.addColorStop(0,'rgba(140,250,255,0.22)');g.addColorStop(1,'rgba(140,250,255,0)');
    ctx.fillStyle=g;
@@ -634,7 +791,6 @@ function drawRealmBackdrop(q,ppm,toSX,toSY){
   }
   ctx.restore();
  }else if(q.id=='dark'){
-  // Purple lightning storm bolts in sky
   if(Math.sin(tt*7.3)>0.82){
    ctx.save();ctx.strokeStyle='rgba(218,140,255,0.75)';ctx.lineWidth=3;ctx.shadowColor='#b84dff';ctx.shadowBlur=18;
    const lx=W*0.65;ctx.beginPath();ctx.moveTo(lx,0);ctx.lineTo(lx-25,H*0.18);ctx.lineTo(lx+12,H*0.26);ctx.lineTo(lx-18,H*0.46);ctx.stroke();
@@ -653,7 +809,6 @@ function drawRealmBackdrop(q,ppm,toSX,toSY){
   }
  }
 
- // 2. Parallax Distant Mountains / Volcanoes / Clouds
  [0.12,0.26].forEach((par,idx)=>{
   ctx.fillStyle=q.mt[idx];
   ctx.beginPath();ctx.moveTo(0,H);
@@ -667,14 +822,11 @@ function drawRealmBackdrop(q,ppm,toSX,toSY){
   ctx.lineTo(W,H);ctx.closePath();ctx.fill();
  });
 
- // 3. Iconic Realm Landmarks (Volcano, Castles, Sunken Ship, Floating Islands)
  ctx.save();
  const lmX=W*0.56-cx*ppm*0.18;
  if(q.id=='volcano'){
-  // Erupting Volcano Cone + Lava Streams
   ctx.fillStyle='#24090c';
   ctx.beginPath();ctx.moveTo(lmX-230,floorY);ctx.lineTo(lmX-38,H*0.26);ctx.lineTo(lmX+38,H*0.26);ctx.lineTo(lmX+230,floorY);ctx.closePath();ctx.fill();
-  // Glowing Crater & Lava Veins
   const lg=ctx.createLinearGradient(lmX,H*0.24,lmX,floorY);
   lg.addColorStop(0,'#fff066');lg.addColorStop(0.3,'#ff6a1a');lg.addColorStop(1,'#b81d13');
   ctx.strokeStyle=lg;ctx.lineWidth=6;
@@ -682,7 +834,6 @@ function drawRealmBackdrop(q,ppm,toSX,toSY){
   ctx.moveTo(lmX+12,H*0.27);ctx.quadraticCurveTo(lmX+35,H*0.46,lmX+75,floorY);ctx.stroke();
   ctx.fillStyle='#ff9a24';ctx.beginPath();ctx.ellipse(lmX,H*0.26,38,10,0,0,Math.PI*2);ctx.fill();
  }else if(q.id=='ice'||q.id=='haunted'||q.id=='dark'){
-  // Fantasy Castle Silhouette on Distant Ridge
   const cyBase=floorY-35;
   ctx.fillStyle=q.id=='ice'?'#7ab2e6':(q.id=='haunted'?'#1a1430':'#160829');
   ctx.fillRect(lmX-75,cyBase-95,150,95);
@@ -691,11 +842,9 @@ function drawRealmBackdrop(q,ppm,toSX,toSY){
    ctx.fillRect(lmX+tx-12,cyBase-th,24,th);
    ctx.beginPath();ctx.moveTo(lmX+tx-16,cyBase-th);ctx.lineTo(lmX+tx,cyBase-th-28);ctx.lineTo(lmX+tx+16,cyBase-th);ctx.closePath();ctx.fill();
   });
-  // Glowing Castle Windows
   ctx.fillStyle=q.id=='ice'?'#e6f8ff':(q.id=='haunted'?'#ffae38':'#b84dff');
   ctx.fillRect(lmX-8,cyBase-42,16,26);
  }else if(q.id=='ocean'){
-  // Sunken Pirate Ship Silhouette
   ctx.save();ctx.translate(lmX,floorY-25);ctx.rotate(-0.22);
   ctx.fillStyle='rgba(7,35,54,0.72)';
   ctx.beginPath();ctx.moveTo(-110,-20);ctx.lineTo(110,-20);ctx.lineTo(75,28);ctx.lineTo(-85,28);ctx.closePath();ctx.fill();
@@ -703,7 +852,6 @@ function drawRealmBackdrop(q,ppm,toSX,toSY){
   ctx.fillRect(-65,-95,68,6);ctx.fillRect(-2,-78,56,5);
   ctx.restore();
  }else if(q.id=='sky'){
-  // Floating Sky Citadel Island
   const fy=H*0.34+Math.sin(tt*1.6)*8;
   ctx.fillStyle='#5c452e';
   ctx.beginPath();ctx.moveTo(lmX-95,fy);ctx.lineTo(lmX+95,fy);ctx.lineTo(lmX+40,fy+52);ctx.lineTo(lmX-35,fy+45);ctx.closePath();ctx.fill();
@@ -722,38 +870,31 @@ function drawRealmProp(q,pr,sx,sy){
   ctx.beginPath();ctx.arc(-22,-72,23,0,Math.PI*2);ctx.arc(22,-72,23,0,Math.PI*2);ctx.fill();
  }else if(q.id=='desert'){
   if(pr.k%2==0){
-   // Saguaro Cactus
    ctx.fillStyle='#2f8a3e';ctx.strokeStyle='#143d1b';ctx.lineWidth=2;
    ctx.beginPath();ctx.roundRect(-8,-68,16,68,8);ctx.fill();ctx.stroke();
    ctx.beginPath();ctx.roundRect(-24,-48,16,10,5);ctx.roundRect(-24,-62,10,24,5);ctx.fill();ctx.stroke();
    ctx.beginPath();ctx.roundRect(8,-38,16,10,5);ctx.roundRect(14,-54,10,26,5);ctx.fill();ctx.stroke();
   }else{
-   // Ancient Sandstone Ruin Pillar
    ctx.fillStyle='#b8823e';ctx.strokeStyle='#593b16';ctx.lineWidth=2;
    ctx.fillRect(-16,-62,32,62);ctx.strokeRect(-16,-62,32,62);
    ctx.fillRect(-20,-70,40,10);ctx.strokeRect(-20,-70,40,10);
   }
  }else if(q.id=='ice'){
-  // Snow-Covered Pine Tree
   [0,-22,-42].forEach((oy,i)=>{
    const w=34-i*7;
    ctx.fillStyle='#265780';ctx.beginPath();ctx.moveTo(-w,oy-12);ctx.lineTo(0,oy-46);ctx.lineTo(w,oy-12);ctx.closePath();ctx.fill();
    ctx.fillStyle='#eef9ff';ctx.beginPath();ctx.moveTo(-w*.65,oy-24);ctx.lineTo(0,oy-46);ctx.lineTo(w*.65,oy-24);ctx.closePath();ctx.fill();
   });
  }else if(q.id=='volcano'){
-  // Obsidian Spire & Glowing Magma Crack
   ctx.fillStyle='#1f1214';ctx.beginPath();ctx.moveTo(-18,0);ctx.lineTo(-4,-72);ctx.lineTo(16,0);ctx.closePath();ctx.fill();
   ctx.strokeStyle='#ff7b1a';ctx.lineWidth=2.5;ctx.beginPath();ctx.moveTo(-3,-10);ctx.lineTo(2,-45);ctx.stroke();
  }else if(q.id=='ocean'){
-  // Coral Cluster & Seaweed
   ctx.fillStyle='#ff5e8e';ctx.beginPath();ctx.arc(-10,-28,12,0,Math.PI*2);ctx.arc(8,-34,14,0,Math.PI*2);ctx.arc(0,-18,14,0,Math.PI*2);ctx.fill();
   ctx.fillStyle='#28a878';ctx.fillRect(-18,-48,6,48);ctx.fillRect(14,-42,6,42);
  }else if(q.id=='haunted'){
-  // Twisted Dead Tree
   ctx.strokeStyle='#141021';ctx.lineWidth=7;ctx.lineCap='round';
   ctx.beginPath();ctx.moveTo(0,0);ctx.lineTo(0,-66);ctx.moveTo(0,-42);ctx.lineTo(-24,-64);ctx.moveTo(0,-50);ctx.lineTo(22,-72);ctx.stroke();
  }else{
-  // Glowing Purple Dark Crystal Cluster
   ctx.save();ctx.shadowColor='#b84dff';ctx.shadowBlur=14;
   ctx.fillStyle='#9b38ff';ctx.beginPath();ctx.moveTo(-12,0);ctx.lineTo(-2,-56);ctx.lineTo(12,0);ctx.closePath();ctx.fill();
   ctx.fillStyle='#d99eff';ctx.beginPath();ctx.moveTo(4,0);ctx.lineTo(16,-38);ctx.lineTo(24,0);ctx.closePath();ctx.fill();
@@ -802,7 +943,6 @@ function drawAnimeHero(sx,sy,scale,facing,pose,phase,atkProg){
 
  ctx.translate(0,-bobY);
 
- // Flowing Tattered Dark Cloak
  const wave=Math.sin(tt*9+phase)*7;
  ctx.save();
  ctx.fillStyle='#242834';ctx.strokeStyle='#0d0f14';ctx.lineWidth=2.5;
@@ -836,7 +976,6 @@ function drawAnimeHero(sx,sy,scale,facing,pose,phase,atkProg){
 
  drawLeg(-7,rHip,rKnee,true);
 
- // Torso (White Sleeveless Tunic + Sash + Waist Scabbard)
  ctx.save();ctx.translate(0,-45);ctx.rotate(bodyTilt);
  ctx.fillStyle='#e6e3dc';ctx.strokeStyle='#0d0f14';ctx.lineWidth=2.5;
  ctx.beginPath();
@@ -864,7 +1003,6 @@ function drawAnimeHero(sx,sy,scale,facing,pose,phase,atkProg){
  ctx.fillStyle='#2a2f3d';ctx.strokeStyle='#0d0f14';ctx.lineWidth=2.4;
  ctx.beginPath();ctx.roundRect(-18,-40,36,12,6);ctx.fill();ctx.stroke();
 
- // Head (Dark skin, fierce anime eyes, spiky dark hair)
  ctx.save();ctx.translate(2,-54);
  ctx.fillStyle='#8c583a';ctx.strokeStyle='#0d0f14';ctx.lineWidth=2.4;
  ctx.beginPath();
@@ -890,7 +1028,6 @@ function drawAnimeHero(sx,sy,scale,facing,pose,phase,atkProg){
 
  drawLeg(7,lHip,lKnee,false);
 
- // Front Arm + Glowing Cyan Lightning Katana
  ctx.save();ctx.translate(10,-74);ctx.rotate(swAng);
  ctx.fillStyle='#8c583a';ctx.strokeStyle='#0d0f14';ctx.lineWidth=2.2;
  ctx.beginPath();ctx.roundRect(-5,0,10,24,5);ctx.fill();ctx.stroke();
@@ -915,7 +1052,6 @@ function drawAnimeHero(sx,sy,scale,facing,pose,phase,atkProg){
  ctx.restore();
  ctx.restore();
 
- // Electric Slash Arc when attacking
  if(pose=='slash'){
   ctx.save();
   ctx.translate(12,-58);
@@ -944,7 +1080,6 @@ function draw(){
  const toSX=wx=>W*0.5+(wx-cx)*ppm+kx;
  const toSY=wy=>H*0.76-(wy-cy+1.6)*ppm+ky;
 
- // Sky Gradient
  const sg=ctx.createLinearGradient(0,0,0,H);
  if(inside){
   sg.addColorStop(0,'#120e1a');sg.addColorStop(1,'#241b2e');
@@ -990,7 +1125,6 @@ function draw(){
  }else{
   drawRealmBackdrop(q,ppm,toSX,toSY);
 
-  // Ambient floating embers/bubbles/sparks
   for(const a of ambient){
    a.x+=a.vx*0.016;a.y+=a.vy*0.016;
    if(a.x>cx+25)a.x-=50;if(a.x<cx-25)a.x+=50;
@@ -1004,7 +1138,6 @@ function draw(){
   }
   ctx.globalAlpha=1;
 
-  // Village Cottages
   doors.forEach(d=>{
    const dx=toSX(d.x),dy=toSY(0);
    ctx.fillStyle='#5c3c24';ctx.strokeStyle='#1f1209';ctx.lineWidth=2.5;
@@ -1021,14 +1154,12 @@ function draw(){
    ctx.fillStyle='#ffd23a';ctx.font='bold 12px Georgia';ctx.textAlign='center';ctx.fillText('SHOP',dx,dy-62);
   }
 
-  // Realm-Specific Foreground Scenery Props
   for(const pr of props){
    const sx=toSX(pr.x),sy=toSY(0);
    if(sx<-120||sx>W+120)continue;
    drawRealmProp(q,pr,sx,sy);
   }
 
-  // Glowing Lava / Deep Abyss below gaps
   const pitY=toSY(-1.1);
   if(q.id=='volcano'){
    const lg=ctx.createLinearGradient(0,pitY,0,H);
@@ -1038,7 +1169,6 @@ function draw(){
    ctx.fillStyle='rgba(255,255,255,0.42)';ctx.fillRect(0,pitY+24,W,H-pitY);
   }
 
-  // Platforms & Rocky/Grassy/Icy/Volcanic Ledges
   for(const f of pl){
    const x0=toSX(f.a),x1=toSX(f.b),y0=toSY(f.y);
    if(x1<-40||x0>W+40)continue;
@@ -1048,7 +1178,6 @@ function draw(){
    ctx.strokeStyle='#141821';ctx.lineWidth=2;ctx.strokeRect(x0,y0,x1-x0,h);
   }
 
-  // Hazards
   for(const h of hz){
    const sx=toSX(h.x),sy=toSY(0);
    ctx.fillStyle=q.id=='volcano'?'#ff8c1a':'#ff4f79';ctx.beginPath();
@@ -1056,7 +1185,6 @@ function draw(){
    ctx.lineTo(sx+7,sy-26);ctx.lineTo(sx+14,sy);ctx.closePath();ctx.fill();
   }
 
-  // Chests
   for(const c of ch){
    const sx=toSX(c.x),sy=toSY(c.y);
    ctx.fillStyle=c.open?'#9e6834':'#784119';ctx.strokeStyle='#1f1005';ctx.lineWidth=2;
@@ -1064,7 +1192,6 @@ function draw(){
    ctx.fillStyle='#ffd23a';ctx.fillRect(sx-4,sy-16,8,8);
   }
 
-  // Mageblade Shards
   for(const s of sh){
    const sx=toSX(s.x),sy=toSY(s.y+Math.sin(tt*3+s.x)*.14);
    ctx.save();ctx.translate(sx,sy);ctx.shadowColor=q.sc;ctx.shadowBlur=16;
@@ -1073,13 +1200,11 @@ function draw(){
    ctx.restore();
   }
 
-  // Hearts
   for(const h of hr){
    const sx=toSX(h.x),sy=toSY(h.y+Math.sin(tt*3+h.x)*.1);
    ctx.fillStyle='#ff4a6a';ctx.beginPath();ctx.arc(sx,sy,10,0,Math.PI*2);ctx.fill();
   }
 
-  // Portal
   const px=toSX(portal.x),py=toSY(portal.y);
   ctx.save();ctx.translate(px,py);
   ctx.strokeStyle=open?'#38e8ff':'#5c667a';ctx.lineWidth=6;
@@ -1087,7 +1212,6 @@ function draw(){
   if(open){ctx.fillStyle='rgba(56,232,255,0.28)';ctx.fill()}
   ctx.restore();
 
-  // Enemies & Boss
   for(const e of en){
    const ex=toSX(e.x),ey=toSY(e.y);
    ctx.save();ctx.translate(ex,ey);
@@ -1104,7 +1228,6 @@ function draw(){
   }
  }
 
- // Projectiles
  for(const b of pj){
   const bx=toSX(b.x),by=toSY(b.y);
   ctx.save();ctx.shadowColor=b.c;ctx.shadowBlur=14;
@@ -1112,14 +1235,12 @@ function draw(){
   ctx.restore();
  }
 
- // Particles
  for(const f of fx){
   ctx.globalAlpha=Math.max(0,f.l/f.ml);
   ctx.fillStyle=f.c;ctx.fillRect(toSX(f.x)-f.sz*.5,toSY(f.y)-f.sz*.5,f.sz,f.sz);
  }
  ctx.globalAlpha=1;
 
- // Draw High-Detail 2D Anime Hero
  if(inv<=0||Math.floor(inv*14)%2==0){
   const pose=p.atk>0?'slash':(air?'jump':(sp>0.12?'run':'idle'));
   const atkProg=p.atk>0?(1-p.atk/.32):0;
@@ -1151,6 +1272,7 @@ mb.textContent='♪';
 mb.onclick=()=>{mute=!mute;mb.style.opacity=mute?.35:1};
 document.body.append(mb);
 
+loadCustomLayout();
 load(0);menu();requestAnimationFrame(loop);
 </script>
 </body>
