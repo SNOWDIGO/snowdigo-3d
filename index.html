@@ -58,6 +58,11 @@ canvas{display:block;width:100%;height:100%;image-rendering:auto}
   height:36px;padding:0 12px;border-radius:18px;background:rgba(16,22,34,.82);
   border:1.5px solid #38e8ff;color:#aef7ff;font:700 11px Georgia,serif;cursor:pointer;
 }
+#MAPBTN{
+  position:fixed;right:142px;top:calc(42px + env(safe-area-inset-top,0px));z-index:16;
+  height:36px;padding:0 12px;border-radius:18px;background:rgba(28,18,46,.86);
+  border:1.5px solid #f2b84b;color:#ffe49e;font:700 11px Georgia,serif;cursor:pointer;
+}
 /* Custom control editing mode */
 body.editing-controls .b{
   z-index:75!important;
@@ -91,6 +96,33 @@ body.editing-controls .b:active{transform:scale(1.06);cursor:grabbing}
   border:2px solid var(--ac);background:transparent;color:var(--fg);cursor:pointer;
 }
 #ov button:first-of-type{background:var(--ac);color:#08131a;font-weight:700}
+
+/* Portal / Level Node Map Screen */
+#mapScreen{
+  display:none;position:fixed;inset:0;z-index:65;
+  background:radial-gradient(circle at 50% 35%,#2b1747 0%,#140b24 65%,#080410 100%);
+  flex-direction:column;justify-content:space-between;
+}
+#mapTop{
+  display:flex;align-items:center;justify-content:space-between;
+  padding:calc(10px + env(safe-area-inset-top,0px)) 16px 10px;
+  background:linear-gradient(180deg,#592c0c,#2e1504);
+  border-bottom:2px solid #d99b38;
+}
+#mapTitle{font:800 18px Georgia,serif;color:#ffe5a3}
+#mapClose{
+  width:36px;height:36px;border-radius:8px;border:2px solid #f2b84b;
+  background:#3b1c06;color:#ffe5a3;font:900 18px sans-serif;cursor:pointer;
+}
+#mapCanvasWrap{position:relative;flex:1;width:100%;overflow:hidden}
+#mapCv{display:block;width:100%;height:100%}
+#mapBottom{
+  padding:8px 16px calc(10px + env(safe-area-inset-bottom,0px));
+  text-align:center;font:700 16px Georgia,serif;color:#ffe5a3;
+  background:linear-gradient(0deg,#592c0c,#2e1504);
+  border-top:2px solid #d99b38;
+}
+
 #rot{
   display:none;position:fixed;inset:0;z-index:99;background:#0d111a;color:#fff2e0;
   align-items:center;justify-content:center;text-align:center;font-size:24px;padding:24px;
@@ -117,6 +149,11 @@ body.editing-controls .b:active{transform:scale(1.06);cursor:grabbing}
 #logo small{
   display:block;margin-top:1vh;font:italic 700 clamp(12px,3vh,19px) Georgia,serif;
   color:#ffe3b8;letter-spacing:.08em;text-shadow:0 2px 6px rgba(0,0,0,.85);
+}
+#progCard{
+  margin-top:10px;display:inline-block;padding:6px 12px;border-radius:10px;
+  background:rgba(10,18,28,.78);border:1px solid rgba(106,240,255,.4);
+  font:700 clamp(12px,2.4vh,15px) Georgia,serif;color:#aef7ff;
 }
 #menu{
   position:absolute;right:5vw;top:24%;width:min(34vw,290px);
@@ -153,6 +190,7 @@ body.editing-controls .b:active{transform:scale(1.06);cursor:grabbing}
 </div>
 
 <input type="file" id="spFile" accept="image/*" style="display:none">
+<button id="MAPBTN" title="Open Level Node Map">Map</button>
 <button id="SPBTN" title="Optional: Load your 4-pose sprite sheet image">Load Sprite</button>
 
 <div class="b" id="L">◀</div>
@@ -163,11 +201,24 @@ body.editing-controls .b:active{transform:scale(1.06);cursor:grabbing}
 <div class="b" id="A">Sword</div>
 <div class="b" id="J">Jump</div>
 
+<div id="mapScreen">
+  <div id="mapTop">
+    <div id="mapTitle">Portal Map — <span id="mapPct">0%</span> Played</div>
+    <button id="mapClose">✕</button>
+  </div>
+  <div id="mapCanvasWrap"><canvas id="mapCv"></canvas></div>
+  <div id="mapBottom"><span id="mapRealmName">World's End Keep</span></div>
+</div>
+
 <div id="ts">
- <div id="logo"><b>Snowdigo<u>2D</u></b><small>8 Realms • Seek the Mageblade • Master the Lightning</small></div>
+ <div id="logo">
+  <b>Snowdigo<u>2D</u></b>
+  <small>8 Realms • Seek the Mageblade • Master the Lightning</small>
+  <div id="progCard">Player (<span id="menuPct">0%</span>) • <span id="menuRealm">1. Forest Realm</span></div>
+ </div>
  <div id="menu">
   <button id="m1">▶ Start</button>
-  <button id="m2">✦ Realms (8)</button>
+  <button id="m2">✦ Realms & Map</button>
   <button id="m3">✥ Controls</button>
   <button id="m4">★ Story</button>
  </div>
@@ -243,7 +294,6 @@ function startControlEditor(){
  $('ts').style.display='none';
  document.body.classList.add('editing-controls');
  $('editBar').style.display='flex';
- // Convert current visual positions to explicit left/top so dragging is exact
  BTN_IDS.forEach(id=>{
   const el=$(id);
   if(!el)return;
@@ -272,7 +322,6 @@ $('saveLayoutBtn').onclick=()=>stopControlEditor(true);
 $('resetLayoutBtn').onclick=()=>resetCustomLayout();
 $('cancelLayoutBtn').onclick=()=>stopControlEditor(false);
 
-// Pointer drag support on all .b buttons when in edit mode
 BTN_IDS.forEach(id=>{
  const el=$(id);
  let dragging=false,offsetX=0,offsetY=0;
@@ -322,7 +371,6 @@ addEventListener('keyup',e=>K[e.code]=0);
  if(hold)['pointerup','pointercancel','pointerleave'].forEach(n=>el.addEventListener(n,()=>T[k]=0));
 });
 
-// Optional custom 2x2 Sprite Sheet loader
 let spriteSheet=null;
 $('SPBTN').onclick=()=>$('spFile').click();
 $('spFile').onchange=e=>{
@@ -371,6 +419,7 @@ function rs(){
  cv.width=W*DPR;cv.height=H*DPR;
  ctx.setTransform(DPR,0,0,DPR,0,0);
  applyCustomLayout();
+ resizeMapCanvas();
 }
 addEventListener('resize',rs);rs();
 
@@ -398,6 +447,205 @@ try{
  lvl=+localStorage.getItem('sd3l')||1;
 }catch(e){}
 
+// ---------- Completion Percentage Calculation ----------
+function getPlayedPercent(){
+ // Combines unlocked realms, current realm shard/boss progress, and level progress
+ const totalRealms=Z.length;
+ const realmSpan=100/totalRealms;
+ const completedRealms=Math.min(mx,totalRealms);
+ let pct=completedRealms*realmSpan;
+ if(completedRealms<totalRealms){
+  const q=Z[Z0]||{k:3};
+  const shardRatio=q.k?Math.min(1,col/q.k):0;
+  const bossRatio=bd?1:0;
+  const inRealmProgress=((shardRatio*0.65)+(bossRatio*0.35))*realmSpan;
+  pct=Math.max(pct,Z0*realmSpan+inRealmProgress);
+ }
+ // Slight bonus from player level up to 100%
+ const levelBoost=Math.min(4,(lvl-1)*0.5);
+ return Math.max(0,Math.min(100,Math.round(pct+levelBoost)));
+}
+
+function updateProgressUI(){
+ const pct=getPlayedPercent();
+ const activeIdx=Math.min(Math.max(Z0,mx),Z.length-1);
+ const realmLabel=Z[activeIdx]?Z[activeIdx].n:'1. Forest Realm';
+ if($('menuPct'))$('menuPct').textContent=pct+'%';
+ if($('menuRealm'))$('menuRealm').textContent=realmLabel;
+ if($('mapPct'))$('mapPct').textContent=pct+'%';
+ if($('mapRealmName'))$('mapRealmName').textContent=Z[Z0]?Z[Z0].n.replace(/^\d+\.\s*/,''):'World\'s End Keep';
+}
+
+// ---------- Portal / Level Node Map Screen ----------
+const mapCv=$('mapCv'),mctx=mapCv.getContext('2d');
+let mapNodes=[];
+
+function resizeMapCanvas(){
+ const wrap=$('mapCanvasWrap');
+ if(!wrap||!mapCv)return;
+ const w=wrap.clientWidth||W,h=wrap.clientHeight||(H-96);
+ mapCv.width=w*DPR;mapCv.height=h*DPR;
+ mctx.setTransform(DPR,0,0,DPR,0,0);
+ buildMapNodes(w,h);
+ if($('mapScreen').style.display==='flex')drawMapScreen();
+}
+
+function buildMapNodes(w,h){
+ // Generates a multi-branch node layout across the 8 realms similar to the Portal map
+ mapNodes=[];
+ const cols=11;
+ const padX=w*0.09,spanX=w*0.82;
+ const midY=h*0.52;
+ const stepY=Math.min(h*0.18,62);
+
+ Z.forEach((realm,idx)=>{
+  const realmIdx=idx;
+  const unlocked=realmIdx<=mx;
+  const isBoss=(idx===Z.length-1||idx===3||idx===5);
+  const stars=realmIdx<mx?3:(realmIdx===mx?(col>=realm.k?2:(col>0?1:0)):0);
+  const xNorm=(idx/(Z.length-1));
+  const yOff=Math.sin(idx*1.45)*stepY*1.25;
+  mapNodes.push({
+   id:'r_'+idx,
+   realmIdx,
+   label:realm.n.replace(/^\d+\.\s*/,''),
+   x:padX+xNorm*spanX,
+   y:midY+yOff,
+   unlocked,
+   isBoss,
+   stars
+  });
+  // Add sub-branch node on alternate realms for rich portal path
+  if(idx<Z.length-1){
+   const nextX=padX+((idx+1)/(Z.length-1))*spanX;
+   const nextY=midY+Math.sin((idx+1)*1.45)*stepY*1.25;
+   const subY=(yOff>0)?(midY-stepY*1.35):(midY+stepY*1.35);
+   mapNodes.push({
+    id:'sub_'+idx,
+    realmIdx:idx,
+    label:realm.n.replace(/^\d+\.\s*/,'')+' Path',
+    x:(mapNodes[mapNodes.length-1].x+nextX)*0.5,
+    y:subY,
+    unlocked,
+    isBoss:false,
+    stars:realmIdx<mx?2:0,
+    isSub:true
+   });
+  }
+ });
+}
+
+function drawMapScreen(){
+ const w=mapCv.width/DPR,h=mapCv.height/DPR;
+ mctx.clearRect(0,0,w,h);
+
+ // Subtle starry night backdrop
+ mctx.fillStyle='rgba(255,255,255,0.22)';
+ for(let i=0;i<36;i++){
+  const sx=((i*97)%Math.max(100,w));
+  const sy=((i*53)%Math.max(80,h));
+  mctx.fillRect(sx,sy,2,2);
+ }
+
+ // Draw connecting lines between sequential nodes
+ mctx.lineWidth=3.5;
+ for(let i=0;i<mapNodes.length-1;i++){
+  const a=mapNodes[i],b=mapNodes[i+1];
+  mctx.strokeStyle=(a.unlocked&&b.unlocked)?'#e8b348':'#54486b';
+  mctx.beginPath();mctx.moveTo(a.x,a.y);mctx.lineTo(b.x,b.y);mctx.stroke();
+ }
+
+ // Draw hexagons / nodes
+ for(const nd of mapNodes){
+  const r=nd.isSub?16:23;
+  mctx.save();mctx.translate(nd.x,nd.y);
+
+  // Highlight active current realm
+  if(!nd.isSub && nd.realmIdx===Z0){
+   mctx.shadowColor='#38e8ff';mctx.shadowBlur=18;
+  }
+
+  // Hexagon shape
+  mctx.beginPath();
+  for(let k=0;k<6;k++){
+   const ang=k*Math.PI/3;
+   const px=Math.cos(ang)*r,py=Math.sin(ang)*r;
+   if(k===0)mctx.moveTo(px,py);else mctx.lineTo(px,py);
+  }
+  mctx.closePath();
+
+  if(!nd.unlocked){
+   mctx.fillStyle='#4a4458';mctx.strokeStyle='#7a728c';
+  }else if(nd.realmIdx===Z0 && !nd.isSub){
+   mctx.fillStyle='#f5c451';mctx.strokeStyle='#38e8ff';
+  }else{
+   mctx.fillStyle='#d99b38';mctx.strokeStyle='#ffe49e';
+  }
+  mctx.lineWidth=2.5;
+  mctx.fill();mctx.stroke();
+  mctx.shadowBlur=0;
+
+  if(!nd.unlocked){
+   mctx.fillStyle='#e5def5';mctx.font='bold 13px sans-serif';mctx.textAlign='center';mctx.textBaseline='middle';
+   mctx.fillText('🔒',0,0);
+  }else if(nd.isBoss){
+   mctx.fillStyle='#241208';mctx.font='bold 15px sans-serif';mctx.textAlign='center';mctx.textBaseline='middle';
+   mctx.fillText('☠',0,-1);
+  }else if(!nd.isSub){
+   mctx.fillStyle='#241208';mctx.font='bold 12px Georgia,serif';mctx.textAlign='center';mctx.textBaseline='middle';
+   mctx.fillText(String(nd.realmIdx+1),0,0);
+  }
+
+  // Stars below node
+  if(nd.unlocked && !nd.isSub){
+   const stStr='★'.repeat(nd.stars)+'☆'.repeat(Math.max(0,3-nd.stars));
+   mctx.fillStyle='#ffe885';mctx.font='bold 11px sans-serif';mctx.textAlign='center';
+   mctx.fillText(stStr,0,r+12);
+  }
+
+  // Node name caption
+  if(!nd.isSub){
+   mctx.fillStyle='#fff6e8';mctx.font='bold 10px Georgia,serif';mctx.textAlign='center';
+   mctx.fillText(nd.label,0,-r-8);
+  }
+
+  mctx.restore();
+ }
+}
+
+function openMapScreen(){
+ updateProgressUI();
+ resizeMapCanvas();
+ $('mapScreen').style.display='flex';
+ drawMapScreen();
+}
+
+function closeMapScreen(){
+ $('mapScreen').style.display='none';
+}
+
+$('MAPBTN').onclick=()=>openMapScreen();
+$('mapClose').onclick=()=>closeMapScreen();
+
+mapCv.addEventListener('pointerdown',e=>{
+ const rect=mapCv.getBoundingClientRect();
+ const mxPos=e.clientX-rect.left,myPos=e.clientY-rect.top;
+ for(const nd of mapNodes){
+  const hitR=nd.isSub?22:30;
+  if(Math.hypot(mxPos-nd.x,myPos-nd.y)<=hitR){
+   if(!nd.unlocked){
+    banner('Locked! Complete earlier realms to unlock.');
+    return;
+   }
+   closeMapScreen();
+   $('ts').style.display='none';
+   ov.style.display='none';
+   go(nd.realmIdx);
+   return;
+  }
+ }
+});
+
 const p={x:0,y:0,vx:0,vy:0,hp:5,mhp:5,atkDmg:1,magDmg:2,f:1,g:0,j:0,atk:0,cs:0,cc:0,mc:0,sx:0,coy:0,jb:0,sq:0,gy:0,spd:7.4};
 
 function burst(x,y,c,n){
@@ -419,6 +667,7 @@ function saveProg(){
   localStorage.setItem('sd3x',xp);
   localStorage.setItem('sd3l',lvl);
  }catch(e){}
+ updateProgressUI();
 }
 function gainXp(amt){
  xp+=amt;
@@ -495,6 +744,7 @@ function load(z){
  for(let i=0;i<80;i++){
   ambient.push({x:Math.random()*60-30,y:Math.random()*16-2,vx:(q.id=='volcano'||q.id=='ocean')?(Math.random()-.5)*1.2:1.4+Math.random()*2,vy:(q.id=='volcano'||q.id=='ocean')?1.2+Math.random()*1.8:(Math.random()-.5)*.6,sz:1.5+Math.random()*2.5,c:i%2==0?sparkCol:'#ffbe55'});
  }
+ updateProgressUI();
 }
 
 function enterRoom(){
@@ -540,6 +790,7 @@ function chk(){
  if(!open&&col>=Z[Z0].k&&bd){
   open=1;banner('Portal Gate open! Step inside.');sfx(660,.4,'triangle',.06,990);
  }
+ updateProgressUI();
 }
 function hurt(f){
  if(inv>0||st!='play')return;
@@ -578,11 +829,19 @@ function over(){
 }
 function menu(){
  st='menu';ov.style.display='none';const t=$('ts');t.style.display='block';
- $('m1').textContent=mx?'▶ Continue':'▶ Start';
+ updateProgressUI();
+ $('m1').textContent=(mx||getPlayedPercent()>0)?'▶ Continue ('+getPlayedPercent()+'%)':'▶ Start';
  $('m1').onclick=()=>{lockL();t.style.display='none';go(Math.min(mx,Z.length-1))};
  $('m2').onclick=()=>{
-  info('Choose Realm (8 Maps)','');
+  info('Choose Realm or Open Map ('+getPlayedPercent()+'% Played)','');
   const tx=$('tx');tx.innerHTML='';
+  const mapOpenBtn=document.createElement('button');
+  mapOpenBtn.className='mp';
+  mapOpenBtn.style.background='rgba(242,184,75,.28)';
+  mapOpenBtn.style.borderColor='#f2b84b';
+  mapOpenBtn.textContent='🗺 Open Portal Node Map';
+  mapOpenBtn.onclick=()=>{ov.style.display='none';openMapScreen()};
+  tx.appendChild(mapOpenBtn);
   Z.forEach((q,i)=>{
    const btn=document.createElement('button');
    btn.className='mp';btn.disabled=i>mx;
@@ -605,7 +864,7 @@ function menu(){
 }
 function next(){
  mx=Math.max(mx,Z0+1);saveProg();
- if(Z0==Z.length-1){st='win';ovl('Victory!','All 8 Realms saved and the Mageblade is restored!','Play again',()=>go(0));return}
+ if(Z0==Z.length-1){st='win';ovl('Victory! (100%)','All 8 Realms saved and the Mageblade is restored!','Play again',()=>go(0));return}
  go(Z0+1);
 }
 
@@ -1247,7 +1506,8 @@ function draw(){
   drawAnimeHero(toSX(p.x),toSY(p.y),ppm*1.12,p.f,pose,ph,atkProg);
  }
 
- $('h1').textContent='❤'.repeat(Math.max(0,p.hp))+'  Lv.'+lvl+'  |  🪙 '+coins;
+ const pctNow=getPlayedPercent();
+ $('h1').textContent='❤'.repeat(Math.max(0,p.hp))+'  Lv.'+lvl+' ('+pctNow+'%)  |  🪙 '+coins;
  $('h2').textContent=inside
   ?(roomChest?.opened?'Chest Opened! Exit left':roomChest?.unlocked?'Unlock Chest (Enter)!':'Defeat Guard!')
   :(open?'Go to the portal ►':q.w+' '+col+'/'+q.k+(boss&&!bd?'  |  '+q.boss.n+' '+boss.hp+'/'+boss.mh:''));
