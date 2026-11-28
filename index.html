@@ -230,7 +230,7 @@ body.editing-controls .b:active{transform:scale(1.06);cursor:grabbing}
 
 <script>
 const $=id=>document.getElementById(id),ov=$('ov'),flEl=$('flash'),cv=$('cv'),ctx=cv.getContext('2d');
-const T={l:0,r:0,jh:0,jp:0,ap:0,mp:0,sp:0,ep:0},K={};
+const T={l:0,r:0,jh:0,jp:0,ap:0,mp:0,sp:0,ep:0,up:0},K={};
 let editingControls=false,prevStateBeforeEdit='menu';
 
 const BTN_IDS=['L','R','EN','SH','M','A','J'];
@@ -413,14 +413,14 @@ let W=window.innerWidth||800,H=window.innerHeight||450,DPR=Math.min(window.devic
 let mapNodes=[];
 
 const Z=[
- {id:'forest',n:'1. Forest Realm',m:'Collect 3 Forest Shards, clear cottage guards, & defeat Corruptor.',w:'Shards',k:3,e:4,sky:['#185a9d','#43cea2','#b8f2e6'],mt:['#256e66','#194d48'],c:'#4c3626',cap:'#43b559',ec:'#397a49',sc:'#38e8ff',f0:196,g:30,village:1,boss:{n:'Corruptor',hp:8,c:'#2f6327',c2:'#ffbe2e'}},
- {id:'desert',n:'2. Desert Realm',m:'Cross sun-scorched dunes & ruins, gather 3 Sun Shards, & beat Sand Golem.',w:'Shards',k:3,e:5,sky:['#c96a1b','#f2a33c','#ffe39f'],mt:['#c77a32','#9e581e'],c:'#9c682b',cap:'#e6b355',ec:'#b8651e',sc:'#4affd0',f0:165,g:30,sp:1,boss:{n:'Sand Golem',hp:10,c:'#a66d24',c2:'#ffd23a'}},
- {id:'ice',n:'3. Ice Kingdom',m:'Scale frozen peaks, collect 3 Frost Shards, & defeat Ice Overseer.',w:'Shards',k:3,e:5,sky:['#16447a','#5ca4e6','#d4f0ff'],mt:['#689fd1','#4477a8'],c:'#5b7b9e',cap:'#e8f8ff',ec:'#2b78b5',sc:'#6af0ff',f0:174,g:30,ice:1,boss:{n:'Ice Overseer',hp:12,c:'#3f8ec9',c2:'#ffffff'}},
- {id:'volcano',n:'4. Volcano Realm',m:'Leap over molten lava & erupting peaks! Gather 4 Magma Shards & beat Flame King.',w:'Shards',k:4,e:6,sky:['#26070c','#7d1919','#eb5e1c'],mt:['#421114','#29080a'],c:'#2e1c1c',cap:'#b8321a',ec:'#d4381c',sc:'#ffd23a',f0:147,g:30,lava:1,boss:{n:'Flame King',hp:15,c:'#42161c',c2:'#ff7b1a'}},
- {id:'ocean',n:'5. Ocean Realm',m:'Swim past sunken ships & glowing coral! Gather 4 Pearl Shards & beat Leviathan.',w:'Shards',k:4,e:6,sky:['#04243b','#0b5378','#1fa2b8'],mt:['#0a415e','#06293d'],c:'#1b4d5c',cap:'#36b5a0',ec:'#d94c8c',sc:'#7cf9ff',f0:155,g:17,fl:1,boss:{n:'Abyss Leviathan',hp:17,c:'#134f6e',c2:'#ff6ab0'}},
- {id:'haunted',n:'6. Haunted Kingdom',m:'Brave the moonlit manor & dead woods! Gather 4 Soul Shards & beat Dread Lord.',w:'Shards',k:4,e:7,sky:['#0f0c24','#29214d','#55487d'],mt:['#1d1738','#120e24'],c:'#2b2638',cap:'#534b6e',ec:'#7d389c',sc:'#b87aff',f0:138,g:30,maw:1,boss:{n:'Dread Lord',hp:19,c:'#2a1d42',c2:'#b87aff'}},
- {id:'sky',n:'7. Sky Kingdom',m:'Soar across floating cloud islands! Gather 4 Aether Shards & beat Sky Archon.',w:'Shards',k:4,e:7,sky:['#2978d6','#6cb8ff','#e3f4ff'],mt:['#9cc8f5','#73a8e0'],c:'#6b5239',cap:'#57c966',ec:'#3b82d6',sc:'#fff066',f0:220,g:22,fl:1,boss:{n:'Sky Archon',hp:21,c:'#2c64b8',c2:'#ffe14a'}},
- {id:'dark',n:'8. Dark Realm',m:'Storm the chained obsidian citadel! Collect 5 Final Shards & defeat Master of Chaos!',w:'Shards',k:5,e:8,sky:['#090414','#230c42','#4e1985'],mt:['#18082e','#0e041c'],c:'#1c1429',cap:'#6929b8',ec:'#a832d9',sc:'#38e8ff',f0:131,g:30,maw:1,boss:{n:'Master of Chaos',hp:26,c:'#1e0c3b',c2:'#d65cff'}}
+ {id:'forest',n:'1. Forest Realm',m:'Collect 3 Forest Shards, clear cottage guards, & defeat Corruptor.',w:'Shards',k:3,e:4,sky:['#185a9d','#43cea2','#b8f2e6'],mt:['#256e66','#194d48'],c:'#4c3626',cap:'#43b559',ec:'#397a49',sc:'#38e8ff',f0:196,g:34,village:1,boss:{n:'Corruptor',hp:8,c:'#2f6327',c2:'#ffbe2e'}},
+ {id:'desert',n:'2. Desert Realm',m:'Cross sun-scorched dunes & ruins, gather 3 Sun Shards, & beat Sand Golem.',w:'Shards',k:3,e:5,sky:['#c96a1b','#f2a33c','#ffe39f'],mt:['#c77a32','#9e581e'],c:'#9c682b',cap:'#e6b355',ec:'#b8651e',sc:'#4affd0',f0:165,g:34,sp:1,boss:{n:'Sand Golem',hp:10,c:'#a66d24',c2:'#ffd23a'}},
+ {id:'ice',n:'3. Ice Kingdom',m:'Scale frozen peaks, collect 3 Frost Shards, & defeat Ice Overseer.',w:'Shards',k:3,e:5,sky:['#16447a','#5ca4e6','#d4f0ff'],mt:['#689fd1','#4477a8'],c:'#5b7b9e',cap:'#e8f8ff',ec:'#2b78b5',sc:'#6af0ff',f0:174,g:34,ice:1,boss:{n:'Ice Overseer',hp:12,c:'#3f8ec9',c2:'#ffffff'}},
+ {id:'volcano',n:'4. Volcano Realm',m:'Leap over molten lava & erupting peaks! Gather 4 Magma Shards & beat Flame King.',w:'Shards',k:4,e:6,sky:['#26070c','#7d1919','#eb5e1c'],mt:['#421114','#29080a'],c:'#2e1c1c',cap:'#b8321a',ec:'#d4381c',sc:'#ffd23a',f0:147,g:34,lava:1,boss:{n:'Flame King',hp:15,c:'#42161c',c2:'#ff7b1a'}},
+ {id:'ocean',n:'5. Ocean Realm',m:'Swim past sunken ships & glowing coral! Gather 4 Pearl Shards & beat Leviathan.',w:'Shards',k:4,e:6,sky:['#04243b','#0b5378','#1fa2b8'],mt:['#0a415e','#06293d'],c:'#1b4d5c',cap:'#36b5a0',ec:'#d94c8c',sc:'#7cf9ff',f0:155,g:19,fl:1,boss:{n:'Abyss Leviathan',hp:17,c:'#134f6e',c2:'#ff6ab0'}},
+ {id:'haunted',n:'6. Haunted Kingdom',m:'Brave the moonlit manor & dead woods! Gather 4 Soul Shards & beat Dread Lord.',w:'Shards',k:4,e:7,sky:['#0f0c24','#29214d','#55487d'],mt:['#1d1738','#120e24'],c:'#2b2638',cap:'#534b6e',ec:'#7d389c',sc:'#b87aff',f0:138,g:34,maw:1,boss:{n:'Dread Lord',hp:19,c:'#2a1d42',c2:'#b87aff'}},
+ {id:'sky',n:'7. Sky Kingdom',m:'Soar across floating cloud islands! Gather 4 Aether Shards & beat Sky Archon.',w:'Shards',k:4,e:7,sky:['#2978d6','#6cb8ff','#e3f4ff'],mt:['#9cc8f5','#73a8e0'],c:'#6b5239',cap:'#57c966',ec:'#3b82d6',sc:'#fff066',f0:220,g:24,fl:1,boss:{n:'Sky Archon',hp:21,c:'#2c64b8',c2:'#ffe14a'}},
+ {id:'dark',n:'8. Dark Realm',m:'Storm the chained obsidian citadel! Collect 5 Final Shards & defeat Master of Chaos!',w:'Shards',k:5,e:8,sky:['#090414','#230c42','#4e1985'],mt:['#18082e','#0e041c'],c:'#1c1429',cap:'#6929b8',ec:'#a832d9',sc:'#38e8ff',f0:131,g:34,maw:1,boss:{n:'Master of Chaos',hp:26,c:'#1e0c3b',c2:'#d65cff'}}
 ];
 
 let pl,en,sh,pj,fx,hz,hr,ch,AR,boss,portal,shopSpot,doors,inside,roomEnemy,roomChest,props,ambient;
@@ -626,7 +626,12 @@ function rs(){
 }
 addEventListener('resize',rs);
 
-const p={x:0,y:0,vx:0,vy:0,hp:5,mhp:5,atkDmg:1,magDmg:2,f:1,g:0,j:0,atk:0,cs:0,cc:0,mc:0,sx:0,coy:0,jb:0,sq:0,gy:0,spd:7.4};
+// Swordigo-tuned character physics & directional slash state
+const p={
+ x:0,y:0,vx:0,vy:0,hp:5,mhp:5,atkDmg:1,magDmg:2,
+ f:1,g:0,j:0,atk:0,upSlash:0,cs:0,cc:0,mc:0,sx:0,coy:0,jb:0,sq:0,gy:0,
+ spd:8.6,turnLag:0
+};
 
 function burst(x,y,c,n){
  for(let i=0;i<n;i++){
@@ -669,8 +674,8 @@ function load(z){
  inside=0;roomEnemy=null;roomChest=null;
  pl=[];en=[];sh=[];pj=[];fx=[];hz=[];hr=[];ch=[];doors=[];shopSpot=null;props=[];ambient=[];
  col=0;open=0;bd=0;boss=null;inv=0;
- Object.assign(p,{x:0,y:0,vx:0,vy:0,hp:p.mhp,f:1,g:0,j:0,atk:0,cs:0,cc:0,mc:0,sx:0,coy:0,jb:0,sq:0,gy:0});
- cx=0;cy=1.5;
+ Object.assign(p,{x:0,y:0,vx:0,vy:0,hp:p.mhp,f:1,g:0,j:0,atk:0,upSlash:0,cs:0,cc:0,mc:0,sx:0,coy:0,jb:0,sq:0,gy:0,turnLag:0});
+ cx=0;cy=1.6;
 
  const gs=[],Lm=50+z*5;let x=-6;
  while(x<Lm){
@@ -777,12 +782,12 @@ function chk(){
 }
 function hurt(f){
  if(inv>0||st!='play')return;
- p.hp--;inv=1.3;p.vy=8;p.vx=f*7;shk=.32;sfx(160,.25,'sawtooth',.07,60);
+ p.hp--;inv=1.3;p.vy=8.5;p.vx=f*7.2;shk=.32;sfx(160,.25,'sawtooth',.07,60);
  if(p.hp<=0)over();
 }
 function hit(e,d,f){
  const totalDmg=d*p.atkDmg;
- e.hp-=totalDmg;e.fl=.16;e.x+=f*(e.t=='b'?.15:.65);shk=Math.max(shk,.15);
+ e.hp-=totalDmg;e.fl=.16;e.x+=f*(e.t=='b'?.15:.72);shk=Math.max(shk,.15);
  sfx(240,.08,'sawtooth',.05);
  burst(e.x,e.y,trinket!='None'?'#ff8c24':'#38e8ff',8);
  if(e.hp<=0){
@@ -844,7 +849,7 @@ function menu(){
   });
  };
  $('m3').onclick=()=>{
-  info('Controls & Custom Layout','Move: ← →  |  Enter Room / Chest: F / Enter\nShop: E  |  Jump: Space (Double/Triple Jump)\nLightning Sword: J (3-Hit Combo + Deflect)  |  Magic Bolt: K\n\nTap "Customize Layout" below to drag Jump or any button anywhere!');
+  info('Controls & Custom Layout','Move Left / Right: ◀ ▶ (Quick Snappy Turn)\nJump / Double Jump: Jump / Space (Hold for high jump)\nSword Left / Right: Sword / J (3-Hit Combo + Deflect)\nUpward Sword Slash: Hold Up/Jump + Sword (or W / ↑ + J)\nMagic Bolt: Bolt / K  |  Enter / Chest: Enter / F  |  Shop: Shop / E\n\nTap "Customize Layout" below to drag any button anywhere!');
   const tx=$('tx');
   const custBtn=document.createElement('button');
   custBtn.className='mp';
@@ -867,23 +872,47 @@ function upd(dt){
  const l=T.l||K.ArrowLeft||K.KeyA;
  const r=T.r||K.ArrowRight||K.KeyD;
  const jh=T.jh||K.Space||K.ArrowUp||K.KeyW;
+ const upAim=K.ArrowUp||K.KeyW||(T.jh&&!p.g);
  const dir=(r?1:0)-(l?1:0);
- if(dir)p.f=dir;
 
- const ac=(!inside&&q.ice&&p.g)?8:(p.g?92:(!inside&&q.fl?26:46));
- p.vx+=Math.max(-ac*dt,Math.min(ac*dt,dir*p.spd-p.vx));
- p.coy-=dt;p.jb-=dt;
- if(T.jp){T.jp=0;p.jb=.12}
-
- const grav=inside?30:q.g,floatMode=!inside&&q.fl;
- if(p.jb>0){
-  if(p.coy>0){p.vy=floatMode?9.5:12.4;p.j=1;p.jb=0;p.coy=0;sfx(380,.12,'square',.04,620)}
-  else if(p.j<(floatMode?3:2)){p.vy=floatMode?8.8:11.2;p.j++;p.jb=0;sfx(520,.12,'square',.04,800);burst(p.x,p.y+.2,'#aef7ff',6)}
+ // Swordigo-style crisp left/right turn & momentum
+ if(dir&&dir!==p.f){
+  p.f=dir;
+  p.turnLag=0.07;
+  if(p.g){
+   p.vx*=0.25;
+   burst(p.x,p.y+0.08,'rgba(255,255,255,0.55)',3);
+  }
  }
- if(!jh&&p.vy>4&&!floatMode)p.vy-=70*dt;
+ p.turnLag=Math.max(0,p.turnLag-dt);
+
+ const reversing=(dir!==0&&Math.sign(p.vx)===-dir);
+ const baseAccel=(!inside&&q.ice&&p.g)?11:(p.g?(reversing?155:115):(!inside&&q.fl?32:58));
+ const friction=(p.g&&dir===0)?95:baseAccel;
+ const targetVx=dir*p.spd;
+ p.vx+=Math.max(-friction*dt,Math.min(friction*dt,targetVx-p.vx));
+
+ // Swordigo-style snappy jump, double-jump somersault & variable jump arc
+ p.coy-=dt;p.jb-=dt;
+ if(T.jp){T.jp=0;p.jb=.13}
+
+ const grav=inside?34:q.g,floatMode=!inside&&q.fl;
+ if(p.jb>0){
+  if(p.coy>0){
+   p.vy=floatMode?10.4:13.6;
+   p.j=1;p.jb=0;p.coy=0;p.sq=0.6;
+   sfx(390,.11,'square',.045,660);
+  }else if(p.j<(floatMode?3:2)){
+   p.vy=floatMode?9.6:12.2;
+   p.j++;p.jb=0;
+   sfx(540,.12,'square',.045,860);
+   burst(p.x,p.y+.25,'#aef7ff',7);
+  }
+ }
+ if(!jh&&p.vy>4.5&&!floatMode)p.vy-=82*dt;
 
  const py=p.y,wg=p.g;
- p.vy=Math.max(-(floatMode?7:26),p.vy-grav*dt);
+ p.vy=Math.max(-(floatMode?8:28),p.vy-grav*dt);
  const minX=inside?-7.2:-4.5,maxX=inside?7.2:AR.b-.5;
  p.x=Math.max(minX,Math.min(maxX,p.x+p.vx*dt));
  p.y+=p.vy*dt;p.g=0;p.gy=-99;
@@ -891,14 +920,14 @@ function upd(dt){
  if(inside){
   if(p.y<=0){
    if(!wg&&p.vy<-9){p.sq=1;burst(p.x,0,'#ffe0a8',5)}
-   p.y=0;p.vy=0;p.g=1;p.coy=.1;p.j=0;p.gy=0;
+   p.y=0;p.vy=0;p.g=1;p.coy=.11;p.j=0;p.gy=0;
   }
  }else{
   for(const f of pl)if(p.x+.35>f.a&&p.x-.35<f.b){
    if(f.y<=p.y+.3&&f.y>p.gy)p.gy=f.y;
    if(p.vy<=0&&py>=f.y-.05&&p.y<=f.y){
     if(!wg&&p.vy<-9){p.sq=1;burst(p.x,f.y,'#aef7ff',5)}
-    p.y=f.y;p.vy=0;p.g=1;p.coy=.1;p.j=0;
+    p.y=f.y;p.vy=0;p.g=1;p.coy=.11;p.j=0;
     if(f.y==0&&p.x>f.a+1&&p.x<f.b-1)p.sx=p.x;
    }
   }
@@ -910,22 +939,39 @@ function upd(dt){
 
  p.atk=Math.max(0,p.atk-dt);p.mc-=dt;inv-=dt;p.cc-=dt;p.sq=Math.max(0,p.sq-dt*5);
 
- if(T.ap){T.ap=0;if(p.atk<=.06){
-  p.cs=p.cc>0?(p.cs+1)%3:0;p.cc=.78;p.atk=.32;
-  sfx(340,.1,'sawtooth',.045,160);
-  burst(p.x+p.f*1.1,p.y+1.1,'#38e8ff',7);
+ // Swordigo-style Left, Right & Upward Sword Slash
+ if(T.ap){T.ap=0;if(p.atk<=.05){
+  p.upSlash=upAim?1:0;
+  p.cs=p.upSlash?0:(p.cc>0?(p.cs+1)%3:0);
+  p.cc=.78;p.atk=.28;
+  if(p.g&&!p.upSlash)p.vx+=p.f*1.8;
+  sfx(p.upSlash?420:350,.09,'sawtooth',.048,p.upSlash?220:165);
+  burst(p.upSlash?p.x:p.x+p.f*1.2,p.upSlash?p.y+2.0:p.y+1.1,'#38e8ff',7);
+
+  // Deflect enemy projectiles (left, right, or upward)
   for(const b of pj){
    if(!b.own){
-    const dx=(b.x-p.x)*p.f,dy=b.y-(p.y+1.1);
-    if(dx>-.4&&dx<2.4&&Math.abs(dy)<1.4){
-     b.own=1;b.vx=p.f*17;b.vy=0;b.life=2.4;b.c='#38e8ff';
-     burst(b.x,b.y,'#38e8ff',14);triggerFlash(.5);sfx(780,.14,'triangle',.06,1200);
+    if(p.upSlash){
+     const dx=Math.abs(b.x-p.x),dy=b.y-(p.y+1.1);
+     if(dx<1.6&&dy>-0.2&&dy<2.7){
+      b.own=1;b.vx=p.f*5;b.vy=17;b.life=2.4;b.c='#38e8ff';
+      burst(b.x,b.y,'#38e8ff',14);triggerFlash(.5);sfx(780,.14,'triangle',.06,1200);
+     }
+    }else{
+     const dx=(b.x-p.x)*p.f,dy=b.y-(p.y+1.1);
+     if(dx>-.4&&dx<2.5&&Math.abs(dy)<1.45){
+      b.own=1;b.vx=p.f*18;b.vy=0;b.life=2.4;b.c='#38e8ff';
+      burst(b.x,b.y,'#38e8ff',14);triggerFlash(.5);sfx(780,.14,'triangle',.06,1200);
+     }
     }
    }
   }
+
   if(inside&&roomEnemy&&roomEnemy.alive){
-   const dx=(roomEnemy.x-p.x)*p.f,dy=roomEnemy.y-(p.y+.6);
-   if(dx>-.3&&dx<2.3&&Math.abs(dy)<1.4){
+   const hitMatch=p.upSlash
+    ?(Math.abs(roomEnemy.x-p.x)<1.6&&(roomEnemy.y-(p.y+.6))>-0.2&&(roomEnemy.y-(p.y+.6))<2.7)
+    :(((roomEnemy.x-p.x)*p.f)>-.3&&((roomEnemy.x-p.x)*p.f)<2.4&&Math.abs(roomEnemy.y-(p.y+.6))<1.45);
+   if(hitMatch){
     roomEnemy.hp-=(p.cs==2?2:1)*p.atkDmg;roomEnemy.fl=.16;roomEnemy.x+=p.f*.6;
     shk=Math.max(shk,.15);burst(roomEnemy.x,roomEnemy.y,'#38e8ff',9);sfx(240,.08,'sawtooth',.05);
     if(roomEnemy.hp<=0){
@@ -936,14 +982,21 @@ function upd(dt){
   }
   if(!inside){
    for(const e of en.slice()){
-    const dx=(e.x-p.x)*p.f,dy=e.y-(p.y+.95);
-    if(dx>-.3&&dx<(p.cs==2?2.5:1.9)+e.r&&Math.abs(dy)<1.4+e.h)hit(e,p.cs==2?2:1,p.f);
+    if(p.upSlash){
+     const dx=Math.abs(e.x-p.x),dy=e.y-(p.y+.95);
+     if(dx<1.55+e.r&&dy>-0.2&&dy<2.65+e.h)hit(e,1,p.f*0.4);
+    }else{
+     const dx=(e.x-p.x)*p.f,dy=e.y-(p.y+.95);
+     if(dx>-.3&&dx<(p.cs==2?2.6:2.05)+e.r&&Math.abs(dy)<1.45+e.h)hit(e,p.cs==2?2:1,p.f);
+    }
    }
   }
  }}
 
  if(T.mp){T.mp=0;if(p.mc<=0){
-  p.mc=.65;ball(p.x+p.f*.7,p.y+1.15,p.f*14,0,1,'#38e8ff');
+  p.mc=.65;
+  if(upAim)ball(p.x,p.y+1.8,p.f*3,15,1,'#38e8ff');
+  else ball(p.x+p.f*.7,p.y+1.15,p.f*14.5,0,1,'#38e8ff');
   sfx(540,.18,'sawtooth',.045,220);
  }}
 
@@ -972,7 +1025,7 @@ function upd(dt){
   if(roomEnemy.x<roomEnemy.x0)roomEnemy.d=1;
   if(Math.abs(roomEnemy.x-p.x)<.85&&Math.abs(roomEnemy.y-(p.y+.85))<1.1){
    if(p.vy<-1&&p.y>roomEnemy.y+.2){
-    roomEnemy.hp-=p.atkDmg;roomEnemy.fl=.16;p.vy=10;p.j=1;burst(roomEnemy.x,roomEnemy.y,'#38e8ff',8);
+    roomEnemy.hp-=p.atkDmg;roomEnemy.fl=.16;p.vy=11;p.j=1;burst(roomEnemy.x,roomEnemy.y,'#38e8ff',8);
     if(roomEnemy.hp<=0){
      roomEnemy.alive=0;coins+=25;gainXp(20);
      if(roomChest){roomChest.unlocked=1;banner('Guard Defeated! Reward Chest Unlocked!')}
@@ -1005,7 +1058,7 @@ function upd(dt){
    }
    const dy=e.y-(p.y+.95);
    if(Math.abs(e.x-p.x)<e.r+.35&&Math.abs(dy)<e.h+.9){
-    if(e.t!='b'&&p.vy<-1&&p.y>e.y+e.h*.3){hit(e,1,0);p.vy=11;p.j=1;sfx(700,.1,'square',.05,900)}
+    if(e.t!='b'&&p.vy<-1&&p.y>e.y+e.h*.3){hit(e,1,0);p.vy=11.5;p.j=1;sfx(700,.1,'square',.05,900)}
     else hurt(Math.sign(p.x-e.x)||1);
    }
   }
@@ -1155,7 +1208,7 @@ function drawRealmProp(q,pr,sx,sy){
  ctx.restore();
 }
 
-function drawAnimeHero(sx,sy,scale,facing,pose,phase,atkProg){
+function drawAnimeHero(sx,sy,scale,facing,pose,phase,atkProg,isUpSlash,comboStep,doubleJumpSpin){
  ctx.save();
  ctx.translate(sx,sy);
  ctx.scale(facing,1);
@@ -1176,6 +1229,12 @@ function drawAnimeHero(sx,sy,scale,facing,pose,phase,atkProg){
  ctx.fillStyle='rgba(0,0,0,0.38)';
  ctx.beginPath();ctx.ellipse(0,2,36,8,0,0,Math.PI*2);ctx.fill();
 
+ if(doubleJumpSpin>0){
+  ctx.translate(0,-45);
+  ctx.rotate(doubleJumpSpin*Math.PI*2);
+  ctx.translate(0,45);
+ }
+
  let bodyTilt=0,bobY=0,lHip=0.25,lKnee=0.2,rHip=-0.35,rKnee=0.35,swAng=-0.55;
  if(pose=='run'){
   bodyTilt=0.24;bobY=Math.abs(Math.sin(phase))*5;
@@ -1185,8 +1244,16 @@ function drawAnimeHero(sx,sy,scale,facing,pose,phase,atkProg){
  }else if(pose=='jump'){
   bodyTilt=0.12;lHip=0.65;lKnee=0.95;rHip=-0.45;rKnee=0.85;swAng=-1.2;
  }else if(pose=='slash'){
-  bodyTilt=0.28;lHip=0.55;lKnee=0.4;rHip=-0.65;rKnee=0.25;
-  swAng=-1.4+atkProg*2.75;
+  if(isUpSlash){
+   bodyTilt=-0.12;lHip=0.35;lKnee=0.3;rHip=-0.4;rKnee=0.3;
+   swAng=-2.9+atkProg*1.75;
+  }else if(comboStep===1){
+   bodyTilt=0.32;lHip=0.65;lKnee=0.35;rHip=-0.7;rKnee=0.2;
+   swAng=1.2-atkProg*2.65;
+  }else{
+   bodyTilt=0.28;lHip=0.55;lKnee=0.4;rHip=-0.65;rKnee=0.25;
+   swAng=-1.45+atkProg*2.85;
+  }
  }else{
   bobY=Math.sin(tt*3)*2.2;
   swAng=-0.48+Math.sin(tt*2.5)*0.05;
@@ -1303,14 +1370,23 @@ function drawAnimeHero(sx,sy,scale,facing,pose,phase,atkProg){
  ctx.restore();
  ctx.restore();
 
+ // Swordigo-style Left/Right & Upward Sword Arc Trail
  if(pose=='slash'){
   ctx.save();
-  ctx.translate(12,-58);
   ctx.shadowColor='#38e8ff';ctx.shadowBlur=22;
-  ctx.strokeStyle='rgba(110,245,255,0.92)';ctx.lineWidth=10*(1-atkProg*0.5);
-  ctx.beginPath();ctx.arc(0,0,76,-1.25,1.15);ctx.stroke();
-  ctx.strokeStyle='#ffffff';ctx.lineWidth=3.5;
-  ctx.beginPath();ctx.arc(0,0,76,-1.15,1.05);ctx.stroke();
+  ctx.strokeStyle='rgba(110,245,255,0.92)';ctx.lineWidth=11*(1-atkProg*0.45);
+  if(isUpSlash){
+   ctx.translate(2,-78);
+   ctx.beginPath();ctx.arc(0,0,78,-2.65,-0.45);ctx.stroke();
+   ctx.strokeStyle='#ffffff';ctx.lineWidth=3.5;
+   ctx.beginPath();ctx.arc(0,0,78,-2.5,-0.6);ctx.stroke();
+  }else{
+   ctx.translate(12,-58);
+   const rArc=comboStep===2?88:78;
+   ctx.beginPath();ctx.arc(0,0,rArc,-1.25,1.15);ctx.stroke();
+   ctx.strokeStyle='#ffffff';ctx.lineWidth=3.5;
+   ctx.beginPath();ctx.arc(0,0,rArc,-1.15,1.05);ctx.stroke();
+  }
   ctx.restore();
  }
 
@@ -1318,18 +1394,19 @@ function drawAnimeHero(sx,sy,scale,facing,pose,phase,atkProg){
 }
 
 function draw(){
- const q=Z[Z0],sp=Math.min(1,Math.abs(p.vx)/p.spd),air=!p.g,ph=tt*(12+sp*6);
+ const q=Z[Z0],sp=Math.min(1,Math.abs(p.vx)/p.spd),air=!p.g,ph=tt*(13+sp*6);
  shk=Math.max(0,shk-0.016);
  const kx=(Math.random()-.5)*shk*28,ky=(Math.random()-.5)*shk*28;
 
- const targetX=inside?p.x*.25:p.x+p.f*1.8;
- const targetY=inside?1.6:Math.max(p.y,0)*.55+2.1;
+ const targetX=inside?p.x*.25:p.x+p.f*2.2;
+ const targetY=inside?1.6:Math.max(p.y,0)*.52+2.3;
  cx+=(targetX-cx)*.12;
  cy+=(targetY-cy)*.1;
 
- const ppm=Math.min(W,H)*0.115;
+ // Reduced zoom (wider view like Swordigo)
+ const ppm=Math.min(W,H)*0.078;
  const toSX=wx=>W*0.5+(wx-cx)*ppm+kx;
- const toSY=wy=>H*0.76-(wy-cy+1.6)*ppm+ky;
+ const toSY=wy=>H*0.78-(wy-cy+1.6)*ppm+ky;
 
  const sg=ctx.createLinearGradient(0,0,0,H);
  if(inside){
@@ -1370,21 +1447,21 @@ function draw(){
   if(roomEnemy&&roomEnemy.alive){
    const ex=toSX(roomEnemy.x),ey=toSY(roomEnemy.y);
    ctx.fillStyle=roomEnemy.fl>0?'#ffffff':'#9e2b4c';ctx.strokeStyle='#14080e';ctx.lineWidth=2.5;
-   ctx.beginPath();ctx.arc(ex,ey,24,0,Math.PI*2);ctx.fill();ctx.stroke();
-   ctx.fillStyle='#ffd23a';ctx.fillRect(ex-10,ey-6,6,6);ctx.fillRect(ex+4,ey-6,6,6);
+   ctx.beginPath();ctx.arc(ex,ey,20,0,Math.PI*2);ctx.fill();ctx.stroke();
+   ctx.fillStyle='#ffd23a';ctx.fillRect(ex-8,ey-5,5,5);ctx.fillRect(ex+3,ey-5,5,5);
   }
  }else{
   drawRealmBackdrop(q,ppm,toSX,toSY);
 
   for(const a of ambient){
    a.x+=a.vx*0.016;a.y+=a.vy*0.016;
-   if(a.x>cx+25)a.x-=50;if(a.x<cx-25)a.x+=50;
+   if(a.x>cx+28)a.x-=56;if(a.x<cx-28)a.x+=56;
    if(a.y>16)a.y=-2;if(a.y<-2)a.y=16;
    const sx=toSX(a.x),sy=toSY(a.y);
    ctx.fillStyle=a.c;ctx.globalAlpha=0.6;
    ctx.beginPath();
-   if(q.id=='ocean')ctx.arc(sx,sy,a.sz*1.2,0,Math.PI*2);
-   else ctx.ellipse(sx,sy,a.sz*2.2,a.sz*.7,-.2,0,Math.PI*2);
+   if(q.id=='ocean')ctx.arc(sx,sy,a.sz*1.1,0,Math.PI*2);
+   else ctx.ellipse(sx,sy,a.sz*2.0,a.sz*.65,-.2,0,Math.PI*2);
    ctx.fill();
   }
   ctx.globalAlpha=1;
@@ -1392,17 +1469,17 @@ function draw(){
   doors.forEach(d=>{
    const dx=toSX(d.x),dy=toSY(0);
    ctx.fillStyle='#5c3c24';ctx.strokeStyle='#1f1209';ctx.lineWidth=2.5;
-   ctx.fillRect(dx-58,dy-78,116,78);ctx.strokeRect(dx-58,dy-78,116,78);
-   ctx.fillStyle='#243b66';ctx.beginPath();ctx.moveTo(dx-70,dy-78);ctx.lineTo(dx,dy-124);ctx.lineTo(dx+70,dy-78);ctx.closePath();ctx.fill();ctx.stroke();
-   ctx.fillStyle='#2e190b';ctx.fillRect(dx-15,dy-46,30,46);
-   ctx.fillStyle='#ffd875';ctx.fillRect(dx-42,dy-54,18,18);ctx.fillRect(dx+24,dy-54,18,18);
+   ctx.fillRect(dx-44,dy-60,88,60);ctx.strokeRect(dx-44,dy-60,88,60);
+   ctx.fillStyle='#243b66';ctx.beginPath();ctx.moveTo(dx-54,dy-60);ctx.lineTo(dx,dy-96);ctx.lineTo(dx+54,dy-60);ctx.closePath();ctx.fill();ctx.stroke();
+   ctx.fillStyle='#2e190b';ctx.fillRect(dx-12,dy-36,24,36);
+   ctx.fillStyle='#ffd875';ctx.fillRect(dx-32,dy-42,14,14);ctx.fillRect(dx+18,dy-42,14,14);
   });
   if(shopSpot){
    const dx=toSX(shopSpot.x),dy=toSY(0);
    ctx.fillStyle='#4a3525';ctx.strokeStyle='#1f1209';ctx.lineWidth=2.5;
-   ctx.fillRect(dx-62,dy-82,124,82);ctx.strokeRect(dx-62,dy-82,124,82);
-   ctx.fillStyle='#1f5c8a';ctx.beginPath();ctx.moveTo(dx-74,dy-82);ctx.lineTo(dx,dy-130);ctx.lineTo(dx+74,dy-82);ctx.closePath();ctx.fill();ctx.stroke();
-   ctx.fillStyle='#ffd23a';ctx.font='bold 12px Georgia';ctx.textAlign='center';ctx.fillText('SHOP',dx,dy-62);
+   ctx.fillRect(dx-48,dy-64,96,64);ctx.strokeRect(dx-48,dy-64,96,64);
+   ctx.fillStyle='#1f5c8a';ctx.beginPath();ctx.moveTo(dx-58,dy-64);ctx.lineTo(dx,dy-102);ctx.lineTo(dx+58,dy-64);ctx.closePath();ctx.fill();ctx.stroke();
+   ctx.fillStyle='#ffd23a';ctx.font='bold 11px Georgia';ctx.textAlign='center';ctx.fillText('SHOP',dx,dy-48);
   }
 
   for(const pr of props){
@@ -1423,43 +1500,43 @@ function draw(){
   for(const f of pl){
    const x0=toSX(f.a),x1=toSX(f.b),y0=toSY(f.y);
    if(x1<-40||x0>W+40)continue;
-   const h=(f.y<=0&&q.id!='sky')?H-y0:28;
+   const h=(f.y<=0&&q.id!='sky')?H-y0:22;
    ctx.fillStyle=q.c;ctx.fillRect(x0,y0,x1-x0,h);
-   ctx.fillStyle=q.cap;ctx.fillRect(x0-2,y0-2,x1-x0+4,11);
+   ctx.fillStyle=q.cap;ctx.fillRect(x0-2,y0-2,x1-x0+4,9);
    ctx.strokeStyle='#141821';ctx.lineWidth=2;ctx.strokeRect(x0,y0,x1-x0,h);
   }
 
   for(const h of hz){
    const sx=toSX(h.x),sy=toSY(0);
    ctx.fillStyle=q.id=='volcano'?'#ff8c1a':'#ff4f79';ctx.beginPath();
-   ctx.moveTo(sx-14,sy);ctx.lineTo(sx-7,sy-24);ctx.lineTo(sx,sy);
-   ctx.lineTo(sx+7,sy-26);ctx.lineTo(sx+14,sy);ctx.closePath();ctx.fill();
+   ctx.moveTo(sx-12,sy);ctx.lineTo(sx-6,sy-20);ctx.lineTo(sx,sy);
+   ctx.lineTo(sx+6,sy-22);ctx.lineTo(sx+12,sy);ctx.closePath();ctx.fill();
   }
 
   for(const c of ch){
    const sx=toSX(c.x),sy=toSY(c.y);
    ctx.fillStyle=c.open?'#9e6834':'#784119';ctx.strokeStyle='#1f1005';ctx.lineWidth=2;
-   ctx.fillRect(sx-20,sy-26,40,26);ctx.strokeRect(sx-20,sy-26,40,26);
-   ctx.fillStyle='#ffd23a';ctx.fillRect(sx-4,sy-16,8,8);
+   ctx.fillRect(sx-16,sy-22,32,22);ctx.strokeRect(sx-16,sy-22,32,22);
+   ctx.fillStyle='#ffd23a';ctx.fillRect(sx-3,sy-14,6,6);
   }
 
   for(const s of sh){
    const sx=toSX(s.x),sy=toSY(s.y+Math.sin(tt*3+s.x)*.14);
-   ctx.save();ctx.translate(sx,sy);ctx.shadowColor=q.sc;ctx.shadowBlur=16;
+   ctx.save();ctx.translate(sx,sy);ctx.shadowColor=q.sc;ctx.shadowBlur=14;
    ctx.fillStyle=q.sc;ctx.beginPath();
-   ctx.moveTo(0,-18);ctx.lineTo(12,0);ctx.lineTo(0,18);ctx.lineTo(-12,0);ctx.closePath();ctx.fill();
+   ctx.moveTo(0,-14);ctx.lineTo(10,0);ctx.lineTo(0,14);ctx.lineTo(-10,0);ctx.closePath();ctx.fill();
    ctx.restore();
   }
 
   for(const h of hr){
    const sx=toSX(h.x),sy=toSY(h.y+Math.sin(tt*3+h.x)*.1);
-   ctx.fillStyle='#ff4a6a';ctx.beginPath();ctx.arc(sx,sy,10,0,Math.PI*2);ctx.fill();
+   ctx.fillStyle='#ff4a6a';ctx.beginPath();ctx.arc(sx,sy,8,0,Math.PI*2);ctx.fill();
   }
 
   const px=toSX(portal.x),py=toSY(portal.y);
   ctx.save();ctx.translate(px,py);
-  ctx.strokeStyle=open?'#38e8ff':'#5c667a';ctx.lineWidth=6;
-  ctx.beginPath();ctx.arc(0,0,34,0,Math.PI*2);ctx.stroke();
+  ctx.strokeStyle=open?'#38e8ff':'#5c667a';ctx.lineWidth=5;
+  ctx.beginPath();ctx.arc(0,0,28,0,Math.PI*2);ctx.stroke();
   if(open){ctx.fillStyle='rgba(56,232,255,0.28)';ctx.fill()}
   ctx.restore();
 
@@ -1468,12 +1545,12 @@ function draw(){
    ctx.save();ctx.translate(ex,ey);
    if(e.t=='b'){
     ctx.fillStyle=e.fl>0?'#ffffff':q.boss.c;ctx.strokeStyle='#0d0f14';ctx.lineWidth=3;
-    ctx.beginPath();ctx.roundRect(-42,-48,84,92,16);ctx.fill();ctx.stroke();
-    ctx.fillStyle='#ff3322';ctx.fillRect(-22,-22,14,10);ctx.fillRect(8,-22,14,10);
+    ctx.beginPath();ctx.roundRect(-34,-38,68,74,14);ctx.fill();ctx.stroke();
+    ctx.fillStyle='#ff3322';ctx.fillRect(-18,-18,11,8);ctx.fillRect(7,-18,11,8);
    }else{
     ctx.fillStyle=e.fl>0?'#ffffff':q.ec;ctx.strokeStyle='#0d0f14';ctx.lineWidth=2.5;
-    ctx.beginPath();ctx.arc(0,0,22,0,Math.PI*2);ctx.fill();ctx.stroke();
-    ctx.fillStyle='#ffd23a';ctx.fillRect(-9,-6,5,5);ctx.fillRect(4,-6,5,5);
+    ctx.beginPath();ctx.arc(0,0,18,0,Math.PI*2);ctx.fill();ctx.stroke();
+    ctx.fillStyle='#ffd23a';ctx.fillRect(-7,-5,4,4);ctx.fillRect(3,-5,4,4);
    }
    ctx.restore();
   }
@@ -1481,8 +1558,8 @@ function draw(){
 
  for(const b of pj){
   const bx=toSX(b.x),by=toSY(b.y);
-  ctx.save();ctx.shadowColor=b.c;ctx.shadowBlur=14;
-  ctx.fillStyle=b.c;ctx.beginPath();ctx.arc(bx,by,b.own?10:8,0,Math.PI*2);ctx.fill();
+  ctx.save();ctx.shadowColor=b.c;ctx.shadowBlur=12;
+  ctx.fillStyle=b.c;ctx.beginPath();ctx.arc(bx,by,b.own?8:7,0,Math.PI*2);ctx.fill();
   ctx.restore();
  }
 
@@ -1494,8 +1571,9 @@ function draw(){
 
  if(inv<=0||Math.floor(inv*14)%2==0){
   const pose=p.atk>0?'slash':(air?'jump':(sp>0.12?'run':'idle'));
-  const atkProg=p.atk>0?(1-p.atk/.32):0;
-  drawAnimeHero(toSX(p.x),toSY(p.y),ppm*1.12,p.f,pose,ph,atkProg);
+  const atkProg=p.atk>0?(1-p.atk/.28):0;
+  const spinProg=(air&&p.j>=2&&p.vy>2)?Math.min(1,(p.vy-2)/10):0;
+  drawAnimeHero(toSX(p.x),toSY(p.y),ppm*1.08,p.f,pose,ph,atkProg,p.upSlash,p.cs,spinProg);
  }
 
  const pctNow=getPlayedPercent();
