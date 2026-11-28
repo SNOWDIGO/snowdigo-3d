@@ -412,19 +412,21 @@ function triggerFlash(strength=.55){
 let W=window.innerWidth||800,H=window.innerHeight||450,DPR=Math.min(window.devicePixelRatio||1,2);
 let mapNodes=[];
 
+// Dark 2D Swordigo-style realm themes
 const Z=[
- {id:'forest',n:'1. Forest Realm',m:'Collect 3 Forest Shards, clear cottage guards, & defeat Corruptor.',w:'Shards',k:3,e:4,sky:['#185a9d','#43cea2','#b8f2e6'],mt:['#256e66','#194d48'],c:'#4c3626',cap:'#43b559',ec:'#397a49',sc:'#38e8ff',f0:196,g:34,village:1,boss:{n:'Corruptor',hp:8,c:'#2f6327',c2:'#ffbe2e'}},
- {id:'desert',n:'2. Desert Realm',m:'Cross sun-scorched dunes & ruins, gather 3 Sun Shards, & beat Sand Golem.',w:'Shards',k:3,e:5,sky:['#c96a1b','#f2a33c','#ffe39f'],mt:['#c77a32','#9e581e'],c:'#9c682b',cap:'#e6b355',ec:'#b8651e',sc:'#4affd0',f0:165,g:34,sp:1,boss:{n:'Sand Golem',hp:10,c:'#a66d24',c2:'#ffd23a'}},
- {id:'ice',n:'3. Ice Kingdom',m:'Scale frozen peaks, collect 3 Frost Shards, & defeat Ice Overseer.',w:'Shards',k:3,e:5,sky:['#16447a','#5ca4e6','#d4f0ff'],mt:['#689fd1','#4477a8'],c:'#5b7b9e',cap:'#e8f8ff',ec:'#2b78b5',sc:'#6af0ff',f0:174,g:34,ice:1,boss:{n:'Ice Overseer',hp:12,c:'#3f8ec9',c2:'#ffffff'}},
- {id:'volcano',n:'4. Volcano Realm',m:'Leap over molten lava & erupting peaks! Gather 4 Magma Shards & beat Flame King.',w:'Shards',k:4,e:6,sky:['#26070c','#7d1919','#eb5e1c'],mt:['#421114','#29080a'],c:'#2e1c1c',cap:'#b8321a',ec:'#d4381c',sc:'#ffd23a',f0:147,g:34,lava:1,boss:{n:'Flame King',hp:15,c:'#42161c',c2:'#ff7b1a'}},
- {id:'ocean',n:'5. Ocean Realm',m:'Swim past sunken ships & glowing coral! Gather 4 Pearl Shards & beat Leviathan.',w:'Shards',k:4,e:6,sky:['#04243b','#0b5378','#1fa2b8'],mt:['#0a415e','#06293d'],c:'#1b4d5c',cap:'#36b5a0',ec:'#d94c8c',sc:'#7cf9ff',f0:155,g:19,fl:1,boss:{n:'Abyss Leviathan',hp:17,c:'#134f6e',c2:'#ff6ab0'}},
- {id:'haunted',n:'6. Haunted Kingdom',m:'Brave the moonlit manor & dead woods! Gather 4 Soul Shards & beat Dread Lord.',w:'Shards',k:4,e:7,sky:['#0f0c24','#29214d','#55487d'],mt:['#1d1738','#120e24'],c:'#2b2638',cap:'#534b6e',ec:'#7d389c',sc:'#b87aff',f0:138,g:34,maw:1,boss:{n:'Dread Lord',hp:19,c:'#2a1d42',c2:'#b87aff'}},
- {id:'sky',n:'7. Sky Kingdom',m:'Soar across floating cloud islands! Gather 4 Aether Shards & beat Sky Archon.',w:'Shards',k:4,e:7,sky:['#2978d6','#6cb8ff','#e3f4ff'],mt:['#9cc8f5','#73a8e0'],c:'#6b5239',cap:'#57c966',ec:'#3b82d6',sc:'#fff066',f0:220,g:24,fl:1,boss:{n:'Sky Archon',hp:21,c:'#2c64b8',c2:'#ffe14a'}},
- {id:'dark',n:'8. Dark Realm',m:'Storm the chained obsidian citadel! Collect 5 Final Shards & defeat Master of Chaos!',w:'Shards',k:5,e:8,sky:['#090414','#230c42','#4e1985'],mt:['#18082e','#0e041c'],c:'#1c1429',cap:'#6929b8',ec:'#a832d9',sc:'#38e8ff',f0:131,g:34,maw:1,boss:{n:'Master of Chaos',hp:26,c:'#1e0c3b',c2:'#d65cff'}}
+ {id:'forest',n:'1. Dark Forest',m:'Enter houses, bounce on rope traps, & defeat Corruptor.',w:'Shards',k:3,e:4,sky:['#091417','#132c33','#1e474f'],mt:['#10262b','#081518'],c:'#2d1e14',cap:'#23693c',ec:'#2b6138',sc:'#38e8ff',f0:196,g:34,village:1,boss:{n:'Corruptor',hp:8,c:'#264d21',c2:'#ffbe2e'}},
+ {id:'desert',n:'2. Dark Desert',m:'Leap across desert sea & rope traps, & beat Sand Golem.',w:'Shards',k:3,e:5,sky:['#261309','#5c2b12','#8f471e'],mt:['#47210e','#291106'],c:'#5e3a16',cap:'#9e692c',ec:'#8a4614',sc:'#4affd0',f0:165,g:34,sp:1,boss:{n:'Sand Golem',hp:10,c:'#6e4312',c2:'#ffd23a'}},
+ {id:'ice',n:'3. Dark Ice Peaks',m:'Cross frozen cliffs & rope traps, & defeat Ice Overseer.',w:'Shards',k:3,e:5,sky:['#08182b','#14375c','#225a8c'],mt:['#133354','#091b2e'],c:'#2c425c',cap:'#9ed8f5',ec:'#1f5e8c',sc:'#6af0ff',f0:174,g:34,ice:1,boss:{n:'Ice Overseer',hp:12,c:'#296696',c2:'#ffffff'}},
+ {id:'volcano',n:'4. Lava Cavern',m:'Bounce past molten lava & rope traps, & beat Flame King.',w:'Shards',k:4,e:6,sky:['#140407','#420c0e','#8a240e'],mt:['#260709','#140305'],c:'#1c1012',cap:'#8a2211',ec:'#a82814',sc:'#ffd23a',f0:147,g:34,lava:1,boss:{n:'Flame King',hp:15,c:'#2e0e14',c2:'#ff7b1a'}},
+ {id:'ocean',n:'5. Abyssal Sea',m:'Swim & bounce across deep waters & beat Leviathan.',w:'Shards',k:4,e:6,sky:['#02101c','#06293d','#0c4b66'],mt:['#052030','#02121c'],c:'#11313d',cap:'#22786d',ec:'#9e2c61',sc:'#7cf9ff',f0:155,g:19,fl:1,boss:{n:'Abyss Leviathan',hp:17,c:'#0b344a',c2:'#ff6ab0'}},
+ {id:'haunted',n:'6. Haunted Manor',m:'Brave the night manor & rope traps & beat Dread Lord.',w:'Shards',k:4,e:7,sky:['#090617','#191233','#342759'],mt:['#120c26','#080514'],c:'#1b1726',cap:'#3b3352',ec:'#572270',sc:'#b87aff',f0:138,g:34,maw:1,boss:{n:'Dread Lord',hp:19,c:'#1b112e',c2:'#b87aff'}},
+ {id:'sky',n:'7. Storm Citadel',m:'Leap across storm clouds & rope traps & beat Sky Archon.',w:'Shards',k:4,e:7,sky:['#112547','#214578','#386ba8'],mt:['#1a3661','#0e1f38'],c:'#3b2b1d',cap:'#368247',ec:'#255696',sc:'#fff066',f0:220,g:24,fl:1,boss:{n:'Sky Archon',hp:21,c:'#1d437d',c2:'#ffe14a'}},
+ {id:'dark',n:'8. Shadow Keep',m:'Storm the chained citadel & defeat Master of Chaos!',w:'Shards',k:5,e:8,sky:['#05020c','#16062b','#320e5c'],mt:['#0f041f','#070212'],c:'#120c1c',cap:'#471882',ec:'#731f99',sc:'#38e8ff',f0:131,g:34,maw:1,boss:{n:'Master of Chaos',hp:26,c:'#140729',c2:'#d65cff'}}
 ];
 
-let pl,en,sh,pj,fx,hz,hr,ch,AR,boss,portal,shopSpot,doors,inside,roomEnemy,roomChest,props,ambient;
+let pl,en,sh,pj,fx,hz,hr,ch,AR,boss,portal,shopSpot,doors,ropeTraps,inside,roomEnemy,roomChest,props,ambient;
 let Z0=0,col=0,coins=120,xp=0,lvl=1,trinket='None',open=0,bd=0,st='menu',inv=0,cx=0,cy=0,tt=0,mx=0,shk=0,mn=0;
+let camZoomMul=1;
 try{
  mx=+localStorage.getItem('sd3b')||0;
  coins=+localStorage.getItem('sd3c')||120;
@@ -451,7 +453,7 @@ function getPlayedPercent(){
 function updateProgressUI(){
  const pct=getPlayedPercent();
  const activeIdx=Math.min(Math.max(Z0,mx),Z.length-1);
- const realmLabel=Z[activeIdx]?Z[activeIdx].n:'1. Forest Realm';
+ const realmLabel=Z[activeIdx]?Z[activeIdx].n:'1. Dark Forest';
  if($('menuPct'))$('menuPct').textContent=pct+'%';
  if($('menuRealm'))$('menuRealm').textContent=realmLabel;
  if($('mapPct'))$('mapPct').textContent=pct+'%';
@@ -626,7 +628,36 @@ function rs(){
 }
 addEventListener('resize',rs);
 
-// Swordigo-tuned character physics & directional slash state
+// Tap on house/door or rope trap directly on canvas
+cv.addEventListener('pointerdown',e=>{
+ if(editingControls||st!=='play')return;
+ const rect=cv.getBoundingClientRect();
+ const sx=e.clientX-rect.left,sy=e.clientY-rect.top;
+ const ppm=Math.min(W,H)*0.074*camZoomMul;
+ const toSX=wx=>W*0.5+(wx-cx)*ppm;
+ const toSY=wy=>H*0.78-(wy-cy+1.6)*ppm;
+
+ if(inside){
+  const dx=toSX(-5.5),dy=toSY(0);
+  if(Math.abs(sx-dx)<42&&sy<dy+10&&sy>dy-85){exitRoom();return}
+  if(roomChest&&roomChest.unlocked&&!roomChest.opened){
+   const chx=toSX(roomChest.x),chy=toSY(0);
+   if(Math.hypot(sx-chx,sy-(chy-18))<36){
+    p.x=roomChest.x;tryEnter();return;
+   }
+  }
+ }else{
+  for(const d of doors){
+   const dx=toSX(d.x),dy=toSY(0);
+   if(Math.abs(sx-dx)<52&&sy<dy+10&&sy>dy-105){
+    if(Math.abs(p.x-d.x)<4.5)enterRoom();
+    else banner('Move closer to the house door or tap Enter!');
+    return;
+   }
+  }
+ }
+});
+
 const p={
  x:0,y:0,vx:0,vy:0,hp:5,mhp:5,atkDmg:1,magDmg:2,
  f:1,g:0,j:0,atk:0,upSlash:0,cs:0,cc:0,mc:0,sx:0,coy:0,jb:0,sq:0,gy:0,
@@ -672,7 +703,7 @@ const rn=()=>(sd=sd*16807%2147483647)/2147483647;
 function load(z){
  Z0=z;const q=Z[z];sd=z*77+5;
  inside=0;roomEnemy=null;roomChest=null;
- pl=[];en=[];sh=[];pj=[];fx=[];hz=[];hr=[];ch=[];doors=[];shopSpot=null;props=[];ambient=[];
+ pl=[];en=[];sh=[];pj=[];fx=[];hz=[];hr=[];ch=[];doors=[];ropeTraps=[];shopSpot=null;props=[];ambient=[];
  col=0;open=0;bd=0;boss=null;inv=0;
  Object.assign(p,{x:0,y:0,vx:0,vy:0,hp:p.mhp,f:1,g:0,j:0,atk:0,upSlash:0,cs:0,cc:0,mc:0,sx:0,coy:0,jb:0,sq:0,gy:0,turnLag:0});
  cx=0;cy=1.6;
@@ -689,9 +720,17 @@ function load(z){
  AR={a:x,b:x+26};pl.push({a:AR.a,b:AR.b,y:0});
  const n=gs.length;
 
+ // Houses & Rope Bounce Traps across realms
+ doors.push({x:1.5,y:0,roomIdx:0});
  if(q.village){
-  doors.push({x:1.5,y:0,roomIdx:0});
+  doors.push({x:11.5,y:0,roomIdx:1});
   shopSpot={x:7.8,y:0};
+ }
+
+ for(let i=0;i<gs.length-1;i++){
+  const gapMid=(gs[i].b+gs[i+1].a)*0.5;
+  const ropeY=1.25+(i%2)*0.45;
+  ropeTraps.push({x:gapMid,y:ropeY,w:1.5,bounce:0,swingPhase:i*1.3});
  }
 
  gs.concat([AR]).forEach(g=>{
@@ -740,7 +779,7 @@ function enterRoom(){
  roomChest={x:5.5,y:0,opened:0,unlocked:0};
  roomEnemy={x:1.8,y:.6,hp:3+Z0,r:.6,h:.6,d:-1,x0:-2.5,x1:4.2,a:0,fl:0,alive:1};
  p.x=-4.5;p.y=0;p.vx=0;p.vy=0;p.sx=-4.5;
- banner('Inside Cottage! Defeat the guard to unlock the Reward Chest.\nPress Enter at the left door to exit.');
+ banner('Inside House! Defeat the guard to unlock the Reward Chest.\nTap left door or press Enter to exit.');
 }
 function exitRoom(){
  inside=0;pj=[];fx=[];
@@ -760,13 +799,13 @@ function tryEnter(){
   }else banner('Walk to the left door to exit.');
   return;
  }
- const nearDoor=doors.find(d=>Math.abs(p.x-d.x)<2.4);
+ const nearDoor=doors.find(d=>Math.abs(p.x-d.x)<2.5);
  if(nearDoor)enterRoom();
- else banner('Walk near the Cottage door and press Enter.');
+ else banner('Walk near a House door & tap House or press Enter.');
 }
 function openShop(){
  if(inside){banner('Exit the room to visit the Shop.');return}
- if(!shopSpot||Math.abs(p.x-shopSpot.x)>3.4){banner('Walk near the SHOP cottage to buy items.');return}
+ if(!shopSpot||Math.abs(p.x-shopSpot.x)>3.4){banner('Walk near the SHOP house to buy items.');return}
  st='pause';
  ovl('Elder Shop & Trinkets','Soul Shards: '+coins+' | Trinket: '+trinket,
   'Heal +2 HP (30)',()=>{coins=Math.max(0,coins-30);p.hp=Math.min(p.mhp,p.hp+2);saveProg();st='play';banner('Restored +2 Health!')},
@@ -849,7 +888,7 @@ function menu(){
   });
  };
  $('m3').onclick=()=>{
-  info('Controls & Custom Layout','Move Left / Right: ◀ ▶ (Quick Snappy Turn)\nJump / Double Jump: Jump / Space (Hold for high jump)\nSword Left / Right: Sword / J (3-Hit Combo + Deflect)\nUpward Sword Slash: Hold Up/Jump + Sword (or W / ↑ + J)\nMagic Bolt: Bolt / K  |  Enter / Chest: Enter / F  |  Shop: Shop / E\n\nTap "Customize Layout" below to drag any button anywhere!');
+  info('Controls & Custom Layout','Move Left / Right: ◀ ▶ (Quick Snappy Turn)\nJump / Double Jump: Jump / Space (Bounce on Rope Traps!)\nEnter House / Chest: Tap House or Enter / F  |  Shop: Shop / E\nSword Left / Right: Sword / J (3-Hit Combo + Deflect)\nUpward Sword Slash: Hold Up/Jump + Sword (or W / ↑ + J)\nMagic Bolt: Bolt / K\n\nTap "Customize Layout" below to drag any button anywhere!');
   const tx=$('tx');
   const custBtn=document.createElement('button');
   custBtn.className='mp';
@@ -859,7 +898,7 @@ function menu(){
   custBtn.onclick=()=>startControlEditor();
   tx.appendChild(custBtn);
  };
- $('m4').onclick=()=>info('Story','Journey across 8 unique realms—Forest, Desert, Ice, Volcano, Ocean, Haunted, Sky, and Dark Realm—to restore the Mageblade!');
+ $('m4').onclick=()=>info('Story','Journey across 8 dark realms, enter houses, bounce across rope traps, and restore the Mageblade!');
 }
 function next(){
  mx=Math.max(mx,Z0+1);saveProg();
@@ -875,7 +914,6 @@ function upd(dt){
  const upAim=K.ArrowUp||K.KeyW||(T.jh&&!p.g);
  const dir=(r?1:0)-(l?1:0);
 
- // Swordigo-style crisp left/right turn & momentum
  if(dir&&dir!==p.f){
   p.f=dir;
   p.turnLag=0.07;
@@ -892,7 +930,6 @@ function upd(dt){
  const targetVx=dir*p.spd;
  p.vx+=Math.max(-friction*dt,Math.min(friction*dt,targetVx-p.vx));
 
- // Swordigo-style snappy jump, double-jump somersault & variable jump arc
  p.coy-=dt;p.jb-=dt;
  if(T.jp){T.jp=0;p.jb=.13}
 
@@ -923,6 +960,21 @@ function upd(dt){
    p.y=0;p.vy=0;p.g=1;p.coy=.11;p.j=0;p.gy=0;
   }
  }else{
+  // Rope Bounce Traps (swing + bounce launch)
+  for(const rt of ropeTraps){
+   rt.swingPhase+=dt*2.4;
+   rt.bounce=Math.max(0,rt.bounce-dt*4);
+   const ry=rt.y+Math.sin(rt.swingPhase)*0.16;
+   if(Math.abs(p.x-rt.x)<rt.w*0.75&&p.vy<=0&&py>=ry-0.25&&p.y<=ry+0.35){
+    p.y=ry+0.05;
+    p.vy=jh?16.2:13.8;
+    p.j=1;p.coy=0;rt.bounce=1;p.sq=0.7;
+    if(dir!==0)p.vx=dir*(p.spd+1.4);
+    burst(rt.x,ry,'#f5c451',9);
+    sfx(460,.14,'triangle',.055,880);
+   }
+  }
+
   for(const f of pl)if(p.x+.35>f.a&&p.x-.35<f.b){
    if(f.y<=p.y+.3&&f.y>p.gy)p.gy=f.y;
    if(p.vy<=0&&py>=f.y-.05&&p.y<=f.y){
@@ -939,7 +991,6 @@ function upd(dt){
 
  p.atk=Math.max(0,p.atk-dt);p.mc-=dt;inv-=dt;p.cc-=dt;p.sq=Math.max(0,p.sq-dt*5);
 
- // Swordigo-style Left, Right & Upward Sword Slash
  if(T.ap){T.ap=0;if(p.atk<=.05){
   p.upSlash=upAim?1:0;
   p.cs=p.upSlash?0:(p.cc>0?(p.cs+1)%3:0);
@@ -948,7 +999,6 @@ function upd(dt){
   sfx(p.upSlash?420:350,.09,'sawtooth',.048,p.upSlash?220:165);
   burst(p.upSlash?p.x:p.x+p.f*1.2,p.upSlash?p.y+2.0:p.y+1.1,'#38e8ff',7);
 
-  // Deflect enemy projectiles (left, right, or upward)
   for(const b of pj){
    if(!b.own){
     if(p.upSlash){
@@ -976,7 +1026,7 @@ function upd(dt){
     shk=Math.max(shk,.15);burst(roomEnemy.x,roomEnemy.y,'#38e8ff',9);sfx(240,.08,'sawtooth',.05);
     if(roomEnemy.hp<=0){
      roomEnemy.alive=0;coins+=25;gainXp(20);burst(roomEnemy.x,roomEnemy.y,'#ffd23a',18);
-     if(roomChest){roomChest.unlocked=1;banner('Guard Defeated! Reward Chest Unlocked — press Enter at chest!')}
+     if(roomChest){roomChest.unlocked=1;banner('Guard Defeated! Reward Chest Unlocked — tap chest or Enter!')}
     }
    }
   }
@@ -1090,7 +1140,7 @@ function drawRealmBackdrop(q,ppm,toSX,toSY){
   for(let i=0;i<6;i++){
    const rx=((i*260-cx*14)%(W+300)+W+300)%(W+300)-150;
    const g=ctx.createLinearGradient(rx,0,rx+90,H*0.8);
-   g.addColorStop(0,'rgba(140,250,255,0.22)');g.addColorStop(1,'rgba(140,250,255,0)');
+   g.addColorStop(0,'rgba(140,250,255,0.16)');g.addColorStop(1,'rgba(140,250,255,0)');
    ctx.fillStyle=g;
    ctx.beginPath();ctx.moveTo(rx,0);ctx.lineTo(rx+85,0);ctx.lineTo(rx+190,H*0.85);ctx.lineTo(rx+40,H*0.85);ctx.closePath();ctx.fill();
   }
@@ -1103,14 +1153,14 @@ function drawRealmBackdrop(q,ppm,toSX,toSY){
   }
  }else{
   const sunX=W*0.72-cx*2.2,sunY=q.id=='haunted'?H*0.22:H*0.24;
-  const sunR=q.id=='haunted'?44:52;
-  const sunG=ctx.createRadialGradient(sunX,sunY,8,sunX,sunY,sunR*2.8);
-  sunG.addColorStop(0,q.id=='volcano'?'rgba(255,190,70,0.9)':'rgba(255,250,220,0.95)');
-  sunG.addColorStop(.45,q.id=='volcano'?'rgba(255,80,20,0.35)':'rgba(255,220,150,0.28)');
+  const sunR=q.id=='haunted'?40:46;
+  const sunG=ctx.createRadialGradient(sunX,sunY,6,sunX,sunY,sunR*2.6);
+  sunG.addColorStop(0,q.id=='volcano'?'rgba(255,160,50,0.85)':'rgba(255,235,190,0.78)');
+  sunG.addColorStop(.45,q.id=='volcano'?'rgba(255,60,15,0.28)':'rgba(255,200,120,0.18)');
   sunG.addColorStop(1,'rgba(255,200,120,0)');
-  ctx.fillStyle=sunG;ctx.beginPath();ctx.arc(sunX,sunY,sunR*2.8,0,Math.PI*2);ctx.fill();
+  ctx.fillStyle=sunG;ctx.beginPath();ctx.arc(sunX,sunY,sunR*2.6,0,Math.PI*2);ctx.fill();
   if(q.id=='haunted'){
-   ctx.fillStyle='#f6f2ff';ctx.beginPath();ctx.arc(sunX,sunY,32,0,Math.PI*2);ctx.fill();
+   ctx.fillStyle='#dcd4f5';ctx.beginPath();ctx.arc(sunX,sunY,28,0,Math.PI*2);ctx.fill();
   }
  }
 
@@ -1130,7 +1180,7 @@ function drawRealmBackdrop(q,ppm,toSX,toSY){
  ctx.save();
  const lmX=W*0.56-cx*ppm*0.18;
  if(q.id=='volcano'){
-  ctx.fillStyle='#24090c';
+  ctx.fillStyle='#1a0609';
   ctx.beginPath();ctx.moveTo(lmX-230,floorY);ctx.lineTo(lmX-38,H*0.26);ctx.lineTo(lmX+38,H*0.26);ctx.lineTo(lmX+230,floorY);ctx.closePath();ctx.fill();
   const lg=ctx.createLinearGradient(lmX,H*0.24,lmX,floorY);
   lg.addColorStop(0,'#fff066');lg.addColorStop(0.3,'#ff6a1a');lg.addColorStop(1,'#b81d13');
@@ -1140,28 +1190,28 @@ function drawRealmBackdrop(q,ppm,toSX,toSY){
   ctx.fillStyle='#ff9a24';ctx.beginPath();ctx.ellipse(lmX,H*0.26,38,10,0,0,Math.PI*2);ctx.fill();
  }else if(q.id=='ice'||q.id=='haunted'||q.id=='dark'){
   const cyBase=floorY-35;
-  ctx.fillStyle=q.id=='ice'?'#7ab2e6':(q.id=='haunted'?'#1a1430':'#160829');
+  ctx.fillStyle=q.id=='ice'?'#2c5882':(q.id=='haunted'?'#130e24':'#10061f');
   ctx.fillRect(lmX-75,cyBase-95,150,95);
   [-65,-25,15,55].forEach((tx,i)=>{
    const th=115+(i%2)*28;
    ctx.fillRect(lmX+tx-12,cyBase-th,24,th);
    ctx.beginPath();ctx.moveTo(lmX+tx-16,cyBase-th);ctx.lineTo(lmX+tx,cyBase-th-28);ctx.lineTo(lmX+tx+16,cyBase-th);ctx.closePath();ctx.fill();
   });
-  ctx.fillStyle=q.id=='ice'?'#e6f8ff':(q.id=='haunted'?'#ffae38':'#b84dff');
+  ctx.fillStyle=q.id=='ice'?'#9ad8f5':(q.id=='haunted'?'#ffae38':'#b84dff');
   ctx.fillRect(lmX-8,cyBase-42,16,26);
  }else if(q.id=='ocean'){
   ctx.save();ctx.translate(lmX,floorY-25);ctx.rotate(-0.22);
-  ctx.fillStyle='rgba(7,35,54,0.72)';
+  ctx.fillStyle='rgba(4,22,36,0.82)';
   ctx.beginPath();ctx.moveTo(-110,-20);ctx.lineTo(110,-20);ctx.lineTo(75,28);ctx.lineTo(-85,28);ctx.closePath();ctx.fill();
   ctx.fillRect(-35,-125,8,105);ctx.fillRect(25,-105,7,85);
   ctx.fillRect(-65,-95,68,6);ctx.fillRect(-2,-78,56,5);
   ctx.restore();
  }else if(q.id=='sky'){
   const fy=H*0.34+Math.sin(tt*1.6)*8;
-  ctx.fillStyle='#5c452e';
+  ctx.fillStyle='#3b2b1d';
   ctx.beginPath();ctx.moveTo(lmX-95,fy);ctx.lineTo(lmX+95,fy);ctx.lineTo(lmX+40,fy+52);ctx.lineTo(lmX-35,fy+45);ctx.closePath();ctx.fill();
-  ctx.fillStyle='#63d471';ctx.fillRect(lmX-98,fy-8,196,10);
-  ctx.fillStyle='#dceeff';ctx.fillRect(lmX-55,fy-68,110,60);
+  ctx.fillStyle='#368247';ctx.fillRect(lmX-98,fy-8,196,10);
+  ctx.fillStyle='#8fb8e0';ctx.fillRect(lmX-55,fy-68,110,60);
   ctx.beginPath();ctx.moveTo(lmX-25,fy-68);ctx.lineTo(lmX,fy-105);ctx.lineTo(lmX+25,fy-68);ctx.closePath();ctx.fill();
  }
  ctx.restore();
@@ -1169,40 +1219,41 @@ function drawRealmBackdrop(q,ppm,toSX,toSY){
 
 function drawRealmProp(q,pr,sx,sy){
  ctx.save();ctx.translate(sx,sy);ctx.scale(pr.s,pr.s);
+ ctx.strokeStyle='#090b10';ctx.lineWidth=2.5;
  if(q.id=='forest'||q.id=='sky'){
-  ctx.fillStyle='#4a2e1b';ctx.fillRect(-7,-74,14,74);
-  ctx.fillStyle=q.cap;ctx.beginPath();ctx.arc(0,-88,34,0,Math.PI*2);ctx.fill();
-  ctx.beginPath();ctx.arc(-22,-72,23,0,Math.PI*2);ctx.arc(22,-72,23,0,Math.PI*2);ctx.fill();
+  ctx.fillStyle='#2e1c10';ctx.fillRect(-7,-74,14,74);ctx.strokeRect(-7,-74,14,74);
+  ctx.fillStyle=q.cap;ctx.beginPath();ctx.arc(0,-88,34,0,Math.PI*2);ctx.fill();ctx.stroke();
+  ctx.beginPath();ctx.arc(-22,-72,23,0,Math.PI*2);ctx.arc(22,-72,23,0,Math.PI*2);ctx.fill();ctx.stroke();
  }else if(q.id=='desert'){
   if(pr.k%2==0){
-   ctx.fillStyle='#2f8a3e';ctx.strokeStyle='#143d1b';ctx.lineWidth=2;
+   ctx.fillStyle='#1d5928';
    ctx.beginPath();ctx.roundRect(-8,-68,16,68,8);ctx.fill();ctx.stroke();
    ctx.beginPath();ctx.roundRect(-24,-48,16,10,5);ctx.roundRect(-24,-62,10,24,5);ctx.fill();ctx.stroke();
    ctx.beginPath();ctx.roundRect(8,-38,16,10,5);ctx.roundRect(14,-54,10,26,5);ctx.fill();ctx.stroke();
   }else{
-   ctx.fillStyle='#b8823e';ctx.strokeStyle='#593b16';ctx.lineWidth=2;
+   ctx.fillStyle='#6e491d';
    ctx.fillRect(-16,-62,32,62);ctx.strokeRect(-16,-62,32,62);
    ctx.fillRect(-20,-70,40,10);ctx.strokeRect(-20,-70,40,10);
   }
  }else if(q.id=='ice'){
   [0,-22,-42].forEach((oy,i)=>{
    const w=34-i*7;
-   ctx.fillStyle='#265780';ctx.beginPath();ctx.moveTo(-w,oy-12);ctx.lineTo(0,oy-46);ctx.lineTo(w,oy-12);ctx.closePath();ctx.fill();
-   ctx.fillStyle='#eef9ff';ctx.beginPath();ctx.moveTo(-w*.65,oy-24);ctx.lineTo(0,oy-46);ctx.lineTo(w*.65,oy-24);ctx.closePath();ctx.fill();
+   ctx.fillStyle='#193c59';ctx.beginPath();ctx.moveTo(-w,oy-12);ctx.lineTo(0,oy-46);ctx.lineTo(w,oy-12);ctx.closePath();ctx.fill();ctx.stroke();
+   ctx.fillStyle='#a7dcf7';ctx.beginPath();ctx.moveTo(-w*.65,oy-24);ctx.lineTo(0,oy-46);ctx.lineTo(w*.65,oy-24);ctx.closePath();ctx.fill();
   });
  }else if(q.id=='volcano'){
-  ctx.fillStyle='#1f1214';ctx.beginPath();ctx.moveTo(-18,0);ctx.lineTo(-4,-72);ctx.lineTo(16,0);ctx.closePath();ctx.fill();
+  ctx.fillStyle='#140b0d';ctx.beginPath();ctx.moveTo(-18,0);ctx.lineTo(-4,-72);ctx.lineTo(16,0);ctx.closePath();ctx.fill();ctx.stroke();
   ctx.strokeStyle='#ff7b1a';ctx.lineWidth=2.5;ctx.beginPath();ctx.moveTo(-3,-10);ctx.lineTo(2,-45);ctx.stroke();
  }else if(q.id=='ocean'){
-  ctx.fillStyle='#ff5e8e';ctx.beginPath();ctx.arc(-10,-28,12,0,Math.PI*2);ctx.arc(8,-34,14,0,Math.PI*2);ctx.arc(0,-18,14,0,Math.PI*2);ctx.fill();
-  ctx.fillStyle='#28a878';ctx.fillRect(-18,-48,6,48);ctx.fillRect(14,-42,6,42);
+  ctx.fillStyle='#a83262';ctx.beginPath();ctx.arc(-10,-28,12,0,Math.PI*2);ctx.arc(8,-34,14,0,Math.PI*2);ctx.arc(0,-18,14,0,Math.PI*2);ctx.fill();ctx.stroke();
+  ctx.fillStyle='#176e4e';ctx.fillRect(-18,-48,6,48);ctx.fillRect(14,-42,6,42);
  }else if(q.id=='haunted'){
-  ctx.strokeStyle='#141021';ctx.lineWidth=7;ctx.lineCap='round';
+  ctx.strokeStyle='#090712';ctx.lineWidth=7;ctx.lineCap='round';
   ctx.beginPath();ctx.moveTo(0,0);ctx.lineTo(0,-66);ctx.moveTo(0,-42);ctx.lineTo(-24,-64);ctx.moveTo(0,-50);ctx.lineTo(22,-72);ctx.stroke();
  }else{
   ctx.save();ctx.shadowColor='#b84dff';ctx.shadowBlur=14;
-  ctx.fillStyle='#9b38ff';ctx.beginPath();ctx.moveTo(-12,0);ctx.lineTo(-2,-56);ctx.lineTo(12,0);ctx.closePath();ctx.fill();
-  ctx.fillStyle='#d99eff';ctx.beginPath();ctx.moveTo(4,0);ctx.lineTo(16,-38);ctx.lineTo(24,0);ctx.closePath();ctx.fill();
+  ctx.fillStyle='#6b1ec2';ctx.beginPath();ctx.moveTo(-12,0);ctx.lineTo(-2,-56);ctx.lineTo(12,0);ctx.closePath();ctx.fill();ctx.stroke();
+  ctx.fillStyle='#b66eff';ctx.beginPath();ctx.moveTo(4,0);ctx.lineTo(16,-38);ctx.lineTo(24,0);ctx.closePath();ctx.fill();ctx.stroke();
   ctx.restore();
  }
  ctx.restore();
@@ -1226,7 +1277,7 @@ function drawAnimeHero(sx,sy,scale,facing,pose,phase,atkProg,isUpSlash,comboStep
  const u=scale/95;
  ctx.scale(u,u);
 
- ctx.fillStyle='rgba(0,0,0,0.38)';
+ ctx.fillStyle='rgba(0,0,0,0.45)';
  ctx.beginPath();ctx.ellipse(0,2,36,8,0,0,Math.PI*2);ctx.fill();
 
  if(doubleJumpSpin>0){
@@ -1370,7 +1421,6 @@ function drawAnimeHero(sx,sy,scale,facing,pose,phase,atkProg,isUpSlash,comboStep
  ctx.restore();
  ctx.restore();
 
- // Swordigo-style Left/Right & Upward Sword Arc Trail
  if(pose=='slash'){
   ctx.save();
   ctx.shadowColor='#38e8ff';ctx.shadowBlur=22;
@@ -1403,14 +1453,13 @@ function draw(){
  cx+=(targetX-cx)*.12;
  cy+=(targetY-cy)*.1;
 
- // Reduced zoom (wider view like Swordigo)
- const ppm=Math.min(W,H)*0.078;
+ const ppm=Math.min(W,H)*0.074*camZoomMul;
  const toSX=wx=>W*0.5+(wx-cx)*ppm+kx;
  const toSY=wy=>H*0.78-(wy-cy+1.6)*ppm+ky;
 
  const sg=ctx.createLinearGradient(0,0,0,H);
  if(inside){
-  sg.addColorStop(0,'#120e1a');sg.addColorStop(1,'#241b2e');
+  sg.addColorStop(0,'#0c0912');sg.addColorStop(1,'#1d1426');
  }else{
   sg.addColorStop(0,q.sky[0]);sg.addColorStop(.55,q.sky[1]);sg.addColorStop(1,q.sky[2]);
  }
@@ -1418,35 +1467,36 @@ function draw(){
 
  if(inside){
   const rx0=toSX(-8),rx1=toSX(8),ryTop=toSY(5.5),ryFloor=toSY(0);
-  ctx.fillStyle='#1d1526';ctx.fillRect(rx0,ryTop,rx1-rx0,ryFloor-ryTop);
-  ctx.strokeStyle='#433252';ctx.lineWidth=4;ctx.strokeRect(rx0,ryTop,rx1-rx0,ryFloor-ryTop);
+  ctx.fillStyle='#16101f';ctx.fillRect(rx0,ryTop,rx1-rx0,ryFloor-ryTop);
+  ctx.strokeStyle='#362645';ctx.lineWidth=4;ctx.strokeRect(rx0,ryTop,rx1-rx0,ryFloor-ryTop);
 
   [-3.8,3.8].forEach(tx=>{
    const sx=toSX(tx),sy=toSY(2.8);
-   ctx.fillStyle='#5c3a21';ctx.fillRect(sx-4,sy,8,28);
+   ctx.fillStyle='#4a2e18';ctx.fillRect(sx-4,sy,8,28);
    const g=ctx.createRadialGradient(sx,sy-4,2,sx,sy-4,48);
    g.addColorStop(0,'rgba(255,210,90,0.85)');g.addColorStop(1,'rgba(255,120,20,0)');
    ctx.fillStyle=g;ctx.beginPath();ctx.arc(sx,sy-4,48,0,Math.PI*2);ctx.fill();
   });
 
   const dx=toSX(-5.5),dy=toSY(0);
-  ctx.fillStyle='#5e3418';ctx.strokeStyle='#241206';ctx.lineWidth=3;
+  ctx.fillStyle='#4a2812';ctx.strokeStyle='#140a03';ctx.lineWidth=3;
   ctx.fillRect(dx-24,dy-74,48,74);ctx.strokeRect(dx-24,dy-74,48,74);
+  ctx.fillStyle='#ffe5a3';ctx.font='bold 11px Georgia';ctx.textAlign='center';ctx.fillText('EXIT',dx,dy-80);
 
   if(roomChest){
    const chx=toSX(roomChest.x),chy=toSY(0);
-   ctx.fillStyle=roomChest.opened?'#8c5828':'#6e3a16';ctx.strokeStyle='#1c0e04';ctx.lineWidth=2.5;
+   ctx.fillStyle=roomChest.opened?'#7a4c20':'#5c2f10';ctx.strokeStyle='#120802';ctx.lineWidth=2.5;
    ctx.fillRect(chx-24,chy-32,48,32);ctx.strokeRect(chx-24,chy-32,48,32);
    ctx.fillStyle=roomChest.unlocked?'#ffd23a':'#ff3b5c';
    ctx.beginPath();ctx.arc(chx,chy-18,6,0,Math.PI*2);ctx.fill();
   }
 
-  ctx.fillStyle='#4a3322';ctx.fillRect(rx0,ryFloor,rx1-rx0,H-ryFloor);
-  ctx.fillStyle='#78553a';ctx.fillRect(rx0,ryFloor,rx1-rx0,8);
+  ctx.fillStyle='#382517';ctx.fillRect(rx0,ryFloor,rx1-rx0,H-ryFloor);
+  ctx.fillStyle='#5e4029';ctx.fillRect(rx0,ryFloor,rx1-rx0,8);
 
   if(roomEnemy&&roomEnemy.alive){
    const ex=toSX(roomEnemy.x),ey=toSY(roomEnemy.y);
-   ctx.fillStyle=roomEnemy.fl>0?'#ffffff':'#9e2b4c';ctx.strokeStyle='#14080e';ctx.lineWidth=2.5;
+   ctx.fillStyle=roomEnemy.fl>0?'#ffffff':'#851f3d';ctx.strokeStyle='#0d0509';ctx.lineWidth=2.5;
    ctx.beginPath();ctx.arc(ex,ey,20,0,Math.PI*2);ctx.fill();ctx.stroke();
    ctx.fillStyle='#ffd23a';ctx.fillRect(ex-8,ey-5,5,5);ctx.fillRect(ex+3,ey-5,5,5);
   }
@@ -1458,7 +1508,7 @@ function draw(){
    if(a.x>cx+28)a.x-=56;if(a.x<cx-28)a.x+=56;
    if(a.y>16)a.y=-2;if(a.y<-2)a.y=16;
    const sx=toSX(a.x),sy=toSY(a.y);
-   ctx.fillStyle=a.c;ctx.globalAlpha=0.6;
+   ctx.fillStyle=a.c;ctx.globalAlpha=0.55;
    ctx.beginPath();
    if(q.id=='ocean')ctx.arc(sx,sy,a.sz*1.1,0,Math.PI*2);
    else ctx.ellipse(sx,sy,a.sz*2.0,a.sz*.65,-.2,0,Math.PI*2);
@@ -1466,19 +1516,22 @@ function draw(){
   }
   ctx.globalAlpha=1;
 
+  // Dark 2D Houses (tap or press Enter to go inside)
   doors.forEach(d=>{
    const dx=toSX(d.x),dy=toSY(0);
-   ctx.fillStyle='#5c3c24';ctx.strokeStyle='#1f1209';ctx.lineWidth=2.5;
+   ctx.fillStyle='#3b2515';ctx.strokeStyle='#0c0704';ctx.lineWidth=2.8;
    ctx.fillRect(dx-44,dy-60,88,60);ctx.strokeRect(dx-44,dy-60,88,60);
-   ctx.fillStyle='#243b66';ctx.beginPath();ctx.moveTo(dx-54,dy-60);ctx.lineTo(dx,dy-96);ctx.lineTo(dx+54,dy-60);ctx.closePath();ctx.fill();ctx.stroke();
-   ctx.fillStyle='#2e190b';ctx.fillRect(dx-12,dy-36,24,36);
-   ctx.fillStyle='#ffd875';ctx.fillRect(dx-32,dy-42,14,14);ctx.fillRect(dx+18,dy-42,14,14);
+   ctx.fillStyle='#192a4a';ctx.beginPath();ctx.moveTo(dx-54,dy-60);ctx.lineTo(dx,dy-96);ctx.lineTo(dx+54,dy-60);ctx.closePath();ctx.fill();ctx.stroke();
+   ctx.fillStyle='#1f1006';ctx.fillRect(dx-12,dy-36,24,36);ctx.strokeRect(dx-12,dy-36,24,36);
+   ctx.fillStyle='#f5c451';ctx.fillRect(dx-32,dy-42,14,14);ctx.fillRect(dx+18,dy-42,14,14);
+   ctx.fillStyle='#aef7ff';ctx.font='bold 10px Georgia';ctx.textAlign='center';ctx.fillText('HOUSE',dx,dy-102);
   });
+
   if(shopSpot){
    const dx=toSX(shopSpot.x),dy=toSY(0);
-   ctx.fillStyle='#4a3525';ctx.strokeStyle='#1f1209';ctx.lineWidth=2.5;
+   ctx.fillStyle='#332216';ctx.strokeStyle='#0c0704';ctx.lineWidth=2.8;
    ctx.fillRect(dx-48,dy-64,96,64);ctx.strokeRect(dx-48,dy-64,96,64);
-   ctx.fillStyle='#1f5c8a';ctx.beginPath();ctx.moveTo(dx-58,dy-64);ctx.lineTo(dx,dy-102);ctx.lineTo(dx+58,dy-64);ctx.closePath();ctx.fill();ctx.stroke();
+   ctx.fillStyle='#154061';ctx.beginPath();ctx.moveTo(dx-58,dy-64);ctx.lineTo(dx,dy-102);ctx.lineTo(dx+58,dy-64);ctx.closePath();ctx.fill();ctx.stroke();
    ctx.fillStyle='#ffd23a';ctx.font='bold 11px Georgia';ctx.textAlign='center';ctx.fillText('SHOP',dx,dy-48);
   }
 
@@ -1488,13 +1541,26 @@ function draw(){
    drawRealmProp(q,pr,sx,sy);
   }
 
+  // Rope Bounce Traps suspended over gaps
+  for(const rt of ropeTraps){
+   const rx=toSX(rt.x),ry=toSY(rt.y+Math.sin(rt.swingPhase)*0.16);
+   const rw=rt.w*ppm*0.5;
+   ctx.save();
+   ctx.strokeStyle='#9e6e34';ctx.lineWidth=2.5;
+   ctx.beginPath();ctx.moveTo(rx-rw,ry-36);ctx.lineTo(rx-rw,ry);ctx.moveTo(rx+rw,ry-36);ctx.lineTo(rx+rw,ry);ctx.stroke();
+   ctx.strokeStyle=rt.bounce>0?'#38e8ff':'#e6b355';
+   ctx.lineWidth=rt.bounce>0?6:4.5;
+   ctx.beginPath();ctx.moveTo(rx-rw,ry);ctx.quadraticCurveTo(rx,ry+(rt.bounce>0?12:5),rx+rw,ry);ctx.stroke();
+   ctx.restore();
+  }
+
   const pitY=toSY(-1.1);
   if(q.id=='volcano'){
    const lg=ctx.createLinearGradient(0,pitY,0,H);
-   lg.addColorStop(0,'#ff9e24');lg.addColorStop(0.35,'#e63917');lg.addColorStop(1,'#5c0a06');
+   lg.addColorStop(0,'#ff8c1a');lg.addColorStop(0.35,'#cc2b0e');lg.addColorStop(1,'#420604');
    ctx.fillStyle=lg;ctx.fillRect(0,pitY,W,H-pitY);
   }else if(q.id=='sky'){
-   ctx.fillStyle='rgba(255,255,255,0.42)';ctx.fillRect(0,pitY+24,W,H-pitY);
+   ctx.fillStyle='rgba(200,225,255,0.28)';ctx.fillRect(0,pitY+24,W,H-pitY);
   }
 
   for(const f of pl){
@@ -1503,19 +1569,20 @@ function draw(){
    const h=(f.y<=0&&q.id!='sky')?H-y0:22;
    ctx.fillStyle=q.c;ctx.fillRect(x0,y0,x1-x0,h);
    ctx.fillStyle=q.cap;ctx.fillRect(x0-2,y0-2,x1-x0+4,9);
-   ctx.strokeStyle='#141821';ctx.lineWidth=2;ctx.strokeRect(x0,y0,x1-x0,h);
+   ctx.strokeStyle='#0a0d12';ctx.lineWidth=2.2;ctx.strokeRect(x0,y0,x1-x0,h);
   }
 
   for(const h of hz){
    const sx=toSX(h.x),sy=toSY(0);
-   ctx.fillStyle=q.id=='volcano'?'#ff8c1a':'#ff4f79';ctx.beginPath();
+   ctx.fillStyle=q.id=='volcano'?'#ff7714':'#d9385a';ctx.strokeStyle='#090b10';ctx.lineWidth=2;
+   ctx.beginPath();
    ctx.moveTo(sx-12,sy);ctx.lineTo(sx-6,sy-20);ctx.lineTo(sx,sy);
-   ctx.lineTo(sx+6,sy-22);ctx.lineTo(sx+12,sy);ctx.closePath();ctx.fill();
+   ctx.lineTo(sx+6,sy-22);ctx.lineTo(sx+12,sy);ctx.closePath();ctx.fill();ctx.stroke();
   }
 
   for(const c of ch){
    const sx=toSX(c.x),sy=toSY(c.y);
-   ctx.fillStyle=c.open?'#9e6834':'#784119';ctx.strokeStyle='#1f1005';ctx.lineWidth=2;
+   ctx.fillStyle=c.open?'#855426':'#5e300e';ctx.strokeStyle='#0d0702';ctx.lineWidth=2;
    ctx.fillRect(sx-16,sy-22,32,22);ctx.strokeRect(sx-16,sy-22,32,22);
    ctx.fillStyle='#ffd23a';ctx.fillRect(sx-3,sy-14,6,6);
   }
@@ -1530,12 +1597,13 @@ function draw(){
 
   for(const h of hr){
    const sx=toSX(h.x),sy=toSY(h.y+Math.sin(tt*3+h.x)*.1);
-   ctx.fillStyle='#ff4a6a';ctx.beginPath();ctx.arc(sx,sy,8,0,Math.PI*2);ctx.fill();
+   ctx.fillStyle='#e03655';ctx.strokeStyle='#0a0507';ctx.lineWidth=1.8;
+   ctx.beginPath();ctx.arc(sx,sy,8,0,Math.PI*2);ctx.fill();ctx.stroke();
   }
 
   const px=toSX(portal.x),py=toSY(portal.y);
   ctx.save();ctx.translate(px,py);
-  ctx.strokeStyle=open?'#38e8ff':'#5c667a';ctx.lineWidth=5;
+  ctx.strokeStyle=open?'#38e8ff':'#485266';ctx.lineWidth=5;
   ctx.beginPath();ctx.arc(0,0,28,0,Math.PI*2);ctx.stroke();
   if(open){ctx.fillStyle='rgba(56,232,255,0.28)';ctx.fill()}
   ctx.restore();
@@ -1544,11 +1612,11 @@ function draw(){
    const ex=toSX(e.x),ey=toSY(e.y);
    ctx.save();ctx.translate(ex,ey);
    if(e.t=='b'){
-    ctx.fillStyle=e.fl>0?'#ffffff':q.boss.c;ctx.strokeStyle='#0d0f14';ctx.lineWidth=3;
+    ctx.fillStyle=e.fl>0?'#ffffff':q.boss.c;ctx.strokeStyle='#090b10';ctx.lineWidth=3;
     ctx.beginPath();ctx.roundRect(-34,-38,68,74,14);ctx.fill();ctx.stroke();
     ctx.fillStyle='#ff3322';ctx.fillRect(-18,-18,11,8);ctx.fillRect(7,-18,11,8);
    }else{
-    ctx.fillStyle=e.fl>0?'#ffffff':q.ec;ctx.strokeStyle='#0d0f14';ctx.lineWidth=2.5;
+    ctx.fillStyle=e.fl>0?'#ffffff':q.ec;ctx.strokeStyle='#090b10';ctx.lineWidth=2.5;
     ctx.beginPath();ctx.arc(0,0,18,0,Math.PI*2);ctx.fill();ctx.stroke();
     ctx.fillStyle='#ffd23a';ctx.fillRect(-7,-5,4,4);ctx.fillRect(3,-5,4,4);
    }
@@ -1579,7 +1647,7 @@ function draw(){
  const pctNow=getPlayedPercent();
  $('h1').textContent='❤'.repeat(Math.max(0,p.hp))+'  Lv.'+lvl+' ('+pctNow+'%)  |  🪙 '+coins;
  $('h2').textContent=inside
-  ?(roomChest?.opened?'Chest Opened! Exit left':roomChest?.unlocked?'Unlock Chest (Enter)!':'Defeat Guard!')
+  ?(roomChest?.opened?'Chest Opened! Tap EXIT':roomChest?.unlocked?'Unlock Chest (Enter)!':'Defeat Guard!')
   :(open?'Go to the portal ►':q.w+' '+col+'/'+q.k+(boss&&!bd?'  |  '+q.boss.n+' '+boss.hp+'/'+boss.mh:''));
 }
 
