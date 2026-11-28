@@ -14,7 +14,7 @@
 }
 *{box-sizing:border-box}
 html,body{
-  margin:0;height:100%;background:var(--bg);overflow:hidden;
+  margin:0;width:100%;height:100%;background:var(--bg);overflow:hidden;
   touch-action:none;font-family:Georgia,"Times New Roman",serif;color:var(--fg);
   user-select:none;-webkit-user-select:none;
 }
@@ -63,7 +63,6 @@ canvas{display:block;width:100%;height:100%;image-rendering:auto}
   height:36px;padding:0 12px;border-radius:18px;background:rgba(28,18,46,.86);
   border:1.5px solid #f2b84b;color:#ffe49e;font:700 11px Georgia,serif;cursor:pointer;
 }
-/* Custom control editing mode */
 body.editing-controls .b{
   z-index:75!important;
   outline:2px dashed #ffd23a;
@@ -97,7 +96,6 @@ body.editing-controls .b:active{transform:scale(1.06);cursor:grabbing}
 }
 #ov button:first-of-type{background:var(--ac);color:#08131a;font-weight:700}
 
-/* Portal / Level Node Map Screen */
 #mapScreen{
   display:none;position:fixed;inset:0;z-index:65;
   background:radial-gradient(circle at 50% 35%,#2b1747 0%,#140b24 65%,#080410 100%);
@@ -128,7 +126,6 @@ body.editing-controls .b:active{transform:scale(1.06);cursor:grabbing}
   align-items:center;justify-content:center;text-align:center;font-size:24px;padding:24px;
 }
 @media (orientation:portrait){#rot{display:flex}}
-/* Title screen */
 #ts{
   position:fixed;inset:0;z-index:50;display:none;overflow:hidden;
   background:radial-gradient(circle at 32% 45%,#1d586e 0%,#132638 48%,#0b0f19 100%);
@@ -236,7 +233,6 @@ const $=id=>document.getElementById(id),ov=$('ov'),flEl=$('flash'),cv=$('cv'),ct
 const T={l:0,r:0,jh:0,jp:0,ap:0,mp:0,sp:0,ep:0},K={};
 let editingControls=false,prevStateBeforeEdit='menu';
 
-// ---------- Custom Control Layout Manager (All Buttons Movable) ----------
 const BTN_IDS=['L','R','EN','SH','M','A','J'];
 let customPositions={};
 
@@ -413,10 +409,9 @@ function triggerFlash(strength=.55){
  triggerFlash.t=setTimeout(()=>flEl.style.opacity=0,95);
 }
 
-let W=innerWidth,H=innerHeight,DPR=Math.min(devicePixelRatio||1,2);
+let W=window.innerWidth||800,H=window.innerHeight||450,DPR=Math.min(window.devicePixelRatio||1,2);
 let mapNodes=[];
 
-// ---------- 8 Ultra 2D Fantasy Realms ----------
 const Z=[
  {id:'forest',n:'1. Forest Realm',m:'Collect 3 Forest Shards, clear cottage guards, & defeat Corruptor.',w:'Shards',k:3,e:4,sky:['#185a9d','#43cea2','#b8f2e6'],mt:['#256e66','#194d48'],c:'#4c3626',cap:'#43b559',ec:'#397a49',sc:'#38e8ff',f0:196,g:30,village:1,boss:{n:'Corruptor',hp:8,c:'#2f6327',c2:'#ffbe2e'}},
  {id:'desert',n:'2. Desert Realm',m:'Cross sun-scorched dunes & ruins, gather 3 Sun Shards, & beat Sand Golem.',w:'Shards',k:3,e:5,sky:['#c96a1b','#f2a33c','#ffe39f'],mt:['#c77a32','#9e581e'],c:'#9c682b',cap:'#e6b355',ec:'#b8651e',sc:'#4affd0',f0:165,g:30,sp:1,boss:{n:'Sand Golem',hp:10,c:'#a66d24',c2:'#ffd23a'}},
@@ -581,7 +576,7 @@ function resizeMapCanvas(){
  const wrap=$('mapCanvasWrap');
  if(!wrap||!mapCv)return;
  const w=wrap.clientWidth||W,h=wrap.clientHeight||Math.max(120,H-96);
- mapCv.width=w*DPR;mapCv.height=h*DPR;
+ mapCv.width=Math.max(1,w)*DPR;mapCv.height=Math.max(1,h)*DPR;
  mctx.setTransform(DPR,0,0,DPR,0,0);
  buildMapNodes(w,h);
  if($('mapScreen').style.display==='flex')drawMapScreen();
@@ -621,13 +616,15 @@ mapCv.addEventListener('pointerdown',e=>{
 });
 
 function rs(){
- W=innerWidth;H=innerHeight;DPR=Math.min(devicePixelRatio||1,2);
+ W=Math.max(1,window.innerWidth||800);
+ H=Math.max(1,window.innerHeight||450);
+ DPR=Math.min(devicePixelRatio||1,2);
  cv.width=W*DPR;cv.height=H*DPR;
  ctx.setTransform(DPR,0,0,DPR,0,0);
  applyCustomLayout();
  resizeMapCanvas();
 }
-addEventListener('resize',rs);rs();
+addEventListener('resize',rs);
 
 const p={x:0,y:0,vx:0,vy:0,hp:5,mhp:5,atkDmg:1,magDmg:2,f:1,g:0,j:0,atk:0,cs:0,cc:0,mc:0,sx:0,coy:0,jb:0,sq:0,gy:0,spd:7.4};
 
@@ -663,6 +660,9 @@ function gainXp(amt){
    '+1 Sword/Magic Power',()=>{p.atkDmg++;p.magDmg++;st='play';banner('Attack & Magic Upgraded!')});
  }else saveProg();
 }
+
+let sd=1;
+const rn=()=>(sd=sd*16807%2147483647)/2147483647;
 
 function load(z){
  Z0=z;const q=Z[z];sd=z*77+5;
@@ -791,7 +791,18 @@ function hit(e,d,f){
   if(e===boss){bd=1;shk=.65;chk()}
  }
 }
-function lockL(){try{document.documentElement.requestFullscreen().then(()=>screen.orientation.lock('landscape')).catch(()=>{})}catch(e){}}
+function lockL(){
+ try{
+  if(document.documentElement.requestFullscreen){
+   const p=document.documentElement.requestFullscreen();
+   if(p&&p.catch)p.catch(()=>{});
+  }
+  if(screen.orientation&&screen.orientation.lock){
+   const o=screen.orientation.lock('landscape');
+   if(o&&o.catch)o.catch(()=>{});
+  }
+ }catch(e){}
+}
 function ovl(t,x,a,fa,b,fb){
  $('h').textContent=t;$('tx').textContent=x;
  const A=$('b1'),B=$('b2');
@@ -1018,7 +1029,6 @@ function upd(dt){
  }
 }
 
-// ---------- Realm-Specific 2D Scenery & Parallax Backgrounds ----------
 function drawRealmBackdrop(q,ppm,toSX,toSY){
  const floorY=toSY(0);
 
@@ -1145,7 +1155,6 @@ function drawRealmProp(q,pr,sx,sy){
  ctx.restore();
 }
 
-// ---------- High-Detail 2D Anime Warrior Renderer ----------
 function drawAnimeHero(sx,sy,scale,facing,pose,phase,atkProg){
  ctx.save();
  ctx.translate(sx,sy);
@@ -1515,8 +1524,12 @@ mb.textContent='♪';
 mb.onclick=()=>{mute=!mute;mb.style.opacity=mute?.35:1};
 document.body.append(mb);
 
+rs();
 loadCustomLayout();
-load(0);menu();requestAnimationFrame(loop);
+load(0);
+menu();
+draw();
+requestAnimationFrame(loop);
 </script>
 </body>
 </html>
